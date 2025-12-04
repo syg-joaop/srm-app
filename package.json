@@ -1,0 +1,39 @@
+{
+  "name": "srm-app",
+  "private": true,
+  "version": "2.0.0",
+  "type": "module",
+  "scripts": {
+    "dev": "nuxt dev",
+    "dev:host": "nuxt dev --host",
+    "build": "nuxt build",
+    "generate": "nuxt generate",
+    "preview": "nuxt preview",
+    "postinstall": "nuxt prepare",
+    "electron:dev": "nuxt dev & wait-on http://localhost:3000 && electron electron/src/index.ts",
+    "electron:build": "nuxt generate && electron-builder"
+  },
+  "dependencies": {
+    "@capacitor-community/electron": "^5.0.1",
+    "@capacitor/android": "^7.4.4",
+    "@capacitor/cli": "^7.4.4",
+    "@capacitor/core": "^7.4.4",
+    "@capacitor/ios": "^7.4.4",
+    "@pinia/nuxt": "^0.5.5",
+    "echarts": "^6.0.0",
+    "h3-zod": "^0.5.3",
+    "lucide-vue-next": "^0.554.0",
+    "nuxt": "^3.13.0",
+    "pinia": "^2.3.1",
+    "vue": "^3.5.24",
+    "zod": "^3.23.8"
+  },
+  "devDependencies": {
+    "@nuxt/image": "^1.8.0",
+    "@nuxtjs/tailwindcss": "^6.12.1",
+    "@types/node": "^24.10.1",
+    "nuxt-typed-router": "^3.6.5",
+    "typescript": "^5.9.3",
+    "vue-tsc": "^3.1.5"
+  }
+}
