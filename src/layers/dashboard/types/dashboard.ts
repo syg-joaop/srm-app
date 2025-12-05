@@ -183,3 +183,69 @@ export interface DashboardApiResponse {
     data: { mes: string; desconto: number }[];
   };
 }
+
+export interface StatItem {
+  label: string;
+  value: string | number;
+  icon: string;
+  color: string;
+}
+
+export interface SummaryItem {
+  label: string;
+  value: string;
+}
+
+export interface TableItem {
+  name: string;
+  current: string;
+  previous: string;
+}
+
+export interface AniversarianteItem {
+  name: string;
+  location: string;
+  status: string;
+  date: string;
+}
+
+export interface StatusBadgeItem {
+  value: string | number;
+  label?: string;
+  color: "red" | "green" | "yellow" | "blue" | "purple" | "gray" | "dark-red";
+  icon?: string;
+}
+
+export interface AtendenteItem {
+  role: string;
+  s1: number; // Geral
+  s2: number; // Periodo
+  s3: number; // OK
+  s4: number; // Pendente
+  statuses: StatusBadgeItem[];
+}
+
+export type AtendimentosVencidos = Attendance;
+
+export interface ChartData {
+  ocorrenciasPie: {
+    value: number;
+    name: string;
+    itemStyle?: { color: string };
+  }[];
+  ocorrenciasLine: { months: string[]; values: number[] };
+  metaDiaria: { days: string[]; values: number[] };
+  descontos: { months: string[]; values: number[] };
+  produtosBar: { names: string[]; current: number[]; previous: number[] };
+}
+
+export interface DashboardData {
+  stats: StatItem[];
+  chartData: ChartData;
+  comprasMes: SummaryItem[];
+  comprasMesAnterior: SummaryItem[];
+  compradorItems: TableItem[];
+  produtosItems: TableItem[];
+  aniversariantesItems: AniversarianteItem[];
+  atendentesItems: AtendenteItem[];
+}

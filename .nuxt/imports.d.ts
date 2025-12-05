@@ -39,10 +39,11 @@ export { premiumTooltipStyle, getPremiumTooltip } from '../src/utils/formatters/
 export { formatCurrency, formatNumber, formatKg } from '../src/utils/formatters/currency';
 export { formatDate, formatDateTime, formatDayMonth } from '../src/utils/formatters/date';
 export { groupBy, unique, sortBy } from '../src/utils/helpers/array';
+export { emptyChartData, formatMoeda, formatarLabel, mapIcon, formatarResumoCompras, formatarResumoComprasAnterior, transformPieData, transformLineData, transformMetaData, transformDescData, transformProdutosData } from '../src/utils/helpers/dashboard';
 export { capitalize, truncate, slugify } from '../src/utils/helpers/string';
 export { isValidEmail, isRequired, minLength, maxLength } from '../src/utils/validators/email';
 export { useAuthStore } from '../src/layers/auth/stores/auth';
 export { useDashboardService } from '../src/layers/dashboard/composables/useDashboardService';
-export { useDashboardStore, DashboardData, StatItem, SummaryItem, TableItem, AniversarianteItem, AtendenteItem, AtendimentosVencidos, ChartData } from '../src/layers/dashboard/stores/dashboard';
+export { useDashboardStore } from '../src/layers/dashboard/stores/dashboard';
 export { defineStore, acceptHMRUpdate, usePinia, storeToRefs } from '../node_modules/@pinia/nuxt/dist/runtime/composables';
 export { useImage } from '../node_modules/@nuxt/image/dist/runtime/composables';

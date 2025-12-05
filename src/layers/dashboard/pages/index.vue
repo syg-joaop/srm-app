@@ -147,7 +147,9 @@
                   class="text-[10px] uppercase tracking-wider font-semibold text-gray-500 dark:text-gray-400"
                   >Total</span
                 >
-                <span class="text-2xl font-bold text-primary">101</span>
+                <span class="text-2xl font-bold text-primary">{{
+                  totalOcorrencias
+                }}</span>
               </div>
             </template>
 
@@ -181,17 +183,23 @@
             :page-size="6"
           >
             <template #default="{ paginatedItems }">
-              <div class="-mx-5">
+              <div class="-mx-6">
                 <table class="w-full table-fixed text-sm text-left">
                   <thead
-                    class="text-xs text-gray-600 dark:text-gray-400 uppercase bg-gradient-to-b from-gray-50/50 to-transparent dark:from-gray-800/30 dark:to-transparent border-b border-gray-200 dark:border-gray-800"
+                    class="text-xs text-gray-500 dark:text-gray-400 uppercase bg-gray-50 dark:bg-gray-800/50 border-b border-gray-200 dark:border-gray-700"
                   >
                     <tr>
-                      <th class="px-5 py-3 font-semibold">Comprador</th>
-                      <th class="px-5 py-3 font-semibold text-center">
+                      <th class="px-6 py-3 font-semibold tracking-wider">
+                        Comprador
+                      </th>
+                      <th
+                        class="px-6 py-3 font-semibold text-center tracking-wider"
+                      >
                         Mês atual
                       </th>
-                      <th class="px-5 py-3 font-semibold text-center">
+                      <th
+                        class="px-6 py-3 font-semibold text-center tracking-wider"
+                      >
                         Mês anterior
                       </th>
                     </tr>
@@ -200,22 +208,22 @@
                     <tr
                       v-for="item in paginatedItems"
                       :key="item.name"
-                      class="border-b border-gray-200 dark:border-gray-800/50 hover:bg-gradient-to-r hover:from-primary/5 hover:via-primary/3 hover:to-transparent transition-all duration-300 group"
+                      class="border-b border-gray-100 dark:border-gray-700/60 hover:bg-gray-50 dark:hover:bg-gray-800/50 transition-colors duration-200 group/row"
                     >
                       <td
-                        class="px-5 py-3 font-medium text-gray-800 dark:text-gray-300 truncate group-hover:text-primary transition-colors"
+                        class="px-6 py-3 font-medium text-gray-700 dark:text-gray-300 truncate group-hover/row:text-primary transition-colors"
                       >
                         {{ item.name }}
                       </td>
-                      <td class="px-5 py-3 text-center">
+                      <td class="px-6 py-3 text-center">
                         <span
-                          class="inline-flex items-center justify-center px-2.5 py-1 rounded-md bg-green-50 dark:bg-green-900/20 text-green-700 dark:text-green-400 font-semibold text-xs border border-green-200 dark:border-green-800/50"
+                          class="font-bold text-xs text-green-600 dark:text-green-400"
                         >
                           {{ item.current }}
                         </span>
                       </td>
                       <td
-                        class="px-5 py-3 text-center text-gray-600 dark:text-gray-400 font-medium"
+                        class="px-6 py-3 text-center text-gray-500 dark:text-gray-400 font-medium text-xs"
                       >
                         {{ item.previous }}
                       </td>
@@ -397,6 +405,13 @@ const {
   atendimentosVencidos,
 } = storeToRefs(dashboardStore);
 
+const totalOcorrencias = computed(() => {
+  return chartData.value.ocorrenciasPie.reduce(
+    (acc: number, item: any) => acc + item.value,
+    0
+  );
+});
+
 const pieChartRef = ref<HTMLElement | null>(null);
 const lineChartRef = ref<HTMLElement | null>(null);
 const barChartRef = ref<HTMLElement | null>(null);
@@ -404,8 +419,39 @@ const discountChartRef = ref<HTMLElement | null>(null);
 const productChartRef = ref<HTMLElement | null>(null);
 
 const initCharts = () => {
+  const getStyle = (variable: string) =>
+    getComputedStyle(document.documentElement)
+      .getPropertyValue(variable)
+      .trim();
+
   if (pieChartRef.value) {
-    const chart = echarts.init(pieChartRef.value);
+    const chart =
+      echarts.getInstanceByDom(pieChartRef.value) ||
+      echarts.init(pieChartRef.value);
+
+    // Map colors to data
+    const coloredData = chartData.value.ocorrenciasPie.map((item) => {
+      let colorVar = "--color-status-finalizado"; // Default
+      switch (item.name) {
+        case "Finalizado":
+          colorVar = "--color-status-finalizado";
+          break;
+        case "Em Acompanhamento":
+          colorVar = "--color-status-acompanhamento";
+          break;
+        case "Pendente":
+          colorVar = "--color-status-pendente";
+          break;
+        case "Vencido":
+          colorVar = "--color-status-vencido";
+          break;
+      }
+      return {
+        ...item,
+        itemStyle: { color: getStyle(colorVar) },
+      };
+    });
+
     chart.setOption({
       baseOption: {
         tooltip: {
@@ -420,7 +466,7 @@ const initCharts = () => {
             avoidLabelOverlap: true,
             itemStyle: {
               borderRadius: 10,
-              borderColor: "#1e293b",
+              borderColor: getStyle("--color-surface"),
               borderWidth: 2,
             },
             label: {
@@ -428,31 +474,15 @@ const initCharts = () => {
               position: "outside",
               formatter: "{b}\n{c}",
               color: "inherit",
-              fontSize: 12,
-              fontWeight: 500,
-              lineHeight: 18,
             },
             labelLine: {
               show: true,
               smooth: 0.2,
-              length: 15,
-              length2: 15,
-              lineStyle: {
-                width: 1.5,
-                type: "solid",
-              },
+              length: 10,
+              length2: 20,
             },
-            emphasis: {
-              scale: true,
-              scaleSize: 10,
-              label: {
-                show: true,
-                fontSize: 14,
-                fontWeight: "bold",
-              },
-            },
-            data: chartData.value.ocorrenciasPie,
-            radius: ["35%", "60%"],
+            data: coloredData,
+            radius: ["40%", "70%"],
           },
         ],
       },
@@ -481,28 +511,44 @@ const initCharts = () => {
     });
   }
 
+  const commonOptions = {
+    grid: { left: "3%", right: "4%", bottom: "3%", containLabel: true },
+    xAxis: {
+      axisLine: { lineStyle: { color: getStyle("--color-border") } },
+      axisLabel: { color: getStyle("--color-text-muted") },
+    },
+    yAxis: {
+      splitLine: {
+        lineStyle: {
+          color: getStyle("--color-border"),
+          type: "dashed",
+          opacity: 0.3,
+        },
+      },
+      axisLabel: { color: getStyle("--color-text-muted") },
+    },
+  };
+
   if (lineChartRef.value) {
-    const chart = echarts.init(lineChartRef.value);
+    const chart =
+      echarts.getInstanceByDom(lineChartRef.value) ||
+      echarts.init(lineChartRef.value);
     chart.setOption({
       tooltip: {
         trigger: "axis",
         ...premiumTooltipStyle,
         formatter: (params: any) => getPremiumTooltip(params),
       },
-      grid: { left: "3%", right: "4%", bottom: "3%", containLabel: true },
+      grid: commonOptions.grid,
       xAxis: {
         type: "category",
         boundaryGap: false,
         data: chartData.value.ocorrenciasLine.months,
-        axisLine: { lineStyle: { color: "#334155" } },
-        axisLabel: { color: "#94a3b8" },
+        ...commonOptions.xAxis,
       },
       yAxis: {
         type: "value",
-        splitLine: {
-          lineStyle: { color: "#334155", type: "dashed", opacity: 0.3 },
-        },
-        axisLabel: { color: "#94a3b8" },
+        ...commonOptions.yAxis,
       },
       series: [
         {
@@ -525,16 +571,25 @@ const initCharts = () => {
   }
 
   if (barChartRef.value) {
-    const chart = echarts.init(barChartRef.value);
+    const chart =
+      echarts.getInstanceByDom(barChartRef.value) ||
+      echarts.init(barChartRef.value);
     chart.setOption({
       tooltip: {
         trigger: "axis",
         ...premiumTooltipStyle,
         formatter: (params: any) => getPremiumTooltip(params),
       },
-      grid: { left: "3%", right: "4%", bottom: "3%", containLabel: true },
-      xAxis: { type: "category", data: chartData.value.metaDiaria.days },
-      yAxis: { type: "value", splitLine: { lineStyle: { color: "#334155" } } },
+      grid: commonOptions.grid,
+      xAxis: {
+        type: "category",
+        data: chartData.value.metaDiaria.days,
+        ...commonOptions.xAxis,
+      },
+      yAxis: {
+        type: "value",
+        ...commonOptions.yAxis,
+      },
       series: [
         {
           name: "Meta Diária: ",
@@ -547,16 +602,25 @@ const initCharts = () => {
   }
 
   if (discountChartRef.value) {
-    const chart = echarts.init(discountChartRef.value);
+    const chart =
+      echarts.getInstanceByDom(discountChartRef.value) ||
+      echarts.init(discountChartRef.value);
     chart.setOption({
       tooltip: {
         trigger: "axis",
         ...premiumTooltipStyle,
         formatter: (params: any) => getPremiumTooltip(params),
       },
-      grid: { left: "3%", right: "4%", bottom: "3%", containLabel: true },
-      xAxis: { type: "category", data: chartData.value.descontos.months },
-      yAxis: { type: "value", splitLine: { lineStyle: { color: "#334155" } } },
+      grid: commonOptions.grid,
+      xAxis: {
+        type: "category",
+        data: chartData.value.descontos.months,
+        ...commonOptions.xAxis,
+      },
+      yAxis: {
+        type: "value",
+        ...commonOptions.yAxis,
+      },
       series: [
         {
           name: "Descontos",
@@ -570,7 +634,9 @@ const initCharts = () => {
   }
 
   if (productChartRef.value) {
-    const chart = echarts.init(productChartRef.value);
+    const chart =
+      echarts.getInstanceByDom(productChartRef.value) ||
+      echarts.init(productChartRef.value);
     chart.setOption({
       tooltip: {
         trigger: "axis",
@@ -582,7 +648,7 @@ const initCharts = () => {
         bottom: 0,
         itemWidth: 10,
         itemHeight: 10,
-        textStyle: { color: "#94a3b8" },
+        textStyle: { color: getStyle("--color-text-muted") },
       },
       grid: {
         left: "3%",
@@ -593,15 +659,13 @@ const initCharts = () => {
       },
       xAxis: {
         type: "value",
-        splitLine: {
-          lineStyle: { color: "#334155", type: "dashed", opacity: 0.3 },
-        },
+        splitLine: commonOptions.yAxis.splitLine,
         axisLabel: {
           formatter: (value: number) => {
             if (value >= 1000) return `${(value / 1000).toFixed(0)}k`;
             return value;
           },
-          color: "#94a3b8",
+          color: getStyle("--color-text-muted"),
         },
       },
       yAxis: {
@@ -612,7 +676,7 @@ const initCharts = () => {
         axisLabel: {
           width: 100,
           overflow: "truncate",
-          color: "#94a3b8",
+          color: getStyle("--color-text-muted"),
         },
       },
       series: [
@@ -635,7 +699,7 @@ const initCharts = () => {
           type: "bar",
           data: chartData.value.produtosBar.previous,
           itemStyle: {
-            color: "#94a3b8",
+            color: getStyle("--color-text-muted"),
             borderRadius: [0, 4, 4, 0],
             opacity: 0.5,
           },
@@ -663,10 +727,21 @@ onMounted(() => {
     handleResize();
   });
   window.addEventListener("resize", handleResize);
-});
 
-onUnmounted(() => {
-  window.removeEventListener("resize", handleResize);
+  // Watch for theme changes
+  const observer = new MutationObserver(() => {
+    initCharts();
+  });
+  observer.observe(document.documentElement, {
+    attributes: true,
+    attributeFilter: ["data-theme"],
+  });
+
+  // Cleanup observer on unmount
+  onUnmounted(() => {
+    observer.disconnect();
+    window.removeEventListener("resize", handleResize);
+  });
 });
 
 const handleResize = () => {

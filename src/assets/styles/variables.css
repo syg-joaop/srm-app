@@ -5,6 +5,7 @@
   --sidebar-width-collapsed: 64px;
   --header-height: 60px;
 
+  /* Default to Dark Mode */
   --color-primary: #0099ff;
   --color-primary-dark: #0077be;
   --color-background: #0f172a;
@@ -14,6 +15,12 @@
   --color-border: #333333;
   --color-border-subtle: rgba(255, 255, 255, 0.08);
   --color-hover: rgba(255, 255, 255, 0.1);
+
+  /* Status Colors */
+  --color-status-finalizado: #4ade80;
+  --color-status-acompanhamento: #fbbf24;
+  --color-status-pendente: #f87171;
+  --color-status-vencido: #ef4444;
 }
 
 [data-theme="light"] {
