@@ -188,6 +188,7 @@ const menuItems = [
   display: flex;
   flex-direction: column;
   gap: 0.5rem;
+  width: 100%; 
 }
 
 .nav-item {
@@ -204,6 +205,8 @@ const menuItems = [
   outline: none;
   background: transparent;
   width: 100%;
+  max-width: 100%; 
+  overflow: hidden; 
 }
 
 .nav-item:hover {
