@@ -20,14 +20,22 @@
       @click="$emit('select', fornecedor)"
     >
       <div
-        class="hidden md:block absolute left-0 top-1/2 -translate-y-1/2 w-0.5 h-0 bg-primary rounded-r-full opacity-0 group-hover/item:h-6 group-hover/item:opacity-100 transition-all duration-300"
+        class="hidden md:block absolute left-0 top-1/2 -translate-y-1/2 w-0.5 h-0 rounded-r-full opacity-0 group-hover/item:h-6 group-hover/item:opacity-100 transition-all duration-300"
+        :class="isInactive(fornecedor.status) ? 'bg-red-500' : 'bg-primary'"
       ></div>
 
       <div class="flex items-center justify-between md:hidden">
         <div class="flex items-center gap-3">
           <div
-            class="w-8 h-8 rounded-full flex items-center justify-center text-green-500 shrink-0"
-            style="background-color: rgba(74, 222, 128, 0.15)"
+            class="w-8 h-8 rounded-full flex items-center justify-center shrink-0"
+            :class="
+              isInactive(fornecedor.status) ? 'text-red-500' : 'text-green-500'
+            "
+            :style="{
+              backgroundColor: isInactive(fornecedor.status)
+                ? 'rgba(239, 68, 68, 0.15)'
+                : 'rgba(74, 222, 128, 0.15)',
+            }"
           >
             <Building2 class="w-4 h-4" />
           </div>
@@ -65,7 +73,15 @@
       <div class="hidden md:flex col-span-1 items-center justify-start">
         <div
           class="w-8 h-8 rounded-md flex items-center justify-center transition-colors group-hover/item:bg-opacity-25"
-          style="background-color: rgba(74, 222, 128, 0.15); color: #10b981"
+          :class="
+            isInactive(fornecedor.status) ? 'text-red-500' : 'text-green-500'
+          "
+          :style="{
+            backgroundColor: isInactive(fornecedor.status)
+              ? 'rgba(239, 68, 68, 0.15)'
+              : 'rgba(74, 222, 128, 0.15)',
+            color: isInactive(fornecedor.status) ? '#ef4444' : '#10b981',
+          }"
         >
           <Building2 class="w-4 h-4" />
         </div>
@@ -174,6 +190,10 @@ defineProps<{
 defineEmits<{
   (e: "select", fornecedor: Fornecedor): void;
 }>();
+
+const isInactive = (status: string) => {
+  return (status || "").toLowerCase().trim() === "inativo";
+};
 
 const getStatusStyle = (status: string) => {
   const normalized = status ? status.toLowerCase().trim() : "";

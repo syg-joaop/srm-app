@@ -12,7 +12,10 @@
       >
         <!-- Title Row -->
         <div class="flex items-center gap-3 w-full md:w-auto">
-          <div class="h-6 w-1 md:h-8 bg-red-600 rounded-full shrink-0"></div>
+          <div
+            class="h-6 w-1 md:h-8 rounded-full shrink-0"
+            :class="isInactive ? 'bg-red-600' : 'bg-primary'"
+          ></div>
           <h2
             class="text-lg md:text-2xl font-bold dark:text-gray-100 text-gray-900 truncate flex-1 md:flex-none"
           >
@@ -192,6 +195,10 @@ watch(
 );
 
 const mockAtendimentos = ref([]);
+
+const isInactive = computed(() => {
+  return (props.parceiro?.status || "").toLowerCase().trim() === "inativo";
+});
 
 const selectTab = (tabId: string, index: number) => {
   activeTab.value = tabId;
