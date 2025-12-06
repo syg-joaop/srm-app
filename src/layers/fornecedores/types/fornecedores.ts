@@ -23,4 +23,6 @@ export interface Fornecedor {
   latlong: boolean;
 }
 
-export interface FornecedorResponse extends ApiResponse<Fornecedor[]> {}
+export interface FornecedorResponse extends ApiResponse<Fornecedor[]> {
+  data: Fornecedor[];
+}

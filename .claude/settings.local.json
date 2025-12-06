@@ -20,7 +20,10 @@
       "Bash(if exist node_modules.cache rmdir /s /q node_modules.cache)",
       "Bash(if exist \"C:\\Users\\Usuario\\.gemini\\antigravity\\scratch\\srm-app\\src\\components\\features\\dashboard\" rmdir \"C:\\Users\\Usuario\\.gemini\\antigravity\\scratch\\srm-app\\src\\components\\features\\dashboard\")",
       "WebSearch",
-      "Bash(timeout /t 5)"
+      "Bash(timeout /t 5)",
+      "Bash(dir \"C:\\Users\\Usuario\\Desktop\\srm-app\\src\\layers\\fornecedores\\components\" /b)",
+      "Bash(cat:*)",
+      "Bash(mkdir:*)"
     ],
     "deny": [],
     "ask": []

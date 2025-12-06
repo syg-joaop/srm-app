@@ -144,7 +144,7 @@
       </div>
 
       <div v-else>
-        <SupplierMap />
+        <SupplierMap :suppliers="filteredSuppliers" />
       </div>
     </div>
   </div>
@@ -163,17 +163,15 @@ import {
 import SupplierList from "../components/SupplierList.vue";
 import SupplierMap from "../components/SupplierMap.vue";
 import SupplierFilters from "../components/SupplierFilters.vue";
-import { mockSuppliers } from "../mocks/suppliers";
-
-definePageMeta({ layout: "default" });
+import type { Fornecedor } from "../types/fornecedores";
+import { useFornecedorService } from "../composables/useFornecedorService";
+import { mapFornecedorToSupplier } from "../utils/supplierMapper";
+import { useListFilter } from "../../../composables/ui/useListFilter";
 
 const { fetchFornecedor } = useFornecedorService();
+const { data: fornecedores, status } = fetchFornecedor();
 
-const { data: fornecedores } = await fetchFornecedor();
-
-console.log(fornecedores);
-
-const search = ref("");
+const isLoading = computed(() => status.value === "pending");
 const showFilters = ref(false);
 const viewMode = ref<"list" | "map">("list");
 
@@ -193,28 +191,60 @@ const activeFiltersCount = computed(() => {
   return count;
 });
 
-const filteredSuppliers = computed(() => {
-  return mockSuppliers.filter((s) => {
-    const searchMatch =
-      !search.value ||
-      s.name.toLowerCase().includes(search.value.toLowerCase()) ||
-      (s.fantasy &&
-        s.fantasy.toLowerCase().includes(search.value.toLowerCase()));
+const listaFornecedores = computed(() => fornecedores.value?.data ?? []);
 
-    const fantasiaMatch =
-      !filters.value.fantasia ||
-      (s.fantasy &&
-        s.fantasy.toLowerCase().includes(filters.value.fantasia.toLowerCase()));
-    const cidadeMatch =
-      !filters.value.cidade ||
-      s.city.toLowerCase().includes(filters.value.cidade.toLowerCase());
+const mapStatusFilter = (filter: string): Fornecedor["status"] | null => {
+  const map: Record<string, Fornecedor["status"]> = {
+    ativo: "ativo",
+    inativo: "inativo",
+    alerta: "alerta",
+  };
+  return map[filter.trim().toLowerCase()] || null;
+};
 
-    const statusMatch =
-      filters.value.status === "todos" ||
-      (filters.value.status === "ativo" && s.status === "active") ||
-      (filters.value.status === "inativo" && s.status === "inactive");
+const filterConfig = computed(() => ({
+  searchFields: ["fornecedor", "fanta", "cidade"] as (keyof Fornecedor)[],
+  
+  customFilters: (s: Fornecedor) => {
+    const f = filters.value;
+    
+    const matchFantasia = !f.fantasia || 
+      (s.fanta ?? "").toLowerCase().includes(f.fantasia.toLowerCase());
+      
+    const matchCidade = !f.cidade || 
+      s.cidade.toLowerCase().includes(f.cidade.toLowerCase());
 
-    return searchMatch && fantasiaMatch && cidadeMatch && statusMatch;
-  });
-});
+    const statusTarget = mapStatusFilter(f.status);
+    const matchStatus = f.status === "todos" || s.status === statusTarget;
+
+    return matchFantasia && matchCidade && matchStatus;
+  },
+
+  sortCompare: (a: Fornecedor, b: Fornecedor) => {
+    const sortBy = filters.value.sortBy;
+    if (sortBy === "cidade") {
+      return a.cidade.localeCompare(b.cidade);
+    } 
+    if (sortBy === "status") {
+      const normalizar = (status: string) => status.trim().toLowerCase();
+      const order: Record<string, number> = {
+        ativo: 1,
+        alerta: 2,
+        inativo: 3,
+      };
+      return (order[normalizar(a.status)] ?? 99) - (order[normalizar(b.status)] ?? 99);
+    }
+    return a.fornecedor.localeCompare(b.fornecedor);
+  }
+}));
+
+const { search, filteredItems: fornecedoresFiltrados } = useListFilter(
+  listaFornecedores,
+  filterConfig
+);
+
+const filteredSuppliers = computed(() =>
+  fornecedoresFiltrados.value.map(mapFornecedorToSupplier)
+);
+
 </script>
