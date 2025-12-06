@@ -2,10 +2,7 @@
   <Teleport to="body">
     <Transition name="modal">
       <div v-if="modelValue" class="modal-overlay" @click="handleOverlayClick">
-        <div
-          :class="['modal-container', `size-${size}`]"
-          @click.stop
-        >
+        <div :class="['modal-container', `size-${size}`]" @click.stop>
           <div class="modal-header">
             <h3 class="modal-title">
               <slot name="title">{{ title }}</slot>
@@ -16,7 +13,14 @@
               @click="close"
               aria-label="Fechar"
             >
-              <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <svg
+                width="24"
+                height="24"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                stroke-width="2"
+              >
                 <line x1="18" y1="6" x2="6" y2="18"></line>
                 <line x1="6" y1="6" x2="18" y2="18"></line>
               </svg>
@@ -38,55 +42,56 @@
 
 <script>
 export default {
-  name: 'BaseModal',
+  name: "BaseModal",
   props: {
     modelValue: {
       type: Boolean,
-      required: true
+      required: true,
     },
     title: {
       type: String,
-      default: ''
+      default: "",
     },
     size: {
       type: String,
-      default: 'medium',
-      validator: (value) => ['small', 'medium', 'large', 'full'].includes(value)
+      default: "medium",
+      validator: (value) =>
+        ["small", "medium", "large", "full"].includes(value),
     },
     showClose: {
       type: Boolean,
-      default: true
+      default: true,
     },
     closeOnOverlay: {
       type: Boolean,
-      default: true
-    }
+      default: true,
+    },
   },
-  emits: ['update:modelValue', 'close'],
+  emits: ["update:modelValue", "close"],
   methods: {
     close() {
-      this.$emit('update:modelValue', false);
-      this.$emit('close');
+      this.$emit("update:modelValue", false);
+      this.$emit("close");
     },
     handleOverlayClick() {
       if (this.closeOnOverlay) {
         this.close();
       }
-    }
+    },
   },
   watch: {
     modelValue(newVal) {
       if (newVal) {
-        document.body.style.overflow = 'hidden';
+        document.body.style.overflow = "hidden";
       } else {
-        document.body.style.overflow = '';
+        document.body.style.overflow = "";
       }
-    }
+    },
   },
   beforeUnmount() {
-    document.body.style.overflow = '';
-  }
-}
+    document.body.style.overflow = "";
+  },
+};
 </script>
 
 <style scoped>
@@ -144,6 +149,8 @@ export default {
   font-weight: 600;
   color: var(--color-text);
   margin: 0;
+  flex: 1;
+  min-width: 0;
 }
 
 .modal-close {
@@ -157,6 +164,7 @@ export default {
   justify-content: center;
   border-radius: 4px;
   transition: all 0.2s ease;
+  flex-shrink: 0;
 }
 
 .modal-close:hover {
@@ -185,7 +193,9 @@ export default {
 
 .modal-enter-active .modal-container,
 .modal-leave-active .modal-container {
-  transition: transform 0.3s ease, opacity 0.3s ease;
+  transition:
+    transform 0.3s ease,
+    opacity 0.3s ease;
 }
 
 .modal-enter-from,

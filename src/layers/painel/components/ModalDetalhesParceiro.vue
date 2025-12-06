@@ -11,13 +11,13 @@
         class="flex pt-2 flex-col md:flex-row md:items-center gap-3 w-full overflow-hidden pb-1"
       >
         <!-- Title Row -->
-        <div class="flex items-center gap-3 w-full md:w-auto">
+        <div class="flex items-center gap-3 w-full md:w-auto min-w-0 flex-1">
           <div
             class="h-6 w-1 md:h-8 rounded-full shrink-0"
             :class="isInactive ? 'bg-red-600' : 'bg-primary'"
           ></div>
           <h2
-            class="text-lg md:text-2xl font-bold dark:text-gray-100 text-gray-900 truncate flex-1 md:flex-none"
+            class="text-lg md:text-2xl font-bold dark:text-gray-100 text-gray-900 truncate flex-1 min-w-0"
           >
             {{ parceiro?.name || "Detalhes do Parceiro" }}
           </h2>
