@@ -1,8 +1,9 @@
 import type {
+  SummaryItem,
   ChartData,
   PurchasingStats,
-  SummaryItem,
-} from "~/layers/dashboard/types/dashboard";
+} from "~/layers/painel/types/dashboard";
+import { formatarMoeda } from "~/utils/formatters/formatadores";
 
 export function emptyChartData(): ChartData {
   return {
@@ -13,15 +14,6 @@ export function emptyChartData(): ChartData {
     produtosBar: { names: [], current: [], previous: [] },
   };
 }
-
-export const formatMoeda = (val: string | number | undefined) => {
-  if (val === undefined || val === null) return "R$ 0,00";
-  const num = typeof val === "string" ? parseFloat(val) : val;
-  return new Intl.NumberFormat("pt-BR", {
-    style: "currency",
-    currency: "BRL",
-  }).format(num);
-};
 
 export const formatarLabel = (tipo: string) =>
   tipo.charAt(0).toUpperCase() + tipo.slice(1);
@@ -46,10 +38,10 @@ export function mapIcon(tipo: string): string {
 export function formatarResumoCompras(data?: PurchasingStats): SummaryItem[] {
   if (!data) return [];
   return [
-    { label: "Total Mês", value: formatMoeda(data.total) },
-    { label: "Líquido", value: formatMoeda(data.liquido) },
-    { label: "Preço Médio", value: formatMoeda(data.preco_medio) },
-    { label: "Descontos", value: formatMoeda(data.desconto) },
+    { label: "Total Mês", value: formatarMoeda(data.total) },
+    { label: "Líquido", value: formatarMoeda(data.liquido) },
+    { label: "Preço Médio", value: formatarMoeda(data.preco_medio) },
+    { label: "Descontos", value: formatarMoeda(data.desconto) },
   ];
 }
 
@@ -58,16 +50,16 @@ export function formatarResumoComprasAnterior(data?: any): SummaryItem[] {
   // mas precisamos evitar o crash se o backend mandar ou se a UI esperar
   if (!data) return [];
   return [
-    { label: "Total Mês", value: formatMoeda(data.total_anterior ?? 0) },
+    { label: "Total Mês", value: formatarMoeda(data.total_anterior ?? 0) },
     {
       label: "Preço Médio",
-      value: formatMoeda(data.preco_medio_anterior ?? 0),
+      value: formatarMoeda(data.preco_medio_anterior ?? 0),
     },
     {
       label: "Média Diária",
-      value: formatMoeda(data.media_diaria_anterior ?? 0),
+      value: formatarMoeda(data.media_diaria_anterior ?? 0),
     },
-    { label: "Descontos", value: formatMoeda(data.desconto_anterior ?? 0) },
+    { label: "Descontos", value: formatarMoeda(data.desconto_anterior ?? 0) },
   ];
 }
 

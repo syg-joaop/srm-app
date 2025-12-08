@@ -11,7 +11,11 @@ export const premiumTooltipStyle = {
     "backdrop-filter: blur(8px); border-radius: 12px; box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.5);",
 };
 
-export const getPremiumTooltip = (params: any, title?: string) => {
+export const getPremiumTooltip = (
+  params: any,
+  title?: string,
+  valueFormatter?: (value: number) => string
+) => {
   const items = Array.isArray(params) ? params : [params];
   const headerTitle =
     title || (Array.isArray(params) ? params[0].name : "Status");
@@ -22,7 +26,7 @@ export const getPremiumTooltip = (params: any, title?: string) => {
   `;
 
   items.forEach((item: any) => {
-    const value = item.value;
+    const value = valueFormatter ? valueFormatter(item.value) : item.value;
     const name =
       item.percent !== undefined ? item.name : item.seriesName || item.name;
     let color = item.color;

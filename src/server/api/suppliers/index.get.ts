@@ -1,32 +1,32 @@
-import { supplierQuerySchema } from '~/server/schemas/supplier.schema'
+import { schemaQueryFornecedor } from "~/server/schemas/fornecedores.schema";
 
 export default defineEventHandler(async (event) => {
   try {
     // Validar query parameters
-    const rawQuery = getQuery(event)
-    const query = supplierQuerySchema.parse(rawQuery)
+    const rawQuery = getQuery(event);
+    const query = schemaQueryFornecedor.parse(rawQuery);
 
     // Buscar fornecedores na API externa
-    const apiClient = createApiClient(event)
-    const data = await apiClient('/suppliers', {
-      query
-    })
+    const apiClient = createApiClient(event);
+    const data = await apiClient("/suppliers", {
+      query,
+    });
 
-    return data
+    return data;
   } catch (error: any) {
-    console.error('[Suppliers Error]', error)
+    console.error("[Suppliers Error]", error);
 
-    if (error.name === 'ZodError') {
+    if (error.name === "ZodError") {
       throw createError({
         statusCode: 400,
-        message: 'Parâmetros de busca inválidos',
-        data: error.errors
-      })
+        message: "Parâmetros de busca inválidos",
+        data: error.errors,
+      });
     }
 
     throw createError({
       statusCode: error.statusCode || 500,
-      message: error.message || 'Erro ao buscar fornecedores'
-    })
+      message: error.message || "Erro ao buscar fornecedores",
+    });
   }
-})
+});

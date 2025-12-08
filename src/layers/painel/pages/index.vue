@@ -382,6 +382,7 @@ import {
   getPremiumTooltip,
   premiumTooltipStyle,
 } from "@/utils/formatters/chart";
+import { formatarKg, formatarMoeda } from "~/utils/formatters/formatadores";
 
 definePageMeta({
   layout: "default",
@@ -605,7 +606,8 @@ const initCharts = () => {
       tooltip: {
         trigger: "axis",
         ...premiumTooltipStyle,
-        formatter: (params: any) => getPremiumTooltip(params),
+        formatter: (params: any) =>
+          getPremiumTooltip(params, undefined, formatarKg),
       },
       grid: commonOptions.grid,
       xAxis: {
@@ -636,7 +638,8 @@ const initCharts = () => {
       tooltip: {
         trigger: "axis",
         ...premiumTooltipStyle,
-        formatter: (params: any) => getPremiumTooltip(params),
+        formatter: (params: any) =>
+          getPremiumTooltip(params, undefined, formatarMoeda),
       },
       grid: commonOptions.grid,
       xAxis: {
@@ -669,7 +672,8 @@ const initCharts = () => {
         trigger: "axis",
         axisPointer: { type: "shadow" },
         ...premiumTooltipStyle,
-        formatter: (params: any) => getPremiumTooltip(params, params[0].name),
+        formatter: (params: any) =>
+          getPremiumTooltip(params, params[0].name, formatarMoeda),
       },
       legend: {
         bottom: 0,

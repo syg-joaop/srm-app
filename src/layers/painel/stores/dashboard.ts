@@ -10,9 +10,9 @@ import type {
   ChartData,
   AtendenteItem,
 } from "../types/dashboard";
+import { formatarMoeda } from "~/utils/formatters/formatadores";
 import {
   emptyChartData,
-  formatMoeda,
   formatarLabel,
   mapIcon,
   formatarResumoCompras,
@@ -70,8 +70,8 @@ export const useDashboardStore = defineStore("dashboard", () => {
     const data = rawData.value?.comprasComprador?.data ?? [];
     return data.map((c) => ({
       name: c.nome ?? "Não Identificado",
-      current: formatMoeda(c.atual),
-      previous: formatMoeda(c.ant),
+      current: formatarMoeda(c.atual),
+      previous: formatarMoeda(c.ant),
     }));
   });
 
@@ -79,8 +79,8 @@ export const useDashboardStore = defineStore("dashboard", () => {
     const data = rawData.value?.prodsMaisCompradosMes?.data ?? [];
     return data.map((p) => ({
       name: p.produto ?? "Produto Desc.",
-      current: formatMoeda(p.mes_atual),
-      previous: formatMoeda(p.mes_anterior),
+      current: formatarMoeda(p.mes_atual),
+      previous: formatarMoeda(p.mes_anterior),
     }));
   });
 
