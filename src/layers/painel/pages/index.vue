@@ -90,6 +90,8 @@
                 <DashboardListItem
                   v-for="item in paginatedItems"
                   :key="item.sr_recno"
+                  class="cursor-pointer hover:bg-gray-50 dark:hover:bg-gray-800/50 transition-colors"
+                  @click="handleOpenAtendimentoModal(item)"
                 >
                   <template #leading>
                     <DateBox label="VENC" variant="danger">{{
@@ -386,6 +388,11 @@
       :parceiro="parceiroSelecionado"
       :variant="modalVariant"
     />
+
+    <ModalAtendimento
+      v-model="showAtendimentoModal"
+      :atendimento="atendimentoSelecionado"
+    />
   </div>
 </template>
 
@@ -418,6 +425,7 @@ import UiMetricGrid from "@/components/ui/data-display/UiMetricGrid.vue";
 import UiEmptyState from "@/components/ui/feedback/UiEmptyState.vue";
 import UiStatusBadgeGroup from "@/components/ui/data-display/UiStatusBadgeGroup.vue";
 import ModalDetalhesParceiro from "../components/ModalDetalhesParceiro.vue";
+import ModalAtendimento from "@/components/common/ModalAtendimento.vue";
 import {
   getPremiumTooltip,
   premiumTooltipStyle,
@@ -463,6 +471,14 @@ const {
 const showParceiroModal = ref(false);
 const parceiroSelecionado = ref(null);
 const modalVariant = ref("parceiro");
+
+const showAtendimentoModal = ref(false);
+const atendimentoSelecionado = ref(null);
+
+const handleOpenAtendimentoModal = (atendimento: any) => {
+  atendimentoSelecionado.value = atendimento;
+  showAtendimentoModal.value = true;
+};
 
 const handleOpenParceiroModal = (parceiro: any) => {
   modalVariant.value = "parceiro";
