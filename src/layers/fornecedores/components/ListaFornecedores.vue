@@ -103,27 +103,44 @@
         {{ fornecedor.fanta }}
       </div>
 
-      <div class="md:col-span-2 flex flex-col md:justify-center">
+      <div class="flex md:hidden flex-row items-center justify-between gap-3">
+        <div class="flex flex-col">
+          <span
+            class="text-[10px] uppercase tracking-wider mb-0.5 opacity-70"
+            style="color: var(--color-text-muted)"
+            >Cidade</span
+          >
+          <span
+            class="text-xs font-medium"
+            style="color: var(--color-text-muted)"
+            >{{ fornecedor.cidade }}</span
+          >
+        </div>
+        <div class="flex flex-col text-right items-end">
+          <span
+            class="text-[10px] uppercase tracking-wider mb-0.5 opacity-70"
+            style="color: var(--color-text-muted)"
+            >Última Carga</span
+          >
+          <span
+            class="text-xs"
+            style="color: var(--color-text-muted)"
+            >{{ fornecedor.ultima_carga }}</span
+          >
+        </div>
+      </div>
+
+      <div class="hidden md:flex col-span-2 items-center">
         <span
-          class="md:hidden text-[10px] uppercase tracking-wider mb-0.5 opacity-70"
-          style="color: var(--color-text-muted)"
-          >Cidade</span
-        >
-        <span
-          class="text-xs md:text-sm font-medium"
+          class="text-sm font-medium"
           style="color: var(--color-text-muted)"
           >{{ fornecedor.cidade }}</span
         >
       </div>
 
-      <div class="md:col-span-2 flex flex-col md:justify-center">
+      <div class="hidden md:flex col-span-2 items-center">
         <span
-          class="md:hidden text-[10px] uppercase tracking-wider mb-0.5 opacity-70"
-          style="color: var(--color-text-muted)"
-          >Última Carga</span
-        >
-        <span
-          class="text-xs md:text-sm"
+          class="text-sm"
           style="color: var(--color-text-muted)"
           >{{ fornecedor.ultima_carga }}</span
         >
