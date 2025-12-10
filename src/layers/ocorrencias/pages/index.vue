@@ -1,34 +1,49 @@
 <template>
-  <div class="min-h-screen p-6 bg-[var(--color-background)]">
-    <div class="flex flex-col md:flex-row md:items-center justify-between mb-8 gap-4">
-      <h1 class="text-2xl font-bold text-[var(--color-text)]">
-        Ocorrências
-      </h1>
+  <div class="min-h-screen p-4 sm:p-6 bg-[var(--color-background)]">
+    <div class="flex flex-col gap-4 mb-6 sm:mb-8">
+      <div class="flex items-center justify-between">
+        <h1 class="text-xl sm:text-2xl font-bold text-[var(--color-text)]">
+          Ocorrências
+        </h1>
+        <UiButton
+          variant="primary"
+          size="medium"
+          class="whitespace-nowrap sm:hidden"
+        >
+          <Plus class="w-4 h-4" />
+        </UiButton>
+      </div>
 
-      <div class="flex items-center gap-3 w-full md:w-auto">
-        <UiButton variant="primary" size="medium" class="whitespace-nowrap flex-1 md:flex-none">
+      <div class="flex flex-col sm:flex-row sm:items-center gap-3 w-full">
+        <UiButton
+          variant="primary"
+          size="medium"
+          class="whitespace-nowrap hidden sm:flex"
+        >
           <Plus class="w-4 h-4" />
           Nova Ocorrência
         </UiButton>
 
-        <div class="relative flex-1 md:w-64">
-          <Search class="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-[var(--color-text-muted)]" />
-          <input
-            v-model="searchQuery"
-            type="text"
-            placeholder="Pesquisar..."
-            class="w-full pl-10 pr-4 py-2.5 rounded-md border border-[var(--color-border)] bg-[var(--color-surface)] text-sm text-[var(--color-text)] placeholder:text-[var(--color-text-muted)] focus:border-[var(--color-primary)] focus:outline-none transition-colors"
-          />
-        </div>
+        <div class="flex items-center gap-2 flex-1">
+          <div class="relative flex-1 sm:max-w-xs">
+            <Search class="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-[var(--color-text-muted)]" />
+            <input
+              v-model="searchQuery"
+              type="text"
+              placeholder="Pesquisar..."
+              class="w-full pl-10 pr-4 py-2.5 rounded-md border border-[var(--color-border)] bg-[var(--color-surface)] text-sm text-[var(--color-text)] placeholder:text-[var(--color-text-muted)] focus:border-[var(--color-primary)] focus:outline-none transition-colors"
+            />
+          </div>
 
-        <UiButton
-          variant="secondary"
-          size="medium"
-          :class="{ '!border-[var(--color-primary)] !text-[var(--color-primary)]': showFilters }"
-          @click="showFilters = !showFilters"
-        >
-          <Filter class="w-4 h-4" />
-        </UiButton>
+          <UiButton
+            variant="secondary"
+            size="medium"
+            :class="{ '!border-[var(--color-primary)] !text-[var(--color-primary)]': showFilters }"
+            @click="showFilters = !showFilters"
+          >
+            <Filter class="w-4 h-4" />
+          </UiButton>
+        </div>
       </div>
     </div>
 
@@ -38,8 +53,8 @@
       enter-from-class="opacity-0 -translate-y-2"
       leave-to-class="opacity-0 -translate-y-2"
     >
-      <div v-if="showFilters" class="mb-6 p-4 rounded-lg border border-[var(--color-border)] bg-[var(--color-surface)]">
-        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-4 mb-4">
+      <div v-if="showFilters" class="mb-6 p-3 sm:p-4 rounded-lg border border-[var(--color-border)] bg-[var(--color-surface)]">
+        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-3 sm:gap-4 mb-4">
           <UiSelect
             v-model="filtroAtendente"
             label="Atendente"

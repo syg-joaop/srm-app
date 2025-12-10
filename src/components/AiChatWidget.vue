@@ -1,13 +1,13 @@
 <template>
   <div
-    class="fixed bottom-6 right-6 flex flex-col items-end"
+    class="fixed bottom-4 right-4 sm:bottom-6 sm:right-6 flex flex-col items-end"
     style="z-index: 9999"
   >
     <!-- Chat Window -->
     <Transition name="slide-up">
       <div
         v-if="isOpen"
-        class="mb-4 w-[380px] h-[550px] rounded-2xl shadow-2xl flex flex-col overflow-hidden border"
+        class="mb-4 w-[calc(100vw-2rem)] sm:w-[380px] h-[calc(100vh-6rem)] sm:h-[550px] max-h-[550px] rounded-2xl shadow-2xl flex flex-col overflow-hidden border"
         style="
           background-color: var(--color-surface);
           border-color: var(--color-border);

@@ -1,5 +1,16 @@
 <template>
-  <div v-if="totalPages > 1" class="flex justify-center items-center gap-1 md:gap-2">
+  <div v-if="totalPages > 1" class="flex justify-center items-center gap-1 sm:gap-2">
+    <!-- First page button (hidden on very small screens) -->
+    <button
+      class="hidden sm:flex w-8 h-8 md:w-9 md:h-9 items-center justify-center rounded-md transition-all duration-200"
+      :class="page === 1 ? 'opacity-40 cursor-not-allowed' : 'hover:bg-[var(--color-hover)]'"
+      :disabled="page === 1"
+      @click="goToPage(1)"
+    >
+      <ChevronsLeft class="w-4 h-4 text-[var(--color-text-muted)]" />
+    </button>
+
+    <!-- Previous button -->
     <button
       class="w-8 h-8 md:w-9 md:h-9 flex items-center justify-center rounded-md transition-all duration-200"
       :class="page === 1 ? 'opacity-40 cursor-not-allowed' : 'hover:bg-[var(--color-hover)]'"
@@ -9,10 +20,11 @@
       <ChevronLeft class="w-4 h-4 text-[var(--color-text-muted)]" />
     </button>
 
+    <!-- Page numbers -->
     <button
       v-for="pageNumber in visiblePages"
       :key="pageNumber"
-      class="w-8 h-8 md:w-9 md:h-9 rounded-md text-xs md:text-sm font-medium transition-all duration-200"
+      class="w-7 h-7 sm:w-8 sm:h-8 md:w-9 md:h-9 rounded-md text-xs md:text-sm font-medium transition-all duration-200"
       :class="[
         pageNumber === page
           ? 'bg-[var(--color-primary)] text-white'
@@ -23,6 +35,7 @@
       {{ pageNumber }}
     </button>
 
+    <!-- Next button -->
     <button
       class="w-8 h-8 md:w-9 md:h-9 flex items-center justify-center rounded-md transition-all duration-200"
       :class="page === totalPages ? 'opacity-40 cursor-not-allowed' : 'hover:bg-[var(--color-hover)]'"
@@ -31,12 +44,22 @@
     >
       <ChevronRight class="w-4 h-4 text-[var(--color-text-muted)]" />
     </button>
+
+    <!-- Last page button (hidden on very small screens) -->
+    <button
+      class="hidden sm:flex w-8 h-8 md:w-9 md:h-9 items-center justify-center rounded-md transition-all duration-200"
+      :class="page === totalPages ? 'opacity-40 cursor-not-allowed' : 'hover:bg-[var(--color-hover)]'"
+      :disabled="page === totalPages"
+      @click="goToPage(totalPages)"
+    >
+      <ChevronsRight class="w-4 h-4 text-[var(--color-text-muted)]" />
+    </button>
   </div>
 </template>
 
 <script setup lang="ts">
-import { computed } from "vue";
-import { ChevronLeft, ChevronRight } from "lucide-vue-next";
+import { computed, ref, onMounted, onUnmounted } from "vue";
+import { ChevronLeft, ChevronRight, ChevronsLeft, ChevronsRight } from "lucide-vue-next";
 
 interface Props {
   page: number;
@@ -53,15 +76,36 @@ const emit = defineEmits<{
   "update:page": [value: number];
 }>();
 
+const windowWidth = ref(typeof window !== 'undefined' ? window.innerWidth : 1024);
+
+const updateWidth = () => {
+  windowWidth.value = window.innerWidth;
+};
+
+onMounted(() => {
+  window.addEventListener('resize', updateWidth);
+});
+
+onUnmounted(() => {
+  window.removeEventListener('resize', updateWidth);
+});
+
+const effectiveMaxVisible = computed(() => {
+  if (windowWidth.value < 400) return 3;
+  if (windowWidth.value < 640) return Math.min(props.maxVisible, 5);
+  return props.maxVisible;
+});
+
 const visiblePages = computed(() => {
   const pages: number[] = [];
-  const half = Math.floor(props.maxVisible / 2);
+  const maxVis = effectiveMaxVisible.value;
+  const half = Math.floor(maxVis / 2);
 
   let start = Math.max(1, props.page - half);
-  let end = Math.min(props.totalPages, start + props.maxVisible - 1);
+  let end = Math.min(props.totalPages, start + maxVis - 1);
 
-  if (end - start + 1 < props.maxVisible) {
-    start = Math.max(1, end - props.maxVisible + 1);
+  if (end - start + 1 < maxVis) {
+    start = Math.max(1, end - maxVis + 1);
   }
 
   for (let i = start; i <= end; i++) {

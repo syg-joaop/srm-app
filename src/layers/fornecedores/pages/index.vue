@@ -1,9 +1,9 @@
 <template>
   <div
-    class="min-h-screen p-6 pb-20 transition-colors"
+    class="min-h-screen p-4 sm:p-6 pb-20 transition-colors"
     style="background-color: var(--color-background); color: var(--color-text)"
   >
-    <h1 class="text-2xl font-bold mb-6">Fornecedores</h1>
+    <h1 class="text-xl sm:text-2xl font-bold mb-4 sm:mb-6">Fornecedores</h1>
     <!-- Header Controls -->
     <div
       class="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-6"

@@ -1,17 +1,17 @@
 <template>
-  <div class="min-h-screen p-6 bg-[var(--color-background)]">
+  <div class="min-h-screen p-4 sm:p-6 bg-[var(--color-background)]">
     <div
-      class="flex flex-col md:flex-row md:items-center justify-between mb-8 gap-4"
+      class="flex flex-col gap-4 mb-6 sm:mb-8"
     >
-      <h1 class="text-2xl font-bold text-[var(--color-text)]">
+      <h1 class="text-xl sm:text-2xl font-bold text-[var(--color-text)]">
         Rotas cadastradas
       </h1>
 
-      <div class="flex items-center gap-3 w-full md:w-auto">
+      <div class="flex flex-col sm:flex-row items-stretch sm:items-center gap-3 w-full sm:w-auto">
         <UiButton
           variant="primary"
           size="medium"
-          class="whitespace-nowrap flex-1 md:flex-none"
+          class="whitespace-nowrap w-full sm:w-auto"
           @click="showNovaRotaModal = true"
         >
           <Plus class="w-4 h-4" />
@@ -23,6 +23,7 @@
           :start-date="filtroDataInicio"
           :end-date="filtroDataFim"
           placeholder="Filtrar período"
+          class="w-full sm:w-auto"
           @change="handleDateChange"
         />
       </div>
@@ -46,7 +47,6 @@
           class="absolute left-0 top-1/2 -translate-y-1/2 w-0.5 h-0 bg-[var(--color-primary)] rounded-r-full opacity-0 group-hover/item:h-6 group-hover/item:opacity-100 transition-all duration-300"
         ></div>
 
-        <div class="flex flex-col md:flex-row md:items-center gap-2.5 md:gap-4 items-center"></div>
         <div class="flex md:grid md:grid-cols-12 gap-2.5 md:gap-4 items-center">
           <div class="col-span-6 flex items-center gap-2.5 md:gap-3 flex-1 min-w-0">
             <div

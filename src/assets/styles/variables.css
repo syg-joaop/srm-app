@@ -36,6 +36,7 @@
 }
 
 [data-theme="light"] {
+  --color-primary-dark: #0066aa;
   --color-background: #f5f7fa;
   --color-surface: #ffffff;
   --color-text: #333333;

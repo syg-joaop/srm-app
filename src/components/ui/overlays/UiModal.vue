@@ -106,7 +106,13 @@ export default {
   align-items: center;
   justify-content: center;
   z-index: 9999;
-  padding: 20px;
+  padding: 12px;
+}
+
+@media (min-width: 640px) {
+  .modal-overlay {
+    padding: 20px;
+  }
 }
 
 .modal-container {
@@ -115,42 +121,85 @@ export default {
   box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
   display: flex;
   flex-direction: column;
-  max-height: 90vh;
+  max-height: calc(100vh - 24px);
   width: 100%;
 }
 
+@media (min-width: 640px) {
+  .modal-container {
+    max-height: 90vh;
+  }
+}
+
 .size-small {
-  max-width: 400px;
+  max-width: 100%;
+}
+
+@media (min-width: 640px) {
+  .size-small {
+    max-width: 400px;
+  }
 }
 
 .size-medium {
-  max-width: 600px;
+  max-width: 100%;
+}
+
+@media (min-width: 640px) {
+  .size-medium {
+    max-width: 600px;
+  }
 }
 
 .size-large {
-  max-width: 900px;
+  max-width: 100%;
+}
+
+@media (min-width: 640px) {
+  .size-large {
+    max-width: 900px;
+  }
 }
 
 .size-full {
-  max-width: 95vw;
-  max-height: 95vh;
+  max-width: 100%;
+  max-height: calc(100vh - 24px);
+}
+
+@media (min-width: 640px) {
+  .size-full {
+    max-width: 95vw;
+    max-height: 95vh;
+  }
 }
 
 .modal-header {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  padding: 20px 24px;
+  padding: 16px;
   border-bottom: 1px solid var(--color-border);
 }
 
+@media (min-width: 640px) {
+  .modal-header {
+    padding: 20px 24px;
+  }
+}
+
 .modal-title {
-  font-size: 1.25rem;
+  font-size: 1.125rem;
   font-weight: 600;
   color: var(--color-text);
   margin: 0;
   flex: 1;
   min-width: 0;
+}
+
+@media (min-width: 640px) {
+  .modal-title {
+    font-size: 1.25rem;
+  }
 }
 
 .modal-close {
@@ -173,17 +222,31 @@ export default {
 }
 
 .modal-body {
-  padding: 24px;
+  padding: 16px;
   overflow-y: auto;
   flex: 1;
 }
 
+@media (min-width: 640px) {
+  .modal-body {
+    padding: 24px;
+  }
+}
+
 .modal-footer {
-  padding: 16px 24px;
+  padding: 12px 16px;
   border-top: 1px solid var(--color-border);
   display: flex;
-  gap: 12px;
+  gap: 8px;
   justify-content: flex-end;
+  flex-wrap: wrap;
+}
+
+@media (min-width: 640px) {
+  .modal-footer {
+    padding: 16px 24px;
+    gap: 12px;
+  }
 }
 
 .modal-enter-active,

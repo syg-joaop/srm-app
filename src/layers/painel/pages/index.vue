@@ -1,6 +1,6 @@
 <template>
   <div
-    class="dashboard-page min-h-screen text-gray-900 dark:text-white p-6"
+    class="dashboard-page min-h-screen text-gray-900 dark:text-white p-4 sm:p-6"
     style="
       background-color: var(--color-background);
       transition:
@@ -31,36 +31,30 @@
       </div>
 
       <div>
-        <h2 class="text-xl font-semibold mb-4">Compras</h2>
-        <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
-          <DashboardWidget title="Compras do mês" class="pt-2 pb-2">
-            <div class="flex flex-col h-full">
-              <UiMetricHero
-                :icon="DollarSign"
-                label="Total Bruto"
-                :value="comprasMes[0]?.value"
-                variant="primary"
-              />
-              <UiMetricGrid :items="comprasMes.slice(1)" />
-            </div>
-          </DashboardWidget>
+        <h2 class="text-lg sm:text-xl font-semibold mb-3 sm:mb-4">Compras</h2>
+        <div class="grid grid-cols-1 lg:grid-cols-2 gap-4 sm:gap-6">
+          <ComprasCard
+            title="Compras do mês"
+            subtitle="Período atual"
+            :main-value="comprasMes[0]?.value || 'R$ 0,00'"
+            main-label="Total"
+            :metrics="comprasMetricsMes"
+            variant="current"
+          />
 
-          <DashboardWidget title="Compras mês anterior">
-            <div class="flex flex-col h-full">
-              <UiMetricHero
-                :icon="CalendarClock"
-                label="Total Anterior"
-                :value="comprasMesAnterior[0]?.value"
-                variant="primary"
-              />
-              <UiMetricGrid :items="comprasMesAnterior.slice(1)" />
-            </div>
-          </DashboardWidget>
+          <ComprasCard
+            title="Mês anterior"
+            subtitle="Período comparativo"
+            :main-value="comprasMesAnterior[0]?.value || 'R$ 0,00'"
+            main-label="Total"
+            :metrics="comprasMetricsMesAnterior"
+            variant="previous"
+          />
         </div>
       </div>
 
       <div>
-        <h2 class="text-xl font-semibold mb-4">Atendimentos</h2>
+        <h2 class="text-lg sm:text-xl font-semibold mb-3 sm:mb-4">Atendimentos</h2>
         <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
           <DashboardWidget
             class="!h-[470px]"
@@ -138,32 +132,54 @@
       </div>
 
       <div>
-        <h2 class="text-xl font-semibold mb-4">Relatórios</h2>
+        <h2 class="text-lg sm:text-xl font-semibold mb-3 sm:mb-4">Relatórios</h2>
 
-        <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-6">
-          <DashboardWidget
-            class="!h-[450px]"
-            title="Ocorrências"
-            subtitle="Dos últimos 12 meses por status"
-            :is-empty="isOcorrenciasPieEmpty"
-            :empty-icon="PieChart"
-            empty-title="Sem ocorrências"
-            empty-description="Não há ocorrências no período"
+        <div class="grid grid-cols-1 lg:grid-cols-2 gap-4 sm:gap-6 mb-6">
+          <div
+            class="rounded-xl sm:rounded-2xl border p-4 sm:p-5 transition-all duration-300 hover:shadow-lg"
+            style="
+              background-color: var(--color-surface);
+              border-color: var(--color-border-subtle);
+            "
           >
-            <template #action>
-              <div class="flex flex-col items-end">
-                <span
-                  class="text-[10px] uppercase tracking-wider font-semibold text-gray-500 dark:text-gray-400"
-                  >Total</span
-                >
-                <span class="text-2xl font-bold text-primary">{{
-                  totalOcorrencias
-                }}</span>
+            <!-- Header -->
+            <div class="flex items-start justify-between mb-4">
+              <div class="flex items-center gap-2.5">
+                <div
+                  class="w-1 h-8 rounded-full bg-primary"
+                  style="box-shadow: 0 0 8px rgba(0, 153, 255, 0.5)"
+                ></div>
+                <div>
+                  <h3
+                    class="text-sm sm:text-base font-bold"
+                    style="color: var(--color-text)"
+                  >
+                    Ocorrências
+                  </h3>
+                  <p
+                    class="text-[10px] sm:text-xs mt-0.5"
+                    style="color: var(--color-text-muted)"
+                  >
+                    Últimos 12 meses por status
+                  </p>
+                </div>
               </div>
-            </template>
+            </div>
 
-            <div ref="pieChartRef" class="w-full h-full min-h-[250px]"></div>
-          </DashboardWidget>
+            <!-- Chart -->
+            <div v-if="!isOcorrenciasPieEmpty" class="h-[320px] sm:h-[350px]">
+              <OcorrenciasChart :data="chartData.ocorrenciasPie" />
+            </div>
+
+            <!-- Empty State -->
+            <div v-else class="h-[320px] sm:h-[350px] flex items-center justify-center">
+              <UiEmptyState
+                :icon="PieChart"
+                title="Sem ocorrências"
+                description="Não há ocorrências no período"
+              />
+            </div>
+          </div>
 
           <DashboardWidget
             class="!h-[450px]"
@@ -402,11 +418,9 @@
 
 <script setup lang="ts">
 import {
-  CalendarClock,
   Search,
   List,
   CheckSquare,
-  DollarSign,
   Gift,
   AlertCircle,
   ShoppingCart,
@@ -422,10 +436,10 @@ import * as echarts from "echarts";
 import StatCard from "../components/StatCard.vue";
 import MobileStatsWidget from "../components/MobileStatsWidget.vue";
 import DashboardWidget from "../components/DashboardWidget.vue";
+import ComprasCard from "../components/ComprasCard.vue";
+import OcorrenciasChart from "../components/OcorrenciasChart.vue";
 import DashboardListItem from "@/components/ui/DashboardListItem.vue";
 import DateBox from "@/components/ui/DateBox.vue";
-import UiMetricHero from "@/components/ui/data-display/UiMetricHero.vue";
-import UiMetricGrid from "@/components/ui/data-display/UiMetricGrid.vue";
 import UiEmptyState from "@/components/ui/feedback/UiEmptyState.vue";
 import UiStatusBadgeGroup from "@/components/ui/data-display/UiStatusBadgeGroup.vue";
 import ModalDetalhesParceiro from "../components/ModalDetalhesParceiro.vue";
@@ -499,14 +513,21 @@ const handleOpenAtendenteModal = (atendente: any) => {
   showParceiroModal.value = true;
 };
 
-const totalOcorrencias = computed(() => {
-  return chartData.value.ocorrenciasPie.reduce(
-    (acc: number, item: any) => acc + item.value,
-    0
-  );
+// Métricas para os cards de compras (excluindo o primeiro item que é o total)
+const comprasMetricsMes = computed(() => {
+  return comprasMes.value.slice(1).map(item => ({
+    label: item.label,
+    value: item.value
+  }));
 });
 
-const pieChartRef = ref<HTMLElement | null>(null);
+const comprasMetricsMesAnterior = computed(() => {
+  return comprasMesAnterior.value.slice(1).map(item => ({
+    label: item.label,
+    value: item.value
+  }));
+});
+
 const lineChartRef = ref<HTMLElement | null>(null);
 const barChartRef = ref<HTMLElement | null>(null);
 const discountChartRef = ref<HTMLElement | null>(null);
@@ -517,92 +538,6 @@ const initCharts = () => {
     getComputedStyle(document.documentElement)
       .getPropertyValue(variable)
       .trim();
-
-  if (pieChartRef.value) {
-    const chart =
-      echarts.getInstanceByDom(pieChartRef.value) ||
-      echarts.init(pieChartRef.value);
-
-    const coloredData = chartData.value.ocorrenciasPie.map((item) => {
-      let colorVar = "--color-status-finalizado";
-      switch (item.name) {
-        case "Finalizado":
-          colorVar = "--color-status-finalizado";
-          break;
-        case "Em Acompanhamento":
-          colorVar = "--color-status-acompanhamento";
-          break;
-        case "Pendente":
-          colorVar = "--color-status-pendente";
-          break;
-        case "Vencido":
-          colorVar = "--color-status-vencido";
-          break;
-      }
-      return {
-        ...item,
-        itemStyle: { color: getStyle(colorVar) },
-      };
-    });
-
-    chart.setOption({
-      baseOption: {
-        tooltip: {
-          trigger: "item",
-          ...premiumTooltipStyle,
-          formatter: (params: any) => getPremiumTooltip(params),
-        },
-        series: [
-          {
-            type: "pie",
-            center: ["50%", "50%"],
-            avoidLabelOverlap: true,
-            itemStyle: {
-              borderRadius: 10,
-              borderColor: getStyle("--color-surface"),
-              borderWidth: 2,
-            },
-            label: {
-              show: true,
-              position: "outside",
-              formatter: "{b}\n{c}",
-              color: "inherit",
-            },
-            labelLine: {
-              show: true,
-              smooth: 0.2,
-              length: 10,
-              length2: 20,
-            },
-            data: coloredData,
-            radius: ["40%", "70%"],
-          },
-        ],
-      },
-      media: [
-        {
-          query: {
-            maxWidth: 768,
-          },
-          option: {
-            series: [
-              {
-                radius: ["25%", "50%"],
-                label: {
-                  fontSize: 10,
-                  lineHeight: 14,
-                },
-                labelLine: {
-                  length: 5,
-                  length2: 5,
-                },
-              },
-            ],
-          },
-        },
-      ],
-    });
-  }
 
   const commonOptions = {
     grid: { left: "3%", right: "4%", bottom: "3%", containLabel: true },
@@ -841,9 +776,6 @@ onMounted(() => {
 });
 
 const handleResize = () => {
-  if (pieChartRef.value) {
-    echarts.getInstanceByDom(pieChartRef.value)?.resize();
-  }
   if (lineChartRef.value) {
     echarts.getInstanceByDom(lineChartRef.value)?.resize();
   }

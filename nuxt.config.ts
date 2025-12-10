@@ -27,6 +27,15 @@ export default defineNuxtConfig({
     },
   },
 
+  sourcemap: {
+    server: false,
+    client: false,
+  },
+
+  experimental: {
+    payloadExtraction: false, 
+  },
+
   css: [
     "~/assets/styles/variables.css",
     "~/assets/styles/base.css",
@@ -54,6 +63,8 @@ export default defineNuxtConfig({
   },
 
   app: {
+    baseURL: '/', 
+    buildAssetsDir: '/_nuxt/',
     head: {
       title: "SRM App",
       meta: [

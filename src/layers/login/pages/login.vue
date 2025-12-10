@@ -225,18 +225,18 @@ watch(
               </div>
             </Transition>
 
-            <div class="space-y-3">
+            <div class="space-y-4">
               <UiCheckbox
                 v-model="credentials.remember"
                 label="Lembrar meu acesso"
                 class="theme-checkbox"
               />
 
-              <div class="flex justify-between">
-                <div class="flex items-center">
-                  <UiCheckbox v-model="credentials.terms" class="mb-5" />
+              <div class="flex flex-col sm:flex-row sm:justify-between gap-4">
+                <div class="flex items-start gap-2">
+                  <UiCheckbox v-model="credentials.terms" class="mt-0.5" />
                   <span
-                    class="text-xs sm:text-sm"
+                    class="text-xs sm:text-sm leading-tight"
                     style="color: var(--color-text-muted)"
                   >
                     Aceito os termos
@@ -253,7 +253,7 @@ watch(
                   type="submit"
                   variant="primary"
                   :loading="loading"
-                  class="!bg-[var(--color-primary)] hover:!bg-[var(--color-primary-dark)] !text-white px-6"
+                  class="!bg-[var(--color-primary)] hover:!bg-[var(--color-primary-dark)] !text-white px-6 w-full sm:w-auto"
                 >
                   Entrar
                 </UiButton>

@@ -1,63 +1,80 @@
 <template>
   <div
-    class="relative overflow-hidden rounded-3xl p-6 shadow-xl transition-all duration-300 group"
-    style="background-color: var(--color-surface); border: 1px solid var(--color-border);"
+    class="relative overflow-hidden rounded-2xl shadow-xl"
+    style="background: linear-gradient(135deg, var(--color-primary) 0%, var(--color-primary-dark, #0077be) 100%);"
   >
-    <!-- Header Section: Primary Stats -->
-    <div class="relative z-10 flex justify-between items-end mb-8 pt-2">
-      <!-- Total -->
-      <div v-if="stats[0]" class="flex flex-col">
-        <span class="text-[10px] uppercase tracking-widest font-bold opacity-60 mb-1" style="color: var(--color-text)">
-          {{ stats[0].label }}
-        </span>
-        <span class="text-4xl font-black tracking-tighter leading-none" style="color: var(--color-primary)">
-          {{ stats[0].value }}
-        </span>
+    <!-- Decorative background elements -->
+    <div class="absolute inset-0 overflow-hidden pointer-events-none">
+      <div class="absolute -right-8 -top-8 w-32 h-32 rounded-full bg-white/5"></div>
+      <div class="absolute -left-4 -bottom-4 w-24 h-24 rounded-full bg-white/5"></div>
+      <div class="absolute right-1/4 bottom-1/3 w-16 h-16 rounded-full bg-white/3"></div>
+    </div>
+
+    <!-- Content -->
+    <div class="relative z-10 p-4">
+      <!-- Header: Two main stats side by side -->
+      <div class="flex justify-between items-start mb-4">
+        <!-- Primary Stat (Fornecedores) -->
+        <div v-if="stats[0]" class="flex items-center gap-3">
+          <div class="p-2.5 rounded-xl bg-white/20 backdrop-blur-sm shadow-lg ring-1 ring-white/20">
+            <component :is="getIcon(stats[0].icon)" :size="24" class="text-white" />
+          </div>
+          <div>
+            <p class="text-[10px] font-semibold text-white/70 uppercase tracking-wider mb-0.5">
+              {{ stats[0].label }}
+            </p>
+            <p class="text-2xl font-bold text-white tracking-tight">
+              {{ stats[0].value }}
+            </p>
+          </div>
+        </div>
+
+        <!-- Secondary Stat (Prospectos) -->
+        <div v-if="stats[1]" class="flex items-center gap-2.5 text-right">
+          <div>
+            <p class="text-[10px] font-semibold text-white/70 uppercase tracking-wider mb-0.5">
+              {{ stats[1].label }}
+            </p>
+            <p class="text-xl font-bold text-white tracking-tight">
+              {{ stats[1].value }}
+            </p>
+          </div>
+          <div class="p-2 rounded-xl bg-white/20 backdrop-blur-sm shadow-lg ring-1 ring-white/20">
+            <component :is="getIcon(stats[1].icon)" :size="20" class="text-white" />
+          </div>
+        </div>
       </div>
 
-      <!-- Active (Secondary Highlight) -->
-      <div v-if="stats[1]" class="flex flex-col items-end">
-        <div class="flex items-center gap-1.5 mb-1">
-          <span class="w-2 h-2 rounded-full bg-[var(--color-primary)] animate-pulse shadow-[0_0_8px_var(--color-primary)]"></span>
-          <span class="text-[10px] uppercase tracking-widest font-bold opacity-60" style="color: var(--color-text)">
-            {{ stats[1].label }}
+      <!-- Divider -->
+      <div class="h-px w-full bg-white/20 mb-4"></div>
+
+      <!-- Stats Grid -->
+      <div class="grid grid-cols-5 gap-1">
+        <div
+          v-for="stat in gridStats"
+          :key="stat.label"
+          class="flex flex-col items-center text-center py-2 px-1 rounded-xl transition-all duration-200 hover:bg-white/10"
+        >
+          <!-- Icon -->
+          <div class="mb-1.5 p-1.5 rounded-lg bg-white/15 backdrop-blur-sm">
+            <component :is="getIcon(stat.icon)" :size="16" class="text-white" />
+          </div>
+
+          <!-- Value -->
+          <span class="text-sm font-bold text-white leading-tight mb-0.5">
+            {{ stat.value }}
+          </span>
+
+          <!-- Label -->
+          <span class="text-[8px] font-medium text-white/60 uppercase tracking-wide leading-tight truncate w-full">
+            {{ formatLabel(stat.label) }}
           </span>
         </div>
-        <span class="text-2xl font-bold tracking-tight" style="color: var(--color-text)">
-          {{ stats[1].value }}
-        </span>
       </div>
     </div>
 
-    <!-- Divider -->
-    <div class="h-px w-full mb-6 opacity-10" style="background-color: var(--color-text)"></div>
-
-    <!-- Grid Section: Secondary Stats -->
-    <div class="relative z-10 grid grid-cols-3 gap-y-6 gap-x-2">
-      <div
-        v-for="stat in gridStats"
-        :key="stat.label"
-        class="flex flex-col items-center text-center group/item"
-      >
-        <!-- Icon Container -->
-        <div
-          class="mb-2 p-2.5 rounded-xl transition-all duration-300 group-hover/item:scale-110 group-hover/item:shadow-lg group-hover/item:bg-[var(--color-primary)] group-hover/item:text-white"
-          style="background-color: var(--color-background); color: var(--color-primary); border: 1px solid var(--color-border-subtle);"
-        >
-          <component :is="getIcon(stat.icon)" :size="20" stroke-width="2.5" />
-        </div>
-
-        <!-- Value -->
-        <span class="text-sm font-bold leading-tight mb-0.5" style="color: var(--color-text)">
-          {{ stat.value }}
-        </span>
-
-        <!-- Label -->
-        <span class="text-[9px] font-medium opacity-50 leading-tight" style="color: var(--color-text)">
-          {{ stat.label }}
-        </span>
-      </div>
-    </div>
+    <!-- Subtle shine effect -->
+    <div class="absolute inset-0 bg-gradient-to-br from-white/10 via-transparent to-transparent pointer-events-none"></div>
   </div>
 </template>
 
@@ -84,5 +101,18 @@ const gridStats = computed(() => {
 const getIcon = (iconName?: string) => {
   if (!iconName) return LucideIcons.HelpCircle
   return (LucideIcons as any)[iconName] || LucideIcons.HelpCircle
+}
+
+// Format label to be shorter for mobile
+const formatLabel = (label?: string) => {
+  if (!label) return ''
+  // Shorten common labels
+  const shortLabels: Record<string, string> = {
+    'Atendimentos': 'Atend.',
+    'Agendados': 'Agend.',
+    'Fornecedores': 'Fornec.',
+    'Prospectos': 'Prosp.',
+  }
+  return shortLabels[label] || label
 }
 </script>
