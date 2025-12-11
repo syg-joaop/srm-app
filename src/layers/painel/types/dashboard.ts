@@ -71,7 +71,7 @@ export interface SupplierBirthday {
   status: string;
   ende: string;
   cidade: string;
-  uf: string;
+  uf?: string;
   categoria: string;
   tf: string;
   dat_nasc: string;
@@ -104,7 +104,7 @@ export interface StaffPerformance {
 
 export interface DailyGoal {
   data: string;
-  sum: string;
+  peso: string;
 }
 
 export interface PurchasingStats {

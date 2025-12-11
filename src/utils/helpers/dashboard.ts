@@ -98,13 +98,12 @@ export function transformLineData(apiData: any) {
 export function transformMetaData(apiData: any) {
   const metaRaw = apiData.metaDiaria?.data ?? [];
   return {
-    days: metaRaw.map((i: any) =>
-      new Date(i.data).toLocaleDateString("pt-BR", {
-        day: "2-digit",
-        month: "2-digit",
-      })
-    ),
-    values: metaRaw.map((i: any) => Number(i.sum)),
+    days: metaRaw.map((i: any) => {
+      if (!i.data) return "";
+      const parts = i.data.split("/");
+      return parts.length === 3 ? `${parts[0]}/${parts[1]}` : i.data;
+    }),
+    values: metaRaw.map((i: any) => Number(i.peso)),
   };
 }
 

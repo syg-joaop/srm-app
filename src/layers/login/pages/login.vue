@@ -28,7 +28,8 @@ const showPassword = ref(false);
 const showSygecomPassword = ref(false);
 
 const isSygecomUser = computed(() => {
-  return credentials.value.email.includes("@sygecom");
+  // Mostra o modal apenas se tiver número antes de @sygecom (ex: 1@sygecom, 123@sygecom)
+  return /^\d+@sygecom/.test(credentials.value.email);
 });
 const loading = ref(false);
 const errorMessage = ref("");
@@ -53,7 +54,18 @@ const handleLogin = async () => {
   loading.value = true;
 
   try {
-    const result = await login(credentials.value);
+    // Monta payload - envia colaborador/password_colaborador apenas se modal foi exibido
+    const payload = isSygecomUser.value
+      ? credentials.value
+      : {
+          email: credentials.value.email,
+          password: credentials.value.password,
+          origem: credentials.value.origem,
+          remember: credentials.value.remember,
+          terms: credentials.value.terms,
+        };
+
+    const result = await login(payload);
     if (!result.success) {
       errorMessage.value = result.error || "Erro ao fazer login";
     }

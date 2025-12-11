@@ -455,11 +455,11 @@ definePageMeta({
 const { fetchDashboard } = useDashboardService();
 
 const filters = ref({
-  data_inicial: "2025-11-01",
-  data_final: "2025-11-30",
-  data_inicial2: "2025-10-01",
-  data_final2: "2025-10-31",
-  categoriaFornecedor: "0",
+  data_inicial: "2025-10-01",
+  data_final: "2025-10-30",
+  data_inicial2: "2025-11-01",
+  data_final2: "2025-11-31",
+  categoriaFornecedor: "12",
   filial: "TODAS",
   mes_grafico: "atual",
 });

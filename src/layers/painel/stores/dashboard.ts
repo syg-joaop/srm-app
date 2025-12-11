@@ -101,9 +101,9 @@ export const useDashboardStore = defineStore("dashboard", () => {
     const data = rawData.value?.aniversariantesFornecedores?.data ?? [];
     return data.map((a) => ({
       name: a.fornecedor,
-      location: `${a.cidade}/${a.uf}`,
+      location: a.uf ? `${a.cidade}/${a.uf}` : a.cidade,
       status: a.status,
-      date: new Date(a.dat_nasc).toLocaleDateString("pt-BR"),
+      date: a.dat_nasc,
     }));
   });
 

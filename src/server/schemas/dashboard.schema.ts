@@ -108,7 +108,7 @@ export const apiProdutoSchema = z.object({
 export const apiAniversarianteSchema = z.object({
   fornecedor: z.string(),
   cidade: z.string(),
-  uf: z.string(),
+  uf: z.string().optional(),
   dat_nasc: z.string(),
   status: z.string(),
 });
@@ -134,7 +134,7 @@ export const apiOcorrencia6MesesSchema = z.object({
 });
 
 export const apiMetaDiariaSchema = z.object({
-  sum: z.string(),
+  peso: z.string(),
 });
 
 export const apiDescontoSchema = z.object({

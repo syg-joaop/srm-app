@@ -15,9 +15,7 @@ export const useDashboardService = () => {
   const api = useMainApi();
   const authStore = useAuthStore();
 
-  const idList = [
-    1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18,
-  ];
+  const idList = ["INDICADORES_DASHBOARD",  "INDICADORES_DASHBOARD_COMPRADOR",  "PROXIMOS_ATENDIMENTOS",  "PROXIMOS_ATENDIMENTOS_NAO_ADMIN",  "ATENDIMENTOS_VENCIDOS",  "ATENDIMENTOS_VENCIDOS_NAO_ADMIN",  "OCORRENCIAS_12_MESES",  "OCORRENCIAS_12_MESES_NAO_ADMIN",  "OCORRENCIAS_6_MESES",  "OCORRENCIAS_6_MESES_NAO_ADMIN",  "ANIVERSIANTES_FORNECEDORES",  "ANIVERSIANTES_CONTATOS",  "ATENDENTES",  "META_DIARIA",  "COMPRAS_MES",  "COMPRAS_COMPRADOR",  "PROD_MAIS_COMPRADOS_MES",  "TOTAL_DESCONTOS"]
 
   /**
    * Hook para buscar dados do dashboard.
@@ -30,14 +28,17 @@ export const useDashboardService = () => {
 
     return useAsyncData<DashboardApiResponse>(
       "dashboard-main-data",
-      () =>
-        api("/dashboard/indicadores", {
+      async () => {
+        const response = await api("/dashboard/indicadores", {
           method: "GET",
           query: {
-            id_list: JSON.stringify(idList),
+            graficos: JSON.stringify(idList),
             ...filtersRef.value,
           },
-        }),
+        });
+        // A API retorna { code, message, data: {...} }, extraímos apenas o data
+        return (response as any)?.data ?? response;
+      },
       {
         // Recarrega automaticamente se os filtros mudarem
         watch: [filtersRef],

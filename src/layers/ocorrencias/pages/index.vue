@@ -17,14 +17,6 @@
           Nova Ocorrência
         </UiButton>
 
-        <UiButton
-          variant="primary"
-          size="medium"
-          class="whitespace-nowrap sm:hidden"
-        >
-          <Plus class="w-4 h-4" />
-        </UiButton>
-
         <div class="relative flex-1">
           <Search
             class="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5"
