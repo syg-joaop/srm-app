@@ -2,13 +2,16 @@ export const premiumTooltipStyle = {
   backgroundColor: "rgba(15, 23, 42, 0.95)",
   borderColor: "rgba(255, 255, 255, 0.1)",
   borderWidth: 1,
-  padding: [12, 16],
+  padding: [10, 14],
+  confine: true,
+  appendToBody: true,
   textStyle: {
     color: "#fff",
     fontFamily: "Inter, sans-serif",
+    fontSize: 12,
   },
   extraCssText:
-    "backdrop-filter: blur(8px); border-radius: 12px; box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.5);",
+    "backdrop-filter: blur(8px); border-radius: 10px; box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.5); z-index: 100 !important; max-width: 280px;",
 };
 
 export const getPremiumTooltip = (

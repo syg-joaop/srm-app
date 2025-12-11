@@ -6,7 +6,7 @@
     <h1 class="text-xl sm:text-2xl font-bold mb-4 sm:mb-6">Fornecedores</h1>
     <!-- Header Controls -->
     <div
-      class="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-6"
+      class="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-4"
     >
       <!-- Search and Filter Toggle -->
       <div class="flex items-center gap-2 w-full md:max-w-xl">
@@ -48,8 +48,11 @@
           <Filter class="w-5 h-5" />
           <span
             v-if="activeFiltersCount > 0"
-            class="absolute -top-1 -right-1 w-3 h-3 bg-red-500 rounded-full border-2 border-gray-900"
-          ></span>
+            class="absolute -top-1 -right-1 w-4 h-4 text-[10px] font-bold flex items-center justify-center rounded-full"
+            style="background-color: var(--color-danger); color: #fff"
+          >
+            {{ activeFiltersCount }}
+          </span>
         </button>
       </div>
 
@@ -97,9 +100,118 @@
     </div>
 
     <!-- Collapsible Filters -->
-    <div v-show="showFilters" class="mb-6">
-      <FiltrosFornecedores v-model="filters" />
-    </div>
+    <Transition
+      enter-active-class="transition-all duration-200 ease-out"
+      leave-active-class="transition-all duration-150 ease-in"
+      enter-from-class="opacity-0 -translate-y-2"
+      leave-to-class="opacity-0 -translate-y-2"
+    >
+      <div
+        v-if="showFilters"
+        class="mb-6 p-3 sm:p-4 rounded-lg border"
+        style="border-color: var(--color-border); background-color: var(--color-surface)"
+      >
+        <!-- Filtros tipo Input -->
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4 mb-4">
+          <div>
+            <label class="block text-xs font-medium mb-1.5" style="color: var(--color-text-muted)">
+              Fantasia
+            </label>
+            <input
+              v-model="filters.fantasia"
+              type="text"
+              placeholder="Filtrar por fantasia"
+              class="w-full rounded-lg px-4 py-2.5 text-sm focus:outline-none focus:ring-1 focus:ring-[var(--color-primary)] transition-all border"
+              style="background-color: var(--color-background); border-color: var(--color-border); color: var(--color-text)"
+            />
+          </div>
+          <div>
+            <label class="block text-xs font-medium mb-1.5" style="color: var(--color-text-muted)">
+              Cidade
+            </label>
+            <input
+              v-model="filters.cidade"
+              type="text"
+              placeholder="Filtrar por cidade"
+              class="w-full rounded-lg px-4 py-2.5 text-sm focus:outline-none focus:ring-1 focus:ring-[var(--color-primary)] transition-all border"
+              style="background-color: var(--color-background); border-color: var(--color-border); color: var(--color-text)"
+            />
+          </div>
+        </div>
+
+        <!-- Filtros tipo Button Group -->
+        <div class="flex flex-col md:flex-row gap-4 mb-4">
+          <div class="space-y-2">
+            <label class="block text-sm font-semibold" style="color: var(--color-text)">
+              Status
+            </label>
+            <div class="flex flex-wrap gap-2">
+              <button
+                v-for="option in statusOptions"
+                :key="option.value"
+                class="px-4 py-1.5 rounded-full text-sm font-medium transition-colors border"
+                :style="[
+                  filters.status === option.value
+                    ? {
+                        backgroundColor: 'var(--color-primary)',
+                        borderColor: 'var(--color-primary)',
+                        color: '#fff',
+                      }
+                    : {
+                        backgroundColor: 'var(--color-surface)',
+                        borderColor: 'var(--color-border)',
+                        color: 'var(--color-text-muted)',
+                      },
+                ]"
+                @click="filters.status = option.value"
+              >
+                {{ option.label }}
+              </button>
+            </div>
+          </div>
+
+          <div class="space-y-2">
+            <label class="block text-sm font-semibold" style="color: var(--color-text)">
+              Ordenar por
+            </label>
+            <div class="flex flex-wrap gap-2">
+              <button
+                v-for="option in sortOptions"
+                :key="option.value"
+                class="px-4 py-1.5 rounded-full text-sm font-medium transition-colors border"
+                :style="[
+                  filters.sortBy === option.value
+                    ? {
+                        backgroundColor: 'var(--color-primary)',
+                        borderColor: 'var(--color-primary)',
+                        color: '#fff',
+                      }
+                    : {
+                        backgroundColor: 'var(--color-surface)',
+                        borderColor: 'var(--color-border)',
+                        color: 'var(--color-text-muted)',
+                      },
+                ]"
+                @click="filters.sortBy = option.value"
+              >
+                {{ option.label }}
+              </button>
+            </div>
+          </div>
+        </div>
+
+        <!-- Botão Limpar -->
+        <button
+          v-if="activeFiltersCount > 0"
+          class="flex items-center gap-1.5 text-sm font-medium transition-colors px-2 py-1.5 hover:opacity-80"
+          style="color: var(--color-danger)"
+          @click="clearFilters"
+        >
+          <X class="w-4 h-4" />
+          Limpar filtros
+        </button>
+      </div>
+    </Transition>
 
     <!-- Content -->
     <div>
@@ -142,11 +254,10 @@
 
 <script setup lang="ts">
 import { ref, computed, watch } from "vue";
-import { Search, Filter, List, Map } from "lucide-vue-next";
+import { Search, Filter, List, Map, X } from "lucide-vue-next";
 import ListaFornecedores from "../components/ListaFornecedores.vue";
 import MapaFornecedores from "../components/MapaFornecedores.vue";
-import FiltrosFornecedores from "../components/FiltrosFornecedores.vue";
-import UiSpinner from "../../../components/ui/feedback/UiSpinner.vue";
+import UiSpinner from "@/components/ui/feedback/UiSpinner.vue";
 import UiPaginacao from "@/components/ui/navigation/UiPaginacao.vue";
 import ModalDetalhesParceiro from "../../painel/components/ModalDetalhesParceiro.vue";
 import type { Fornecedor } from "../types/fornecedores";
@@ -165,15 +276,36 @@ const filters = ref({
   sortBy: "fornecedor",
 });
 
+const statusOptions = [
+  { label: "Todos", value: "todos" },
+  { label: "Ativo", value: "ativo" },
+  { label: "Inativo", value: "inativo" },
+];
+
+const sortOptions = [
+  { label: "Fornecedor", value: "fornecedor" },
+  { label: "Cidade", value: "cidade" },
+  { label: "Status", value: "status" },
+  { label: "Sem carga +60 dias", value: "sem_carga" },
+];
+
 const activeFiltersCount = computed(() => {
   let count = 0;
-  if (search.value) count++;
   if (filters.value.fantasia) count++;
   if (filters.value.cidade) count++;
   if (filters.value.status !== "todos") count++;
   if (filters.value.sortBy !== "fornecedor") count++;
   return count;
 });
+
+const clearFilters = () => {
+  filters.value = {
+    fantasia: "",
+    cidade: "",
+    status: "todos",
+    sortBy: "fornecedor",
+  };
+};
 
 const { fetchFornecedor } = useFornecedorService();
 

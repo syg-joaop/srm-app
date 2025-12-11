@@ -281,10 +281,7 @@
             empty-title="Sem produtos"
             empty-description="Não há dados de produtos comprados"
           >
-            <div
-              ref="productChartRef"
-              class="w-full h-full min-h-[250px]"
-            ></div>
+            <ProdutosRankingList :data="chartData.produtosBar" />
           </DashboardWidget>
 
           <DashboardWidget
@@ -438,6 +435,7 @@ import MobileStatsWidget from "../components/MobileStatsWidget.vue";
 import DashboardWidget from "../components/DashboardWidget.vue";
 import ComprasCard from "../components/ComprasCard.vue";
 import OcorrenciasChart from "../components/OcorrenciasChart.vue";
+import ProdutosRankingList from "../components/ProdutosRankingList.vue";
 import DashboardListItem from "@/components/ui/DashboardListItem.vue";
 import DateBox from "@/components/ui/DateBox.vue";
 import UiEmptyState from "@/components/ui/feedback/UiEmptyState.vue";
@@ -531,7 +529,6 @@ const comprasMetricsMesAnterior = computed(() => {
 const lineChartRef = ref<HTMLElement | null>(null);
 const barChartRef = ref<HTMLElement | null>(null);
 const discountChartRef = ref<HTMLElement | null>(null);
-const productChartRef = ref<HTMLElement | null>(null);
 
 const initCharts = () => {
   const getStyle = (variable: string) =>
@@ -663,81 +660,6 @@ const initCharts = () => {
     });
   }
 
-  if (productChartRef.value) {
-    const chart =
-      echarts.getInstanceByDom(productChartRef.value) ||
-      echarts.init(productChartRef.value);
-    chart.setOption({
-      tooltip: {
-        trigger: "axis",
-        axisPointer: { type: "shadow" },
-        ...premiumTooltipStyle,
-        formatter: (params: any) =>
-          getPremiumTooltip(params, params[0].name, formatarKg),
-      },
-      legend: {
-        bottom: 0,
-        itemWidth: 10,
-        itemHeight: 10,
-        textStyle: { color: getStyle("--color-text-muted") },
-      },
-      grid: {
-        left: "3%",
-        right: "4%",
-        bottom: "10%",
-        top: "3%",
-        containLabel: true,
-      },
-      xAxis: {
-        type: "value",
-        splitLine: commonOptions.yAxis.splitLine,
-        axisLabel: {
-          formatter: (value: number) => {
-            if (value >= 1000) return `${(value / 1000).toFixed(0)}k`;
-            return value;
-          },
-          color: getStyle("--color-text-muted"),
-        },
-      },
-      yAxis: {
-        type: "category",
-        data: chartData.value.produtosBar.names,
-        axisTick: { show: false },
-        axisLine: { show: false },
-        axisLabel: {
-          width: 100,
-          overflow: "truncate",
-          color: getStyle("--color-text-muted"),
-        },
-      },
-      series: [
-        {
-          name: "Mês Atual",
-          type: "bar",
-          data: chartData.value.produtosBar.current,
-          itemStyle: {
-            color: new echarts.graphic.LinearGradient(0, 0, 1, 0, [
-              { offset: 0, color: "#0099ff" },
-              { offset: 1, color: "#0077be" },
-            ]),
-            borderRadius: [0, 4, 4, 0],
-          },
-          barGap: "20%",
-          barCategoryGap: "40%",
-        },
-        {
-          name: "Mês Anterior",
-          type: "bar",
-          data: chartData.value.produtosBar.previous,
-          itemStyle: {
-            color: getStyle("--color-text-muted"),
-            borderRadius: [0, 4, 4, 0],
-            opacity: 0.5,
-          },
-        },
-      ],
-    });
-  }
 };
 
 watch(
@@ -784,9 +706,6 @@ const handleResize = () => {
   }
   if (discountChartRef.value) {
     echarts.getInstanceByDom(discountChartRef.value)?.resize();
-  }
-  if (productChartRef.value) {
-    echarts.getInstanceByDom(productChartRef.value)?.resize();
   }
 };
 </script>

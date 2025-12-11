@@ -233,8 +233,7 @@ watch(
               />
 
               <div class="flex flex-col sm:flex-row sm:justify-between gap-4">
-                <div class="flex items-start gap-2">
-                  <UiCheckbox v-model="credentials.terms" class="mt-0.5" />
+                <UiCheckbox v-model="credentials.terms" class="theme-checkbox">
                   <span
                     class="text-xs sm:text-sm leading-tight"
                     style="color: var(--color-text-muted)"
@@ -247,7 +246,7 @@ watch(
                       >Política de Privacidade</a
                     >
                   </span>
-                </div>
+                </UiCheckbox>
 
                 <UiButton
                   type="submit"

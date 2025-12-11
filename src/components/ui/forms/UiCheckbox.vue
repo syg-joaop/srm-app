@@ -89,8 +89,9 @@ export default {
 
 .checkmark {
   position: absolute;
-  top: 0;
+  top: 50%;
   left: 0;
+  transform: translateY(-50%);
   height: 18px;
   width: 18px;
   background-color: var(--color-surface);

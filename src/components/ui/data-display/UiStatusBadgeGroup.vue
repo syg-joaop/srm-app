@@ -1,28 +1,40 @@
 <template>
-  <div class="flex gap-2 text-[10px] sm:text-xs justify-end">
+  <!-- Desktop: horizontal -->
+  <div class="hidden sm:flex gap-2 text-xs justify-end">
     <div
       v-for="(item, index) in items"
       :key="index"
-      class="group/badge relative flex items-center justify-center gap-2 w-16 py-1.5 rounded border transition-all duration-200 ease-out cursor-pointer hover:scale-110 hover:z-20 hover:shadow-md"
-      :class="getBadgeStyle(item.color)"
+      class="group/badge relative flex items-center justify-center gap-2 min-w-[56px] px-2 py-1.5 rounded border transition-all duration-200 ease-out cursor-pointer hover:scale-105 hover:z-20 hover:shadow-md"
+      :style="getBadgeStyle(item.color)"
       @mouseenter="(e) => showTooltip(index, e)"
       @mouseleave="hideTooltip"
     >
       <component :is="getIcon(item.icon)" class="w-3.5 h-3.5 shrink-0" />
-      <span class="font-medium">{{ item.value }}</span>
+      <span class="font-semibold">{{ item.value }}</span>
 
       <Teleport to="body">
         <div
           v-if="hoveredIndex === index"
-          class="fixed px-2 py-1 text-[10px] font-medium text-white bg-gray-900 dark:bg-gray-700 rounded shadow-lg transition-opacity duration-200 pointer-events-none whitespace-nowrap z-[9999]"
+          class="fixed px-2 py-1 text-[10px] font-medium text-white rounded shadow-lg transition-opacity duration-200 pointer-events-none whitespace-nowrap z-[9999]"
+          style="background-color: var(--color-surface); border: 1px solid var(--color-border)"
           :style="tooltipStyle"
         >
           {{ item.label }}
-          <div
-            class="absolute top-full left-1/2 -translate-x-1/2 -mt-[1px] border-4 border-transparent border-t-gray-900 dark:border-t-gray-700"
-          ></div>
         </div>
       </Teleport>
+    </div>
+  </div>
+
+  <!-- Mobile: grid compacto -->
+  <div class="sm:hidden grid grid-cols-4 gap-1 text-[10px]">
+    <div
+      v-for="(item, index) in items"
+      :key="index"
+      class="flex items-center justify-center gap-1 py-1 px-1.5 rounded border"
+      :style="getBadgeStyle(item.color)"
+    >
+      <component :is="getIcon(item.icon)" class="w-3 h-3 shrink-0" />
+      <span class="font-semibold">{{ item.value }}</span>
     </div>
   </div>
 </template>
@@ -74,18 +86,42 @@ const getIcon = (iconName?: string) => {
 };
 
 const getBadgeStyle = (color: string) => {
-  const colorMap: Record<string, string> = {
-    red: "bg-red-50 text-red-600 border-red-100 dark:bg-red-900/20 dark:text-red-400 dark:border-red-800/30",
-    green:
-      "bg-green-50 text-green-600 border-green-100 dark:bg-green-900/20 dark:text-green-400 dark:border-green-800/30",
-    yellow:
-      "bg-yellow-50 text-yellow-600 border-yellow-100 dark:bg-yellow-900/20 dark:text-yellow-400 dark:border-yellow-800/30",
-    blue: "bg-blue-50 text-blue-600 border-blue-100 dark:bg-blue-900/20 dark:text-blue-400 dark:border-blue-800/30",
-    purple:
-      "bg-purple-50 text-purple-600 border-purple-100 dark:bg-purple-900/20 dark:text-purple-400 dark:border-purple-800/30",
-    gray: "bg-gray-50 text-gray-600 border-gray-100 dark:bg-gray-800 dark:text-gray-400 dark:border-gray-700",
-    "dark-red":
-      "bg-red-100 text-red-800 border-red-200 dark:bg-red-900/40 dark:text-red-300 dark:border-red-800/50",
+  const colorMap: Record<string, Record<string, string>> = {
+    red: {
+      backgroundColor: "var(--color-danger-soft)",
+      color: "var(--color-danger)",
+      borderColor: "var(--color-border-subtle)",
+    },
+    green: {
+      backgroundColor: "var(--color-success-soft)",
+      color: "var(--color-success)",
+      borderColor: "var(--color-border-subtle)",
+    },
+    yellow: {
+      backgroundColor: "var(--color-warning-soft)",
+      color: "var(--color-warning)",
+      borderColor: "var(--color-border-subtle)",
+    },
+    blue: {
+      backgroundColor: "var(--color-primary-soft)",
+      color: "var(--color-primary)",
+      borderColor: "var(--color-border-subtle)",
+    },
+    gray: {
+      backgroundColor: "var(--color-hover)",
+      color: "var(--color-text-muted)",
+      borderColor: "var(--color-border-subtle)",
+    },
+    "dark-red": {
+      backgroundColor: "var(--color-danger-soft)",
+      color: "var(--color-danger)",
+      borderColor: "var(--color-border-subtle)",
+    },
+    purple: {
+      backgroundColor: "var(--color-primary-soft)",
+      color: "var(--color-primary)",
+      borderColor: "var(--color-border-subtle)",
+    },
   };
   return colorMap[color] || colorMap.gray;
 };
