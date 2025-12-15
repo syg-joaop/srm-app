@@ -138,44 +138,75 @@
     <!-- List -->
     <div
       v-if="ocorrenciasFiltradas.length > 0"
-      class="divide-y divide-[var(--color-border)] border border-t-0 md:border-t border-[var(--color-border)] rounded-b-lg md:rounded-lg overflow-hidden"
+      class="flex flex-col gap-1.5 md:gap-0"
     >
       <div
         v-for="item in paginatedOcorrencias"
         :key="item.id"
-        class="grid grid-cols-1 md:grid-cols-12 gap-2 md:gap-4 p-4 md:px-6 md:py-4 bg-[var(--color-surface)] hover:bg-[var(--color-hover)] transition-colors cursor-pointer"
+        class="group/item relative bg-[var(--color-surface)] md:rounded-none first:md:rounded-t-none last:md:rounded-b-lg rounded-lg border border-[var(--color-border-subtle)] md:border-[var(--color-border)] md:border-t-0 first:md:border-t hover:border-[var(--color-primary-border)] hover:bg-[var(--color-primary-soft)] transition-all duration-300 ease-out hover:shadow-sm px-4 py-4 md:px-6 md:py-4 cursor-pointer grid grid-cols-1 md:grid-cols-12 gap-2 md:gap-4"
         @click="abrirDetalhes(item)"
       >
-        <div class="flex items-center gap-3 md:col-span-1">
+        <!-- Sliding Indicator -->
+        <div
+          class="absolute left-0 top-1/2 -translate-y-1/2 w-0.5 h-0 bg-[var(--color-primary)] rounded-r-full opacity-0 group-hover/item:h-6 group-hover/item:opacity-100 transition-all duration-300"
+        ></div>
+
+        <div class="hidden md:flex items-center gap-3 md:col-span-1">
           <div
-            class="w-8 h-8 rounded-full flex items-center justify-center"
+            class="w-8 h-8 rounded-full flex items-center justify-center group-hover/item:scale-105 transition-transform duration-200"
             :class="getStatusIconClass(item.status)"
           >
             <Eye class="w-4 h-4" />
           </div>
-          <span class="md:hidden text-sm font-medium text-[var(--color-text)]">
-            {{ item.fornecedor }}
-          </span>
         </div>
 
         <div class="hidden md:flex items-center col-span-3">
-          <span class="text-sm font-medium text-[var(--color-text)] truncate">
+          <span class="text-sm font-medium text-[var(--color-text)] group-hover/item:text-[var(--color-primary)] transition-colors truncate">
             {{ item.fornecedor }}
           </span>
         </div>
 
-        <div class="flex items-center text-xs md:text-sm text-[var(--color-text-muted)] md:col-span-2">
-          <span class="md:hidden mr-2 text-[10px] uppercase">Data:</span>
+        <!-- Mobile Layout (2 lines max) -->
+        <div class="flex md:hidden flex-col gap-1 w-full min-w-0">
+          <!-- Line 1: Icon + Name + Date + Arrow -->
+          <div class="flex items-center justify-between gap-2 w-full">
+            <div class="flex items-center gap-2.5 min-w-0 flex-1">
+              <div
+                class="flex-shrink-0 w-8 h-8 rounded-full flex items-center justify-center"
+                :class="getStatusIconClass(item.status)"
+              >
+                <Eye class="w-3.5 h-3.5" />
+              </div>
+              <span class="text-sm font-medium text-[var(--color-text)] group-hover/item:text-[var(--color-primary)] transition-colors truncate">
+                {{ item.fornecedor }}
+              </span>
+            </div>
+            
+            <div class="flex items-center gap-1.5 flex-shrink-0">
+              <span class="text-[10px] text-[var(--color-text-muted)]">
+                {{ item.dataCadastro }}
+              </span>
+              <ChevronRight class="w-4 h-4 text-[var(--color-text-muted)]" />
+            </div>
+          </div>
+
+          <!-- Line 2: Title + Atendente -->
+          <div class="flex items-center justify-between gap-2 pl-[42px] text-xs text-[var(--color-text-muted)] w-full">
+            <span class="truncate pr-2">{{ item.titulo || 'Sem descrição' }}</span>
+            <span class="whitespace-nowrap flex-shrink-0">{{ item.atendente }}</span>
+          </div>
+        </div>
+
+        <!-- Desktop Columns -->
+        <div class="hidden md:flex items-center text-xs md:text-sm text-[var(--color-text-muted)] md:col-span-2">
           {{ item.dataCadastro || '-' }}
         </div>
 
-        <div class="flex items-center text-xs md:text-sm text-[var(--color-text-muted)] md:col-span-2">
-          <span class="md:hidden mr-2 text-[10px] uppercase">Atendente:</span>
+        <div class="hidden md:flex items-center text-xs md:text-sm text-[var(--color-text-muted)] md:col-span-2">
           {{ item.atendente }}
         </div>
 
-        <div class="flex items-center text-xs md:text-sm text-[var(--color-text-muted)] md:col-span-3">
-          <span class="md:hidden mr-2 text-[10px] uppercase">Título:</span>
+        <div class="hidden md:flex items-center text-xs md:text-sm text-[var(--color-text-muted)] md:col-span-3">
           <span class="truncate">{{ item.titulo || 'Sem descrição' }}</span>
         </div>
 
@@ -222,7 +253,7 @@
 
 <script setup lang="ts">
 import { ref, computed } from "vue";
-import { Search, Filter, MessageSquare, Plus, Eye, X } from "lucide-vue-next";
+import { Search, Filter, MessageSquare, Plus, Eye, X, ChevronRight } from "lucide-vue-next";
 import UiButton from "@/components/ui/buttons/UiButton.vue";
 import UiSelect from "@/components/ui/forms/UiSelect.vue";
 import UiEmptyState from "@/components/ui/feedback/UiEmptyState.vue";

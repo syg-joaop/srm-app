@@ -1,39 +1,31 @@
-import type { LoginCredentials } from '../types'
-import { useUserStore } from '../stores/user'
+import type { LoginCredentials } from '@/types/auth'
+import { useAuthStore } from '../stores/auth'
 
 export const useAuth = () => {
-  const userStore = useUserStore()
-  const router = useRouter()
+  const authStore = useAuthStore()
 
   const login = async (credentials: LoginCredentials) => {
-    const result = await userStore.login(credentials)
-
-    if (result.success) {
-      console.log('Login successful, redirecting to /')
-      await navigateTo('/')
-    } else {
-      console.error('Login failed in composable:', result)
-    }
-
+    const result = await authStore.login(credentials)
+    if (result.success) await navigateTo('/')
     return result
   }
 
   const logout = async () => {
-    await userStore.logout()
+    await authStore.logout()
   }
 
   const checkAuth = async () => {
-    return await userStore.fetchCurrentUser()
+    return await authStore.initAuth()
   }
 
   return {
     // State
-    user: computed(() => userStore.user),
-    isAuthenticated: computed(() => userStore.isAuthenticated),
-    userEmail: computed(() => userStore.userEmail),
-    userName: computed(() => userStore.userName),
-    loading: computed(() => userStore.loading),
-    error: computed(() => userStore.error),
+    user: computed(() => authStore.user),
+    isAuthenticated: computed(() => authStore.isAuthenticated),
+    userEmail: computed(() => authStore.userEmail),
+    userName: computed(() => authStore.userName),
+    loading: computed(() => authStore.loading),
+    error: computed(() => authStore.error),
 
     // Actions
     login,

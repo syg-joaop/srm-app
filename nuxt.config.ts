@@ -52,13 +52,16 @@ export default defineNuxtConfig({
   },
 
   runtimeConfig: {
+    apiSecret: process.env.API_SECRET,
+    apiBaseUrl: process.env.API_LOGIN,
+    apiV2Url: process.env.API_URL,
+    apiV2UrlHomol: process.env.API_URL_HOMOL,
     public: {
-      apiSecret: process.env.API_SECRET,
-      apiBaseUrl: process.env.API_LOGIN,
-      apiV2Url: process.env.API_URL,
-      apiV2UrlHomol: process.env.API_URL_HOMOL,
-      appName: "SRM App",
-      appVersion: "0.0.1",
+      appName: process.env.NUXT_PUBLIC_APP_NAME ?? "SRM App",
+      appVersion:
+        process.env.NUXT_PUBLIC_APP_VERSION ??
+        process.env.npm_package_version ??
+        "0.0.0",
     },
   },
 
@@ -97,7 +100,6 @@ export default defineNuxtConfig({
   },
 
   nitro: {
-    preset: "static",
     esbuild: {
       options: {
         target: "es2020",

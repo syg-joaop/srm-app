@@ -57,46 +57,11 @@
       </div>
 
       <!-- View Toggle -->
-      <div
-        class="flex items-center rounded-lg p-1 border self-start md:self-auto"
-        style="
-          background-color: var(--color-surface);
-          border-color: var(--color-border);
-        "
-      >
-        <button
-          class="flex items-center gap-2 px-3 py-1.5 rounded-md text-sm font-medium transition-all"
-          :style="[
-            viewMode === 'list'
-              ? {
-                  backgroundColor: 'var(--color-hover)',
-                  color: 'var(--color-text)',
-                  boxShadow: '0 1px 2px 0 rgba(0, 0, 0, 0.05)',
-                }
-              : { color: 'var(--color-text-muted)' },
-          ]"
-          @click="viewMode = 'list'"
-        >
-          <List class="w-4 h-4" />
-          Lista
-        </button>
-        <button
-          class="flex items-center gap-2 px-3 py-1.5 rounded-md text-sm font-medium transition-all"
-          :style="[
-            viewMode === 'map'
-              ? {
-                  backgroundColor: 'var(--color-hover)',
-                  color: 'var(--color-text)',
-                  boxShadow: '0 1px 2px 0 rgba(0, 0, 0, 0.05)',
-                }
-              : { color: 'var(--color-text-muted)' },
-          ]"
-          @click="viewMode = 'map'"
-        >
-          <Map class="w-4 h-4" />
-          Mapa
-        </button>
-      </div>
+      <UiSegmentedControl
+        v-model="viewMode"
+        :options="viewModeOptions"
+        class="self-start md:self-auto"
+      />
     </div>
 
     <!-- Collapsible Filters -->
@@ -108,11 +73,12 @@
     >
       <div
         v-if="showFilters"
-        class="mb-6 p-3 sm:p-4 rounded-lg border"
+        class="mb-6 p-3 sm:p-4 rounded-lg border overflow-hidden"
         style="border-color: var(--color-border); background-color: var(--color-surface)"
       >
-        <!-- Filtros tipo Input -->
-        <div class="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4 mb-4">
+        <!-- Filtros Unificados -->
+        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4 mb-4">
+          <!-- Fantasia -->
           <div>
             <label class="block text-xs font-medium mb-1.5" style="color: var(--color-text-muted)">
               Fantasia
@@ -125,6 +91,8 @@
               style="background-color: var(--color-background); border-color: var(--color-border); color: var(--color-text)"
             />
           </div>
+
+          <!-- Cidade -->
           <div>
             <label class="block text-xs font-medium mb-1.5" style="color: var(--color-text-muted)">
               Cidade
@@ -137,66 +105,30 @@
               style="background-color: var(--color-background); border-color: var(--color-border); color: var(--color-text)"
             />
           </div>
-        </div>
 
-        <!-- Filtros tipo Button Group -->
-        <div class="flex flex-col md:flex-row gap-4 mb-4">
+          <!-- Status -->
           <div class="space-y-2">
-            <label class="block text-sm font-semibold" style="color: var(--color-text)">
+            <label class="block text-xs font-semibold uppercase tracking-wide" style="color: var(--color-text-muted)">
               Status
             </label>
-            <div class="flex flex-wrap gap-2">
-              <button
-                v-for="option in statusOptions"
-                :key="option.value"
-                class="px-4 py-1.5 rounded-full text-sm font-medium transition-colors border"
-                :style="[
-                  filters.status === option.value
-                    ? {
-                        backgroundColor: 'var(--color-primary)',
-                        borderColor: 'var(--color-primary)',
-                        color: '#fff',
-                      }
-                    : {
-                        backgroundColor: 'var(--color-surface)',
-                        borderColor: 'var(--color-border)',
-                        color: 'var(--color-text-muted)',
-                      },
-                ]"
-                @click="filters.status = option.value"
-              >
-                {{ option.label }}
-              </button>
-            </div>
+            <UiSegmentedControl
+              v-model="filters.status"
+              :options="statusOptions"
+              full-width
+            />
           </div>
 
+          <!-- Ordenar por -->
           <div class="space-y-2">
-            <label class="block text-sm font-semibold" style="color: var(--color-text)">
+            <label class="block text-xs font-semibold uppercase tracking-wide" style="color: var(--color-text-muted)">
               Ordenar por
             </label>
-            <div class="flex flex-wrap gap-2">
-              <button
-                v-for="option in sortOptions"
-                :key="option.value"
-                class="px-4 py-1.5 rounded-full text-sm font-medium transition-colors border"
-                :style="[
-                  filters.sortBy === option.value
-                    ? {
-                        backgroundColor: 'var(--color-primary)',
-                        borderColor: 'var(--color-primary)',
-                        color: '#fff',
-                      }
-                    : {
-                        backgroundColor: 'var(--color-surface)',
-                        borderColor: 'var(--color-border)',
-                        color: 'var(--color-text-muted)',
-                      },
-                ]"
-                @click="filters.sortBy = option.value"
-              >
-                {{ option.label }}
-              </button>
-            </div>
+            <UiSegmentedControl
+              v-model="filters.sortBy"
+              :options="sortOptions"
+              mobile-size="xs"
+              full-width
+            />
           </div>
         </div>
 
@@ -259,6 +191,7 @@ import ListaFornecedores from "../components/ListaFornecedores.vue";
 import MapaFornecedores from "../components/MapaFornecedores.vue";
 import UiSpinner from "@/components/ui/feedback/UiSpinner.vue";
 import UiPaginacao from "@/components/ui/navigation/UiPaginacao.vue";
+import UiSegmentedControl from "@/components/ui/forms/UiSegmentedControl.vue";
 import ModalDetalhesParceiro from "../../painel/components/ModalDetalhesParceiro.vue";
 import type { Fornecedor } from "../types/fornecedores";
 import { useFornecedorService } from "../composables/useFornecedorService";
@@ -275,6 +208,11 @@ const filters = ref({
   status: "todos",
   sortBy: "fornecedor",
 });
+
+const viewModeOptions = [
+  { label: "Lista", value: "list", icon: List },
+  { label: "Mapa", value: "map", icon: Map },
+];
 
 const statusOptions = [
   { label: "Todos", value: "todos" },

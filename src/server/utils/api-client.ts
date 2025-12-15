@@ -1,18 +1,43 @@
 import type { H3Event } from 'h3'
 
+export type ApiTarget = 'v1' | 'v2' | 'v2Homol'
+
+const getApiBaseUrl = (config: Record<string, unknown>, target: ApiTarget) => {
+  if (target === 'v1') return String(config.apiBaseUrl ?? '')
+  if (target === 'v2Homol') return String(config.apiV2UrlHomol ?? '')
+  return String(config.apiV2Url ?? '')
+}
+
 /**
  * Cria uma instância do $fetch configurada para fazer proxy para a API externa
  * Extrai o token de autenticação dos cookies e injeta nos headers
  */
-export const createApiClient = (event: H3Event) => {
-  const config = useRuntimeConfig()
+export const createApiClient = (event: H3Event, target: ApiTarget = 'v2') => {
+  const config = useRuntimeConfig(event)
   const token = getCookie(event, 'auth_token')
 
+  const baseURL = getApiBaseUrl(config, target)
+  const apiSecret = String(config.apiSecret ?? '')
+
+  if (!baseURL) {
+    throw createError({
+      statusCode: 500,
+      message: 'Configuração de API ausente (baseURL)'
+    })
+  }
+
+  if (!apiSecret) {
+    throw createError({
+      statusCode: 500,
+      message: 'Configuração de API ausente (API_SECRET)'
+    })
+  }
+
   return $fetch.create({
-    baseURL: String(config.public.apiBaseUrl),
+    baseURL,
     headers: {
-      'Authorization': token ? `Bearer ${token}` : '',
-      'x-secret': config.xSecret,
+      ...(token ? { Authorization: `Bearer ${token}` } : {}),
+      'x-secret': apiSecret,
       'Content-Type': 'application/json',
       'Accept': 'application/json'
     },
@@ -70,9 +95,10 @@ export const createApiClient = (event: H3Event) => {
 export const useApiRequest = async <T = any>(
   event: H3Event,
   endpoint: string,
-  options?: RequestInit & { query?: Record<string, any> }
+  options?: RequestInit & { query?: Record<string, any> },
+  target: ApiTarget = 'v2'
 ): Promise<T> => {
-  const apiClient = createApiClient(event)
+  const apiClient = createApiClient(event, target)
 
   return await apiClient<T>(endpoint, options as any) as T
 }

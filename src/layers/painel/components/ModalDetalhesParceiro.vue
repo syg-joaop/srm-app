@@ -24,7 +24,9 @@
         </div>
 
         <!-- Actions Row -->
+
         <div
+          v-if="variant != 'time'"
           class="flex items-center justify-start md:justify-end gap-2 w-full md:w-auto md:ml-auto md:mr-8 border-t md:border-t-0 border-gray-100 dark:border-gray-800 pt-3 md:pt-0 pl-1 md:pl-0"
         >
           <UiButton
@@ -151,14 +153,16 @@ const props = defineProps({
   },
   variant: {
     type: String,
-    default: "parceiro", // parceiro | atendente
+    default: "parceiro", // parceiro | atendente | time
   },
 });
 
 defineEmits(["update:modelValue", "close"]);
 
 const activeTab = ref(
-  props.variant === "atendente" ? "agendamentos" : "atendimentos"
+  ["atendente", "time"].includes(props.variant)
+    ? "agendamentos"
+    : "atendimentos"
 );
 const tabButtonRefs = ref<HTMLElement[]>([]);
 
@@ -175,7 +179,7 @@ const allTabs = [
 ];
 
 const tabs = computed(() => {
-  if (props.variant === "atendente") {
+  if (["atendente", "time"].includes(props.variant)) {
     return allTabs.filter((t) =>
       ["agendamentos", "atendimentos", "checkins"].includes(t.id)
     );
@@ -186,7 +190,7 @@ const tabs = computed(() => {
 watch(
   () => props.variant,
   (newVariant) => {
-    if (newVariant === "atendente") {
+    if (["atendente", "time"].includes(newVariant)) {
       activeTab.value = "agendamentos";
     } else {
       activeTab.value = "atendimentos";

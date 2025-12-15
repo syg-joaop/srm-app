@@ -46,6 +46,7 @@ nuxt.d.ts
 .vscode/*
 !.vscode/extensions.json
 .idea
+.claude/settings.local.json
 *.swp
 *.swo
 *~

@@ -12,7 +12,8 @@ npm install
 npm run dev
 
 # Build de produção
-npm run generate
+npm run build
+npm run preview
 
 # Electron
 npm run electron:dev    # Dev mode
@@ -31,7 +32,7 @@ npm run electron:build  # Build final
 
 ## 📚 Documentação Completa
 
-- **[Arquitetura](./arquitetura.MD)** - Arquitetura implementada
+- **[Arquitetura](./regras-srm.MD)** - Arquitetura e padrões do projeto
 
 ## 🛠️ Stack
 

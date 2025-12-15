@@ -55,15 +55,19 @@ const handleLogin = async () => {
 
   try {
     // Monta payload - envia colaborador/password_colaborador apenas se modal foi exibido
-    const payload = isSygecomUser.value
-      ? credentials.value
-      : {
-          email: credentials.value.email,
-          password: credentials.value.password,
-          origem: credentials.value.origem,
-          remember: credentials.value.remember,
-          terms: credentials.value.terms,
-        };
+    const payload = {
+      email: credentials.value.email,
+      password: credentials.value.password,
+      origem: credentials.value.origem,
+      remember: credentials.value.remember,
+      terms: credentials.value.terms,
+      // Inclui dados de colaborador apenas se o modal foi exibido (número antes de @sygecom)
+      ...(isSygecomUser.value && {
+        colaborador: credentials.value.colaborador,
+        password_colaborador: credentials.value.password_colaborador,
+        remember_colaborador: credentials.value.remember_colaborador,
+      }),
+    };
 
     const result = await login(payload);
     if (!result.success) {

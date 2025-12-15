@@ -78,7 +78,7 @@ export const loginCredentialsSchema = z.object({
  * Schema de validação para objeto de usuário
  */
 export const userSchema = z.object({
-  token: z.string(),
+  token: z.string().optional(),
   email: z.string().email(),
   usuario: z.string(),
   role: z.string().optional().default('user'),

@@ -13,7 +13,7 @@ export default defineEventHandler(async (event) => {
     }
 
     // Buscar fornecedor na API externa
-    const apiClient = createApiClient(event);
+    const apiClient = createApiClient(event, "v1");
     const data = await apiClient(`/suppliers/${id}`);
 
     // Validar resposta

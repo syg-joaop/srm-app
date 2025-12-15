@@ -3,7 +3,7 @@ import { dashboardApiResponseSchema } from '~/server/schemas/dashboard.schema'
 export default defineEventHandler(async (event) => {
   try {
     // Buscar dados do dashboard na API externa
-    const apiClient = createApiClient(event)
+    const apiClient = createApiClient(event, 'v1')
     const data = await apiClient('/dashboard')
 
     // Validar resposta com Zod

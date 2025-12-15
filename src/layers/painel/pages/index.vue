@@ -308,6 +308,7 @@
             :items="aniversariantesItems"
             :paginated="true"
             :page-size="6"
+            :show-tabs="true"
             :empty-icon="Cake"
             empty-title="Nenhum aniversariante"
             empty-description="Não há aniversariantes próximos"
@@ -437,15 +438,15 @@ import ComprasCard from "../components/ComprasCard.vue";
 import OcorrenciasChart from "../components/OcorrenciasChart.vue";
 import ProdutosRankingList from "../components/ProdutosRankingList.vue";
 import DashboardListItem from "@/components/ui/DashboardListItem.vue";
-import DateBox from "@/components/ui/DateBox.vue";
-import UiEmptyState from "@/components/ui/feedback/UiEmptyState.vue";
-import UiStatusBadgeGroup from "@/components/ui/data-display/UiStatusBadgeGroup.vue";
+import DateBox from "~/components/ui/DateBox.vue";
+import UiEmptyState from "~/components/ui/feedback/UiEmptyState.vue";
+import UiStatusBadgeGroup from "~/components/ui/data-display/UiStatusBadgeGroup.vue";
 import ModalDetalhesParceiro from "../components/ModalDetalhesParceiro.vue";
-import ModalAtendimento from "@/components/common/ModalAtendimento.vue";
+import ModalAtendimento from "~/components/common/ModalAtendimento.vue";
 import {
   getPremiumTooltip,
   premiumTooltipStyle,
-} from "@/utils/formatters/chart";
+} from "~/utils/formatters/chart";
 import { formatarKg, formatarMoeda } from "~/utils/formatters/formatadores";
 
 definePageMeta({
@@ -530,6 +531,40 @@ const lineChartRef = ref<HTMLElement | null>(null);
 const barChartRef = ref<HTMLElement | null>(null);
 const discountChartRef = ref<HTMLElement | null>(null);
 
+const clamp = (value: number, min: number, max: number) =>
+  Math.min(Math.max(value, min), max);
+
+const boundedTooltipPosition = (
+  point: number[],
+  _params: any,
+  _dom: HTMLElement,
+  _rect: any,
+  size: any
+) => {
+  if (!point || !size?.viewSize || !size?.contentSize) return point;
+
+  const [x, y] = point;
+  const [viewW, viewH] = size.viewSize;
+  const [contentW, contentH] = size.contentSize;
+  const margin = 8;
+
+  const maxLeft = Math.max(margin, viewW - contentW - margin);
+  const maxTop = Math.max(margin, viewH - contentH - margin);
+
+  const left = clamp(x - contentW / 2, margin, maxLeft);
+  const top = clamp(y - contentH - margin, margin, maxTop);
+
+  return [left, top];
+};
+
+const axisTooltip = (formatter: (params: any) => string) => ({
+  trigger: "axis",
+  ...premiumTooltipStyle,
+  appendToBody: false,
+  position: boundedTooltipPosition,
+  formatter,
+});
+
 const initCharts = () => {
   const getStyle = (variable: string) =>
     getComputedStyle(document.documentElement)
@@ -559,11 +594,7 @@ const initCharts = () => {
       echarts.getInstanceByDom(lineChartRef.value) ||
       echarts.init(lineChartRef.value);
     chart.setOption({
-      tooltip: {
-        trigger: "axis",
-        ...premiumTooltipStyle,
-        formatter: (params: any) => getPremiumTooltip(params),
-      },
+      tooltip: axisTooltip((params: any) => getPremiumTooltip(params)),
       grid: commonOptions.grid,
       xAxis: {
         type: "category",
@@ -600,12 +631,9 @@ const initCharts = () => {
       echarts.getInstanceByDom(barChartRef.value) ||
       echarts.init(barChartRef.value);
     chart.setOption({
-      tooltip: {
-        trigger: "axis",
-        ...premiumTooltipStyle,
-        formatter: (params: any) =>
-          getPremiumTooltip(params, undefined, formatarKg),
-      },
+      tooltip: axisTooltip((params: any) =>
+        getPremiumTooltip(params, undefined, formatarKg)
+      ),
       grid: commonOptions.grid,
       xAxis: {
         type: "category",
@@ -632,12 +660,9 @@ const initCharts = () => {
       echarts.getInstanceByDom(discountChartRef.value) ||
       echarts.init(discountChartRef.value);
     chart.setOption({
-      tooltip: {
-        trigger: "axis",
-        ...premiumTooltipStyle,
-        formatter: (params: any) =>
-          getPremiumTooltip(params, undefined, formatarMoeda),
-      },
+      tooltip: axisTooltip((params: any) =>
+        getPremiumTooltip(params, undefined, formatarMoeda)
+      ),
       grid: commonOptions.grid,
       xAxis: {
         type: "category",

@@ -7,7 +7,7 @@
     "
   >
     <div
-      class="lg:hidden h-16 w-full flex items-center justify-between relative px-4 z-30"
+      class="lg:hidden fixed top-0 left-0 h-16 w-full flex items-center justify-between px-4 z-30"
       style="
         background-color: var(--color-background);
         border-bottom: 1px solid var(--color-border);
@@ -103,11 +103,10 @@
     />
 
     <main
-      class="main-content flex-1"
+      class="main-content flex-1 pt-16"
       style="transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1)"
       :style="{
         marginLeft: sidebarWidth,
-        paddingTop: isDesktop ? '64px' : '0',
       }"
     >
       <slot />

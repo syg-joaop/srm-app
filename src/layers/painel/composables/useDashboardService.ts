@@ -45,7 +45,7 @@ export const useDashboardService = () => {
         // Não bloqueia a navegação inicial (lazy loading)
         lazy: true,
         // Garante que só execute se o usuário estiver logado
-        immediate: !!authStore.user?.token,
+        immediate: authStore.isAuthenticated,
       }
     );
   };

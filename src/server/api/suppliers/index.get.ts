@@ -7,7 +7,7 @@ export default defineEventHandler(async (event) => {
     const query = schemaQueryFornecedor.parse(rawQuery);
 
     // Buscar fornecedores na API externa
-    const apiClient = createApiClient(event);
+    const apiClient = createApiClient(event, "v1");
     const data = await apiClient("/suppliers", {
       query,
     });

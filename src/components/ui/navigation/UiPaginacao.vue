@@ -1,34 +1,49 @@
 <template>
-  <div v-if="totalPages > 1" class="flex justify-center items-center gap-1 sm:gap-2">
-    <!-- First page button (hidden on very small screens) -->
+  <div
+    v-if="totalPages > 1"
+    class="flex justify-center items-center gap-2 sm:gap-2"
+  >
+    <!-- First page button E -->
     <button
-      class="hidden sm:flex w-8 h-8 md:w-9 md:h-9 items-center justify-center rounded-md transition-all duration-200"
-      :class="page === 1 ? 'opacity-40 cursor-not-allowed' : 'hover:bg-[var(--color-hover)]'"
+      class="hidden sm:flex w-10 h-10 md:w-9 md:h-9 items-center justify-center rounded-md transition-all duration-200"
+      :class="
+        page === 1
+          ? 'opacity-40 cursor-not-allowed'
+          : 'hover:bg-[var(--color-hover)]'
+      "
       :disabled="page === 1"
       @click="goToPage(1)"
     >
-      <ChevronsLeft class="w-4 h-4 text-[var(--color-text-muted)]" />
+      <ChevronsLeft
+        class="w-5 h-5 sm:w-4 sm:h-4 text-[var(--color-text-muted)]"
+      />
     </button>
 
     <!-- Previous button -->
     <button
-      class="w-8 h-8 md:w-9 md:h-9 flex items-center justify-center rounded-md transition-all duration-200"
-      :class="page === 1 ? 'opacity-40 cursor-not-allowed' : 'hover:bg-[var(--color-hover)]'"
+      class="w-11 h-11 sm:w-10 sm:h-10 md:w-9 md:h-9 flex items-center justify-center rounded-md transition-all duration-200"
+      :class="
+        page === 1
+          ? 'opacity-40 cursor-not-allowed'
+          : 'hover:bg-[var(--color-hover)]'
+      "
       :disabled="page === 1"
       @click="goToPage(page - 1)"
     >
-      <ChevronLeft class="w-4 h-4 text-[var(--color-text-muted)]" />
+      <ChevronLeft
+        class="w-6 h-6 sm:w-5 sm:h-5 md:w-4 md:h-4 text-[var(--color-text-muted)]"
+      />
     </button>
 
     <!-- Page numbers -->
     <button
       v-for="pageNumber in visiblePages"
       :key="pageNumber"
-      class="w-7 h-7 sm:w-8 sm:h-8 md:w-9 md:h-9 rounded-md text-xs md:text-sm font-medium transition-all duration-200"
+      class="w-10 h-10 sm:w-9 sm:h-9 md:w-9 md:h-9 rounded-md text-sm sm:text-xs md:text-sm font-medium transition-all duration-200"
       :class="[
         pageNumber === page
           ? 'bg-[var(--color-primary)] text-white'
-          : 'bg-[var(--color-surface)] text-[var(--color-text-muted)] border border-[var(--color-border)] hover:border-[var(--color-primary)] hover:text-[var(--color-primary)]'
+          : 'bg-[var(--color-surface)] text-[var(--color-text-muted)] border border-[var(--color-border)] hover:border-[var(--color-primary)] hover:text-[var(--color-primary)]',
       ]"
       @click="goToPage(pageNumber)"
     >
@@ -37,29 +52,46 @@
 
     <!-- Next button -->
     <button
-      class="w-8 h-8 md:w-9 md:h-9 flex items-center justify-center rounded-md transition-all duration-200"
-      :class="page === totalPages ? 'opacity-40 cursor-not-allowed' : 'hover:bg-[var(--color-hover)]'"
+      class="w-11 h-11 sm:w-10 sm:h-10 md:w-9 md:h-9 flex items-center justify-center rounded-md transition-all duration-200"
+      :class="
+        page === totalPages
+          ? 'opacity-40 cursor-not-allowed'
+          : 'hover:bg-[var(--color-hover)]'
+      "
       :disabled="page === totalPages"
       @click="goToPage(page + 1)"
     >
-      <ChevronRight class="w-4 h-4 text-[var(--color-text-muted)]" />
+      <ChevronRight
+        class="w-6 h-6 sm:w-5 sm:h-5 md:w-4 md:h-4 text-[var(--color-text-muted)]"
+      />
     </button>
 
     <!-- Last page button (hidden on very small screens) -->
     <button
-      class="hidden sm:flex w-8 h-8 md:w-9 md:h-9 items-center justify-center rounded-md transition-all duration-200"
-      :class="page === totalPages ? 'opacity-40 cursor-not-allowed' : 'hover:bg-[var(--color-hover)]'"
+      class="hidden sm:flex w-10 h-10 md:w-9 md:h-9 items-center justify-center rounded-md transition-all duration-200"
+      :class="
+        page === totalPages
+          ? 'opacity-40 cursor-not-allowed'
+          : 'hover:bg-[var(--color-hover)]'
+      "
       :disabled="page === totalPages"
       @click="goToPage(totalPages)"
     >
-      <ChevronsRight class="w-4 h-4 text-[var(--color-text-muted)]" />
+      <ChevronsRight
+        class="w-5 h-5 sm:w-4 sm:h-4 text-[var(--color-text-muted)]"
+      />
     </button>
   </div>
 </template>
 
 <script setup lang="ts">
 import { computed, ref, onMounted, onUnmounted } from "vue";
-import { ChevronLeft, ChevronRight, ChevronsLeft, ChevronsRight } from "lucide-vue-next";
+import {
+  ChevronLeft,
+  ChevronRight,
+  ChevronsLeft,
+  ChevronsRight,
+} from "lucide-vue-next";
 
 interface Props {
   page: number;
@@ -76,18 +108,20 @@ const emit = defineEmits<{
   "update:page": [value: number];
 }>();
 
-const windowWidth = ref(typeof window !== 'undefined' ? window.innerWidth : 1024);
+const windowWidth = ref(
+  typeof window !== "undefined" ? window.innerWidth : 1024
+);
 
 const updateWidth = () => {
   windowWidth.value = window.innerWidth;
 };
 
 onMounted(() => {
-  window.addEventListener('resize', updateWidth);
+  window.addEventListener("resize", updateWidth);
 });
 
 onUnmounted(() => {
-  window.removeEventListener('resize', updateWidth);
+  window.removeEventListener("resize", updateWidth);
 });
 
 const effectiveMaxVisible = computed(() => {

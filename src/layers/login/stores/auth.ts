@@ -1,93 +1,87 @@
 import { defineStore } from "pinia";
-import type { User, LoginCredentials, Permissao, Parametros } from "@/types/auth";
+import type { LoginCredentials, Parametros, Permissao, User } from "@/types/auth";
 
 const STORAGE_KEY = "srm_auth_user";
 
+type LoginResult =
+  | { success: true; data: { user: User[] } }
+  | { success: false; error: string };
+
 export const useAuthStore = defineStore("auth", () => {
-  // Estado
   const user = ref<User | null>(null);
   const loading = ref(false);
   const error = ref<string | null>(null);
   const initialized = ref(false);
 
-  // Propriedades computadas
-  const isAuthenticated = computed(() => user.value !== null);
+  const isAuthenticated = computed(() => Boolean(user.value));
   const userEmail = computed(() => user.value?.email ?? "");
   const userName = computed(() => user.value?.usuario ?? "");
   const userRole = computed(() => user.value?.role ?? "user");
-  const userPermissoes = computed<Permissao[]>(() => (user.value?.permissoes as Permissao[]) ?? []);
-  const userParametros = computed<Partial<Parametros>>(() => (user.value?.parametros as Partial<Parametros>) ?? {});
+  const userPermissoes = computed<Permissao[]>(
+    () => (user.value?.permissoes as Permissao[]) ?? []
+  );
+  const userParametros = computed<Partial<Parametros>>(
+    () => (user.value?.parametros as Partial<Parametros>) ?? {}
+  );
 
-  // Salvar usuário no localStorage
-  function saveUserToStorage(userData: User) {
+  const saveUserToStorage = (userData: User) => {
     if (!import.meta.client) return;
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(userData));
+  };
 
-    try {
-      localStorage.setItem(STORAGE_KEY, JSON.stringify(userData));
-      console.log("Usuário salvo no localStorage");
-    } catch (err) {
-      console.error("Erro ao salvar usuário:", err);
-    }
-  }
-
-  // Carregar usuário do localStorage
-  function loadUserFromStorage(): User | null {
+  const loadUserFromStorage = (): User | null => {
     if (!import.meta.client) return null;
-
+    const stored = localStorage.getItem(STORAGE_KEY);
+    if (!stored) return null;
     try {
-      const stored = localStorage.getItem(STORAGE_KEY);
-      if (!stored) return null;
-
-      const userData = JSON.parse(stored);
-      console.log("Usuário carregado do localStorage");
-      return userData;
-    } catch (err) {
-      console.error("Erro ao carregar usuário:", err);
+      return JSON.parse(stored) as User;
+    } catch {
       return null;
     }
-  }
+  };
 
-  // Remover usuário do localStorage
-  function removeUserFromStorage() {
+  const removeUserFromStorage = () => {
     if (!import.meta.client) return;
+    localStorage.removeItem(STORAGE_KEY);
+  };
 
+  const checkSession = async (): Promise<boolean> => {
+    if (!import.meta.client) return isAuthenticated.value;
     try {
-      localStorage.removeItem(STORAGE_KEY);
-      console.log("Usuário removido do localStorage");
-    } catch (err) {
-      console.error("Erro ao remover usuário:", err);
+      await $fetch("/api/session", { credentials: "include" });
+      return true;
+    } catch {
+      return false;
     }
-  }
+  };
 
-  // Inicializar autenticação (carrega dados salvos)
-  async function initAuth(): Promise<boolean> {
-    // Já foi inicializado
-    if (initialized.value) {
-      return isAuthenticated.value;
-    }
+  const initAuth = async (): Promise<boolean> => {
+    if (initialized.value) return isAuthenticated.value;
 
-    // Tenta carregar usuário salvo
     const savedUser = loadUserFromStorage();
-
     if (savedUser) {
       user.value = savedUser;
-      initialized.value = true;
-      return true;
     }
 
-    // Sem usuário salvo
-    user.value = null;
     initialized.value = true;
-    return false;
-  }
 
-  // Fazer login
-  async function login(credentials: LoginCredentials) {
+    if (!user.value) return false;
+
+    const sessionOk = await checkSession();
+    if (!sessionOk) {
+      user.value = null;
+      removeUserFromStorage();
+      return false;
+    }
+
+    return true;
+  };
+
+  const login = async (credentials: LoginCredentials): Promise<LoginResult> => {
     loading.value = true;
     error.value = null;
 
     try {
-      // Preparar dados para enviar
       const requestBody = {
         email: credentials.email,
         password: credentials.password,
@@ -99,34 +93,29 @@ export const useAuthStore = defineStore("auth", () => {
         remember_colaborador: credentials.remember_colaborador,
       };
 
-      // Chamar API
-      const apiLogin = useAuthApi();
-      const response = await apiLogin<{ user: User[] }>("/login", {
+      const api = useAuthApi();
+      const response = await api<{ user: User[] }>("/login", {
         method: "POST",
         body: requestBody,
-        headers: {
-          "x-secret": "ZThiMGYzZjhkNGNjNjhmMmViY2Q1NjgwY2FlMGM0ZTU=",
-        },
       });
 
-      // Verificar se login foi bem sucedido
-      if (!response.user || response.user.length === 0) {
+      const loggedUser = response.user?.[0];
+      if (!loggedUser) {
         error.value = "Credenciais inválidas";
         return { success: false, error: error.value };
       }
 
-      // Salvar usuário
-      const loggedUser = response.user[0];
-      user.value = loggedUser;
-      saveUserToStorage(loggedUser);
+      const { token: _token, ...safeUser } = loggedUser as any;
+      const storedUser = safeUser as User;
+      user.value = storedUser;
+      initialized.value = true;
+      saveUserToStorage(storedUser);
 
-      // Salvar credenciais se "lembrar-me" estiver marcado (qualquer um dos dois)
       if (credentials.remember || credentials.remember_colaborador) {
-        const { persistCredentials } = useAuthPersistence();
-        persistCredentials(credentials);
+        useAuthPersistence().persistCredentials(credentials);
       }
 
-      return { success: true, data: response };
+      return { success: true, data: { user: [storedUser] } };
     } catch (err: any) {
       const errorMessage =
         err.data?.message ?? err.message ?? "Erro ao fazer login";
@@ -135,36 +124,31 @@ export const useAuthStore = defineStore("auth", () => {
     } finally {
       loading.value = false;
     }
-  }
+  };
 
-  // Fazer logout
-  async function logout() {
-    // Limpar dados
-    user.value = null;
+  const logout = async () => {
+    try {
+      await $fetch("/api/logout", { method: "POST", credentials: "include" });
+    } catch {
+    } finally {
+      user.value = null;
+      error.value = null;
+      initialized.value = false;
+      removeUserFromStorage();
+      await navigateTo("/login");
+    }
+  };
+
+  const clearError = () => {
     error.value = null;
-    initialized.value = false;
+  };
 
-    // Remover do storage
-    removeUserFromStorage();
-
-    // Redirecionar para login
-    await navigateTo("/login");
-  }
-
-  // Limpar mensagem de erro
-  function clearError() {
-    error.value = null;
-  }
-
-  // Expor estado e métodos
   return {
-    // Estado (somente leitura)
     user: readonly(user),
     loading: readonly(loading),
     error: readonly(error),
     initialized: readonly(initialized),
 
-    // Propriedades computadas
     isAuthenticated,
     userEmail,
     userName,
@@ -172,7 +156,6 @@ export const useAuthStore = defineStore("auth", () => {
     userPermissoes,
     userParametros,
 
-    // Métodos
     initAuth,
     login,
     logout,

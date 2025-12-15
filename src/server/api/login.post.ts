@@ -19,14 +19,31 @@ export default defineEventHandler(async (event) => {
       }),
     };
 
-    const config = useRuntimeConfig();
+    const config = useRuntimeConfig(event);
+    const apiBaseUrl = String(config.apiBaseUrl ?? "");
+    const apiSecret = String(config.apiSecret ?? "");
+
+    if (!apiBaseUrl) {
+      throw createError({
+        statusCode: 500,
+        message: "Configuração de API ausente (API_LOGIN)",
+      });
+    }
+
+    if (!apiSecret) {
+      throw createError({
+        statusCode: 500,
+        message: "Configuração de API ausente (API_SECRET)",
+      });
+    }
 
     const response = await $fetch("/login", {
       method: "POST",
-      baseURL: config.public.apiBaseUrl,
+      baseURL: apiBaseUrl,
       headers: {
         "Content-Type": "application/json",
-        "x-secret": config.xSecretw as string,
+        Accept: "application/json",
+        "x-secret": apiSecret,
       },
       body: apiBody,
     });
@@ -50,7 +67,15 @@ export default defineEventHandler(async (event) => {
       }
     }
 
-    return validatedResponse;
+    const sanitizedResponse = {
+      ...validatedResponse,
+      user: validatedResponse.user.map((u) => {
+        const { token: _token, ...safeUser } = u as any;
+        return safeUser;
+      }),
+    };
+
+    return sanitizedResponse;
   } catch (error: any) {
     console.error("[Login Error]", error);
 

@@ -33,7 +33,7 @@ export const useFornecedorService = () => {
         });
       },
       {
-        immediate: !!authStore.user?.token,
+        immediate: authStore.isAuthenticated,
         lazy: true,
         watch: [page, filters],
       }
