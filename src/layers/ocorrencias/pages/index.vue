@@ -1,18 +1,10 @@
 <template>
   <div class="min-h-screen p-4 sm:p-6 pb-20 bg-[var(--color-background)]">
-    <h1 class="text-xl sm:text-2xl font-bold mb-4 sm:mb-6 text-[var(--color-text)]">
-      Ocorrências
-    </h1>
+    <h1 class="text-xl sm:text-2xl font-bold mb-4 sm:mb-6 text-[var(--color-text)]">Ocorrências</h1>
 
-    <!-- Header Controls -->
     <div class="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-4">
-      <!-- Search and Filter Toggle -->
       <div class="flex items-center gap-2 w-full md:max-w-xl">
-        <UiButton
-          variant="primary"
-          size="medium"
-          class="whitespace-nowrap hidden sm:flex"
-        >
+        <UiButton variant="primary" size="medium" class="whitespace-nowrap hidden sm:flex">
           <Plus class="w-4 h-4" />
           Nova Ocorrência
         </UiButton>
@@ -64,7 +56,6 @@
       </div>
     </div>
 
-    <!-- Collapsible Filters -->
     <Transition
       enter-active-class="transition-all duration-200 ease-out"
       leave-active-class="transition-all duration-150 ease-in"
@@ -76,7 +67,6 @@
         class="mb-6 p-3 sm:p-4 rounded-lg border"
         style="border-color: var(--color-border); background-color: var(--color-surface)"
       >
-        <!-- Filtros tipo Select -->
         <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-3 sm:gap-4 mb-4">
           <UiSelect
             v-model="filters.atendente"
@@ -110,7 +100,6 @@
           />
         </div>
 
-        <!-- Botão Limpar -->
         <button
           v-if="activeFiltersCount > 0"
           class="flex items-center gap-1.5 text-sm font-medium transition-colors px-2 py-1.5 hover:opacity-80"
@@ -123,7 +112,6 @@
       </div>
     </Transition>
 
-    <!-- Table Header -->
     <div
       class="hidden md:grid grid-cols-12 gap-4 px-6 py-3 bg-[var(--color-background)] rounded-t-lg border border-[var(--color-border)] text-xs font-semibold text-[var(--color-text-muted)] uppercase tracking-wider"
     >
@@ -135,18 +123,13 @@
       <div class="col-span-1 text-center">Ações</div>
     </div>
 
-    <!-- List -->
-    <div
-      v-if="ocorrenciasFiltradas.length > 0"
-      class="flex flex-col gap-1.5 md:gap-0"
-    >
+    <div v-if="ocorrenciasFiltradas.length > 0" class="flex flex-col gap-1.5 md:gap-0">
       <div
         v-for="item in paginatedOcorrencias"
         :key="item.id"
         class="group/item relative bg-[var(--color-surface)] md:rounded-none first:md:rounded-t-none last:md:rounded-b-lg rounded-lg border border-[var(--color-border-subtle)] md:border-[var(--color-border)] md:border-t-0 first:md:border-t hover:border-[var(--color-primary-border)] hover:bg-[var(--color-primary-soft)] transition-all duration-300 ease-out hover:shadow-sm px-4 py-4 md:px-6 md:py-4 cursor-pointer grid grid-cols-1 md:grid-cols-12 gap-2 md:gap-4"
         @click="abrirDetalhes(item)"
       >
-        <!-- Sliding Indicator -->
         <div
           class="absolute left-0 top-1/2 -translate-y-1/2 w-0.5 h-0 bg-[var(--color-primary)] rounded-r-full opacity-0 group-hover/item:h-6 group-hover/item:opacity-100 transition-all duration-300"
         ></div>
@@ -161,14 +144,14 @@
         </div>
 
         <div class="hidden md:flex items-center col-span-3">
-          <span class="text-sm font-medium text-[var(--color-text)] group-hover/item:text-[var(--color-primary)] transition-colors truncate">
+          <span
+            class="text-sm font-medium text-[var(--color-text)] group-hover/item:text-[var(--color-primary)] transition-colors truncate"
+          >
             {{ item.fornecedor }}
           </span>
         </div>
 
-        <!-- Mobile Layout (2 lines max) -->
         <div class="flex md:hidden flex-col gap-1 w-full min-w-0">
-          <!-- Line 1: Icon + Name + Date + Arrow -->
           <div class="flex items-center justify-between gap-2 w-full">
             <div class="flex items-center gap-2.5 min-w-0 flex-1">
               <div
@@ -177,11 +160,13 @@
               >
                 <Eye class="w-3.5 h-3.5" />
               </div>
-              <span class="text-sm font-medium text-[var(--color-text)] group-hover/item:text-[var(--color-primary)] transition-colors truncate">
+              <span
+                class="text-sm font-medium text-[var(--color-text)] group-hover/item:text-[var(--color-primary)] transition-colors truncate"
+              >
                 {{ item.fornecedor }}
               </span>
             </div>
-            
+
             <div class="flex items-center gap-1.5 flex-shrink-0">
               <span class="text-[10px] text-[var(--color-text-muted)]">
                 {{ item.dataCadastro }}
@@ -190,24 +175,30 @@
             </div>
           </div>
 
-          <!-- Line 2: Title + Atendente -->
-          <div class="flex items-center justify-between gap-2 pl-[42px] text-xs text-[var(--color-text-muted)] w-full">
-            <span class="truncate pr-2">{{ item.titulo || 'Sem descrição' }}</span>
+          <div
+            class="flex items-center justify-between gap-2 pl-[42px] text-xs text-[var(--color-text-muted)] w-full"
+          >
+            <span class="truncate pr-2">{{ item.titulo || "Sem descrição" }}</span>
             <span class="whitespace-nowrap flex-shrink-0">{{ item.atendente }}</span>
           </div>
         </div>
 
-        <!-- Desktop Columns -->
-        <div class="hidden md:flex items-center text-xs md:text-sm text-[var(--color-text-muted)] md:col-span-2">
-          {{ item.dataCadastro || '-' }}
+        <div
+          class="hidden md:flex items-center text-xs md:text-sm text-[var(--color-text-muted)] md:col-span-2"
+        >
+          {{ item.dataCadastro || "-" }}
         </div>
 
-        <div class="hidden md:flex items-center text-xs md:text-sm text-[var(--color-text-muted)] md:col-span-2">
+        <div
+          class="hidden md:flex items-center text-xs md:text-sm text-[var(--color-text-muted)] md:col-span-2"
+        >
           {{ item.atendente }}
         </div>
 
-        <div class="hidden md:flex items-center text-xs md:text-sm text-[var(--color-text-muted)] md:col-span-3">
-          <span class="truncate">{{ item.titulo || 'Sem descrição' }}</span>
+        <div
+          class="hidden md:flex items-center text-xs md:text-sm text-[var(--color-text-muted)] md:col-span-3"
+        >
+          <span class="truncate">{{ item.titulo || "Sem descrição" }}</span>
         </div>
 
         <div class="hidden md:flex items-center justify-center col-span-1">
@@ -244,20 +235,17 @@
       class="mt-6"
     />
 
-    <ModalDetalhesOcorrencia
-      v-model="showModal"
-      :ocorrencia="ocorrenciaSelecionada"
-    />
+    <ModalDetalhesOcorrencia v-model="showModal" :ocorrencia="ocorrenciaSelecionada" />
   </div>
 </template>
 
 <script setup lang="ts">
 import { ref, computed } from "vue";
 import { Search, Filter, MessageSquare, Plus, Eye, X, ChevronRight } from "lucide-vue-next";
-import UiButton from "@/components/ui/buttons/UiButton.vue";
-import UiSelect from "@/components/ui/forms/UiSelect.vue";
-import UiEmptyState from "@/components/ui/feedback/UiEmptyState.vue";
-import UiPaginacao from "@/components/ui/navigation/UiPaginacao.vue";
+import UiButton from "~/components/ui/UiButton.vue";
+import UiSelect from "~/components/ui/UiSelect.vue";
+import UiEmptyState from "~/components/ui/UiEmptyState.vue";
+import UiPaginacao from "~/components/ui/UiPaginacao.vue";
 import ModalDetalhesOcorrencia from "../components/ModalDetalhesOcorrencia.vue";
 
 definePageMeta({
@@ -350,15 +338,78 @@ const clearFilters = () => {
 };
 
 const ocorrencias = ref<Ocorrencia[]>([
-  { id: 1, titulo: "Sem descrição", fornecedor: "Joao Teste", dataCadastro: "", atendente: "Sygecom", status: "pendente" },
-  { id: 2, titulo: "Sem descrição", fornecedor: "Joao Teste", dataCadastro: "", atendente: "Sygecom", status: "pendente" },
-  { id: 3, titulo: "Sem descrição", fornecedor: "Joao Teste", dataCadastro: "", atendente: "Sygecom", status: "concluida" },
-  { id: 4, titulo: "Sem descrição", fornecedor: "Joao Teste", dataCadastro: "", atendente: "Sygecom", status: "acompanhamento" },
-  { id: 5, titulo: "Sem descrição", fornecedor: "Joao Teste", dataCadastro: "", atendente: "Dahm", status: "acompanhamento" },
-  { id: 6, titulo: "Sem descrição", fornecedor: "Joao Teste", dataCadastro: "", atendente: "Dahm", status: "acompanhamento" },
-  { id: 7, titulo: "Sem descrição", fornecedor: "19 Servico Notarial", dataCadastro: "19/11/2025", atendente: "Alexnlv", status: "pendente" },
-  { id: 8, titulo: "Usisiuwuwuuwu", fornecedor: "Bruno Teste", dataCadastro: "04/11/2025", atendente: "Alexnlv", status: "concluida" },
-  { id: 9, titulo: "Kakakqkq", fornecedor: "Cassandra Oliveira", dataCadastro: "04/11/2025", atendente: "Alexnlv", status: "concluida" },
+  {
+    id: 1,
+    titulo: "Sem descrição",
+    fornecedor: "Joao Teste",
+    dataCadastro: "",
+    atendente: "Sygecom",
+    status: "pendente",
+  },
+  {
+    id: 2,
+    titulo: "Sem descrição",
+    fornecedor: "Joao Teste",
+    dataCadastro: "",
+    atendente: "Sygecom",
+    status: "pendente",
+  },
+  {
+    id: 3,
+    titulo: "Sem descrição",
+    fornecedor: "Joao Teste",
+    dataCadastro: "",
+    atendente: "Sygecom",
+    status: "concluida",
+  },
+  {
+    id: 4,
+    titulo: "Sem descrição",
+    fornecedor: "Joao Teste",
+    dataCadastro: "",
+    atendente: "Sygecom",
+    status: "acompanhamento",
+  },
+  {
+    id: 5,
+    titulo: "Sem descrição",
+    fornecedor: "Joao Teste",
+    dataCadastro: "",
+    atendente: "Dahm",
+    status: "acompanhamento",
+  },
+  {
+    id: 6,
+    titulo: "Sem descrição",
+    fornecedor: "Joao Teste",
+    dataCadastro: "",
+    atendente: "Dahm",
+    status: "acompanhamento",
+  },
+  {
+    id: 7,
+    titulo: "Sem descrição",
+    fornecedor: "19 Servico Notarial",
+    dataCadastro: "19/11/2025",
+    atendente: "Alexnlv",
+    status: "pendente",
+  },
+  {
+    id: 8,
+    titulo: "Usisiuwuwuuwu",
+    fornecedor: "Bruno Teste",
+    dataCadastro: "04/11/2025",
+    atendente: "Alexnlv",
+    status: "concluida",
+  },
+  {
+    id: 9,
+    titulo: "Kakakqkq",
+    fornecedor: "Cassandra Oliveira",
+    dataCadastro: "04/11/2025",
+    atendente: "Alexnlv",
+    status: "concluida",
+  },
 ]);
 
 const ocorrenciasFiltradas = computed(() => {
@@ -370,7 +421,7 @@ const ocorrenciasFiltradas = computed(() => {
       (o) =>
         o.titulo?.toLowerCase().includes(query) ||
         o.fornecedor.toLowerCase().includes(query) ||
-        o.atendente.toLowerCase().includes(query)
+        o.atendente.toLowerCase().includes(query),
     );
   }
 

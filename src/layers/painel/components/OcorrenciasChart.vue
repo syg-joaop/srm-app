@@ -1,13 +1,11 @@
 <template>
   <div class="flex flex-col h-full">
-    <!-- Chart Container -->
     <div class="relative flex-1 min-h-0">
       <div ref="chartRef" class="w-full h-full"></div>
 
-      <!-- Center Label (Total) -->
       <div
         class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 flex flex-col items-center justify-center pointer-events-none"
-        style="width: 100px;"
+        style="width: 100px"
       >
         <span
           class="text-[10px] sm:text-xs font-semibold uppercase tracking-wider mb-1"
@@ -21,24 +19,18 @@
         >
           {{ total }}
         </span>
-        <span
-          class="text-[10px] font-medium mt-0.5"
-          style="color: var(--color-text-muted)"
-        >
+        <span class="text-[10px] font-medium mt-0.5" style="color: var(--color-text-muted)">
           ocorrências
         </span>
       </div>
     </div>
 
-    <!-- Custom Legend -->
     <div class="grid grid-cols-2 sm:grid-cols-4 gap-2 sm:gap-3 mt-4 px-2">
       <div
         v-for="item in legendItems"
         :key="item.name"
         class="flex items-center gap-2 p-2 sm:p-2.5 rounded-lg transition-all duration-200 cursor-pointer group"
-        :class="[
-          hoveredItem === item.name ? 'scale-[1.02]' : '',
-        ]"
+        :class="[hoveredItem === item.name ? 'scale-[1.02]' : '']"
         :style="{
           backgroundColor: hoveredItem === item.name ? `${item.color}15` : 'var(--color-hover)',
           border: `1px solid ${hoveredItem === item.name ? item.color : 'transparent'}`,
@@ -50,7 +42,7 @@
           class="w-2.5 h-2.5 sm:w-3 sm:h-3 rounded-full flex-shrink-0 transition-transform duration-200 group-hover:scale-110"
           :style="{
             backgroundColor: item.color,
-            boxShadow: `0 0 8px ${item.color}60`
+            boxShadow: `0 0 8px ${item.color}60`,
           }"
         ></div>
         <div class="flex flex-col min-w-0 flex-1">
@@ -61,16 +53,10 @@
             {{ item.shortName }}
           </span>
           <div class="flex items-baseline gap-1">
-            <span
-              class="text-sm sm:text-base font-bold"
-              :style="{ color: item.color }"
-            >
+            <span class="text-sm sm:text-base font-bold" :style="{ color: item.color }">
               {{ item.value }}
             </span>
-            <span
-              class="text-[9px] sm:text-[10px]"
-              style="color: var(--color-text-muted)"
-            >
+            <span class="text-[9px] sm:text-[10px]" style="color: var(--color-text-muted)">
               ({{ item.percent }}%)
             </span>
           </div>
@@ -81,8 +67,8 @@
 </template>
 
 <script setup lang="ts">
-import { ref, computed, watch, onMounted, onUnmounted, nextTick } from 'vue';
-import * as echarts from 'echarts';
+import { ref, computed, watch, onMounted, onUnmounted, nextTick } from "vue";
+import * as echarts from "echarts";
 
 interface ChartDataItem {
   name: string;
@@ -104,23 +90,24 @@ const total = computed(() => {
 const getStatusColor = (name: string): string => {
   const style = getComputedStyle(document.documentElement);
   const colorMap: Record<string, string> = {
-    'Finalizado': style.getPropertyValue('--color-status-finalizado').trim() || '#4ade80',
-    'Em Acompanhamento': style.getPropertyValue('--color-status-acompanhamento').trim() || '#fbbf24',
-    'Pendente': style.getPropertyValue('--color-status-pendente').trim() || '#f87171',
-    'Vencido': style.getPropertyValue('--color-status-vencido').trim() || '#ef4444',
+    Finalizado: style.getPropertyValue("--color-status-finalizado").trim() || "#4ade80",
+    "Em Acompanhamento":
+      style.getPropertyValue("--color-status-acompanhamento").trim() || "#fbbf24",
+    Pendente: style.getPropertyValue("--color-status-pendente").trim() || "#f87171",
+    Vencido: style.getPropertyValue("--color-status-vencido").trim() || "#ef4444",
   };
-  return colorMap[name] || '#0099ff';
+  return colorMap[name] || "#0099ff";
 };
 
 const getShortName = (name: string): string => {
   const shortNames: Record<string, string> = {
-    'Em Acompanhamento': 'Acompanham.',
+    "Em Acompanhamento": "Acompanham.",
   };
   return shortNames[name] || name;
 };
 
 const legendItems = computed(() => {
-  return props.data.map(item => ({
+  return props.data.map((item) => ({
     name: item.name,
     shortName: getShortName(item.name),
     value: item.value,
@@ -134,12 +121,12 @@ const handleLegendHover = (name: string | null) => {
   if (chartInstance) {
     if (name) {
       chartInstance.dispatchAction({
-        type: 'highlight',
+        type: "highlight",
         name: name,
       });
     } else {
       chartInstance.dispatchAction({
-        type: 'downplay',
+        type: "downplay",
       });
     }
   }
@@ -149,11 +136,11 @@ const initChart = () => {
   if (!chartRef.value) return;
 
   const style = getComputedStyle(document.documentElement);
-  const surfaceColor = style.getPropertyValue('--color-surface').trim();
+  const surfaceColor = style.getPropertyValue("--color-surface").trim();
 
   chartInstance = echarts.getInstanceByDom(chartRef.value) || echarts.init(chartRef.value);
 
-  const coloredData = props.data.map(item => ({
+  const coloredData = props.data.map((item) => ({
     ...item,
     itemStyle: {
       color: new echarts.graphic.LinearGradient(0, 0, 0, 1, [
@@ -169,9 +156,9 @@ const initChart = () => {
     },
     series: [
       {
-        type: 'pie',
-        radius: ['55%', '80%'],
-        center: ['50%', '50%'],
+        type: "pie",
+        radius: ["55%", "80%"],
+        center: ["50%", "50%"],
         avoidLabelOverlap: true,
         itemStyle: {
           borderRadius: 6,
@@ -190,12 +177,12 @@ const initChart = () => {
           itemStyle: {
             shadowBlur: 20,
             shadowOffsetX: 0,
-            shadowColor: 'rgba(0, 0, 0, 0.3)',
+            shadowColor: "rgba(0, 0, 0, 0.3)",
           },
         },
         data: coloredData,
-        animationType: 'scale',
-        animationEasing: 'elasticOut',
+        animationType: "scale",
+        animationEasing: "elasticOut",
         animationDelay: (idx: number) => idx * 100,
       },
     ],
@@ -203,55 +190,59 @@ const initChart = () => {
 
   chartInstance.setOption(option);
 
-  // Handle chart item hover
-  chartInstance.on('mouseover', (params: any) => {
+  chartInstance.on("mouseover", (params: any) => {
     hoveredItem.value = params.name;
   });
 
-  chartInstance.on('mouseout', () => {
+  chartInstance.on("mouseout", () => {
     hoveredItem.value = null;
   });
 };
 
-// Helper function to adjust color brightness
 const adjustColorBrightness = (color: string, amount: number): string => {
-  const hex = color.replace('#', '');
+  const hex = color.replace("#", "");
   const num = parseInt(hex, 16);
   const r = Math.min(255, Math.max(0, (num >> 16) + amount));
-  const g = Math.min(255, Math.max(0, ((num >> 8) & 0x00FF) + amount));
-  const b = Math.min(255, Math.max(0, (num & 0x0000FF) + amount));
-  return `#${(1 << 24 | r << 16 | g << 8 | b).toString(16).slice(1)}`;
+  const g = Math.min(255, Math.max(0, ((num >> 8) & 0x00ff) + amount));
+  const b = Math.min(255, Math.max(0, (num & 0x0000ff) + amount));
+  return `#${((1 << 24) | (r << 16) | (g << 8) | b).toString(16).slice(1)}`;
 };
 
 const handleResize = () => {
   chartInstance?.resize();
 };
 
-watch(() => props.data, () => {
-  nextTick(() => {
-    initChart();
-  });
-}, { deep: true });
+watch(
+  () => props.data,
+  () => {
+    nextTick(() => {
+      initChart();
+    });
+  },
+  { deep: true },
+);
+
+let themeObserver: MutationObserver | null = null;
 
 onMounted(() => {
   nextTick(() => {
     initChart();
   });
-  window.addEventListener('resize', handleResize);
+  window.addEventListener("resize", handleResize);
 
-  // Watch for theme changes
-  const observer = new MutationObserver(() => {
+  themeObserver = new MutationObserver(() => {
     initChart();
   });
-  observer.observe(document.documentElement, {
+  themeObserver.observe(document.documentElement, {
     attributes: true,
-    attributeFilter: ['data-theme'],
+    attributeFilter: ["data-theme"],
   });
+});
 
-  onUnmounted(() => {
-    observer.disconnect();
-    window.removeEventListener('resize', handleResize);
-    chartInstance?.dispose();
-  });
+onUnmounted(() => {
+  themeObserver?.disconnect();
+  themeObserver = null;
+  window.removeEventListener("resize", handleResize);
+  chartInstance?.dispose();
 });
 </script>

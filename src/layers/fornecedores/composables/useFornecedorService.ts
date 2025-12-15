@@ -1,5 +1,5 @@
-import { useAuthStore } from "~/layers/login/stores/auth";
-import type { FornecedorResponse, FornecedorFilters } from "../types/fornecedores";
+import { useAuthStore } from "~/stores/auth";
+import type { FornecedorResponse, FornecedorFilters } from "../fornecedores.types";
 import type { Ref } from "vue";
 
 export const useFornecedorService = () => {
@@ -9,7 +9,7 @@ export const useFornecedorService = () => {
   const fetchFornecedor = (
     page: Ref<number>,
     size: Ref<number>,
-    filters: Ref<FornecedorFilters>
+    filters: Ref<FornecedorFilters>,
   ) => {
     return useAsyncData<FornecedorResponse>(
       "fornecedores",
@@ -36,7 +36,7 @@ export const useFornecedorService = () => {
         immediate: authStore.isAuthenticated,
         lazy: true,
         watch: [page, filters],
-      }
+      },
     );
   };
 

@@ -3,9 +3,7 @@
     <div class="flex items-center justify-between">
       <h4 class="text-sm font-bold text-[var(--color-text)]">Fornecedores</h4>
       <span class="text-xs font-medium text-[var(--color-text-muted)]">
-        {{ modelValue.length }} adicionado{{
-          modelValue.length !== 1 ? "s" : ""
-        }}
+        {{ modelValue.length }} adicionado{{ modelValue.length !== 1 ? "s" : "" }}
       </span>
     </div>
 
@@ -18,9 +16,7 @@
         :key="index"
         class="group/item flex items-center gap-2 px-3 py-2 rounded-md border border-[var(--color-border)] bg-[var(--color-background)] hover:border-[var(--color-primary-border)] transition-colors"
       >
-        <Building2
-          class="w-4 h-4 text-[var(--color-text-muted)] flex-shrink-0"
-        />
+        <Building2 class="w-4 h-4 text-[var(--color-text-muted)] flex-shrink-0" />
         <span class="text-sm text-[var(--color-text)] flex-1 truncate">
           {{ fornecedor.name }}
         </span>
@@ -47,9 +43,7 @@
     </div>
 
     <div v-else class="py-4 text-center">
-      <p class="text-sm text-[var(--color-text-muted)]">
-        Nenhum fornecedor adicionado
-      </p>
+      <p class="text-sm text-[var(--color-text-muted)]">Nenhum fornecedor adicionado</p>
     </div>
 
     <div class="flex gap-2 items-center">
@@ -74,7 +68,7 @@
 
 <script setup lang="ts">
 import { Building2, MapPin, Trash2, Plus } from "lucide-vue-next";
-import UiInput from "@/components/ui/forms/UiInput.vue";
+import UiInput from "~/components/ui/UiInput.vue";
 
 interface FornecedorRota {
   name: string;

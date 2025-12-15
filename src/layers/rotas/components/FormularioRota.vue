@@ -16,9 +16,7 @@
     />
 
     <div class="flex flex-col gap-1.5">
-      <label class="text-sm font-semibold text-[var(--color-text)]">
-        Período da rota
-      </label>
+      <label class="text-sm font-semibold text-[var(--color-text)]"> Período da rota </label>
       <UiCalendario
         :range="true"
         :start-date="dataInicio"
@@ -31,9 +29,7 @@
     </div>
 
     <div class="flex flex-col gap-1.5">
-      <label class="text-sm font-semibold text-[var(--color-text)]">
-        Observações
-      </label>
+      <label class="text-sm font-semibold text-[var(--color-text)]"> Observações </label>
       <textarea
         :value="observacoes"
         placeholder="Observações sobre a rota..."
@@ -46,9 +42,9 @@
 </template>
 
 <script setup lang="ts">
-import UiInput from "@/components/ui/forms/UiInput.vue";
-import UiSelect from "@/components/ui/forms/UiSelect.vue";
-import UiCalendario from "@/components/ui/forms/UiCalendario.vue";
+import UiInput from "~/components/ui/UiInput.vue";
+import UiSelect from "~/components/ui/UiSelect.vue";
+import UiCalendario from "~/components/ui/UiCalendario.vue";
 
 defineProps<{
   nome: string;

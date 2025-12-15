@@ -10,4 +10,3 @@ export default defineEventHandler((event) => {
 
   return { authenticated: true };
 });
-

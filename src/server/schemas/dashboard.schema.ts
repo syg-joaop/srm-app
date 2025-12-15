@@ -49,7 +49,7 @@ export const chartDataSchema = z.object({
           color: z.string(),
         })
         .optional(),
-    })
+    }),
   ),
   ocorrenciasLine: z.object({
     months: z.array(z.string()),

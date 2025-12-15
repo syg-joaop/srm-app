@@ -10,5 +10,5 @@
 
 <script setup lang="ts">
 import { Construction } from "lucide-vue-next";
-import UiEmptyState from "@/components/ui/feedback/UiEmptyState.vue";
+import UiEmptyState from "~/components/ui/UiEmptyState.vue";
 </script>

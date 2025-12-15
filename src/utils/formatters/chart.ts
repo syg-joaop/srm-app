@@ -1,3 +1,11 @@
+export interface TooltipParam {
+  name?: string;
+  value?: number | string;
+  seriesName?: string;
+  percent?: number;
+  color?: string | { colorStops?: { color: string }[]; type?: string };
+}
+
 export const premiumTooltipStyle = {
   backgroundColor: "rgba(15, 23, 42, 0.95)",
   borderColor: "rgba(255, 255, 255, 0.1)",
@@ -15,29 +23,24 @@ export const premiumTooltipStyle = {
 };
 
 export const getPremiumTooltip = (
-  params: any,
+  params: TooltipParam | TooltipParam[],
   title?: string,
-  valueFormatter?: (value: number) => string
+  valueFormatter?: (value: number) => string,
 ) => {
   const items = Array.isArray(params) ? params : [params];
-  const headerTitle =
-    title || (Array.isArray(params) ? params[0].name : "Status");
+  const headerTitle = title || (Array.isArray(params) ? params[0].name : "Status");
 
   let content = `
     <div class="flex flex-col gap-1">
       <div class="text-xs font-medium text-gray-400 uppercase tracking-wider mb-1">${headerTitle}</div>
   `;
 
-  items.forEach((item: any) => {
-    const value = valueFormatter ? valueFormatter(item.value) : item.value;
-    const name =
-      item.percent !== undefined ? item.name : item.seriesName || item.name;
+  items.forEach((item: TooltipParam) => {
+    const rawValue = typeof item.value === "number" ? item.value : Number(item.value) || 0;
+    const value = valueFormatter ? valueFormatter(rawValue) : item.value;
+    const name = item.percent !== undefined ? item.name : item.seriesName || item.name;
     let color = item.color;
-    if (
-      typeof color === "object" &&
-      color.colorStops &&
-      color.colorStops.length > 0
-    ) {
+    if (typeof color === "object" && color.colorStops && color.colorStops.length > 0) {
       color = color.colorStops[0].color;
     } else if (typeof color === "object" && color.type === "linear") {
       color = color.colorStops?.[0]?.color || "var(--color-primary)";

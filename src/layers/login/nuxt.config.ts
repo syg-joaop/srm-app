@@ -1,5 +1,1 @@
-export default defineNuxtConfig({
-  imports: {
-    dirs: ['stores']
-  }
-})
+export default defineNuxtConfig({});

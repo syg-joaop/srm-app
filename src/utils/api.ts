@@ -24,4 +24,3 @@ export const useMainApi = (homol?: boolean) => {
 export const useAuthApi = () => {
   return createApiClient("/api");
 };
-

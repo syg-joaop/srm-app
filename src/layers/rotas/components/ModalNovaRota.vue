@@ -30,10 +30,7 @@
         <div
           class="h-full rounded-lg overflow-hidden border border-[var(--color-border)] bg-[var(--color-background)]"
         >
-          <MapaFornecedores
-            :fornecedores="mapFornecedores"
-            class="!h-full !border-0"
-          />
+          <UiMapaPontos :pontos="pontosMapa" class="w-full h-full" />
         </div>
       </div>
     </div>
@@ -51,11 +48,12 @@
 <script setup lang="ts">
 import { ref, computed } from "vue";
 import { Route as RouteIcon, Plus } from "lucide-vue-next";
-import UiModal from "@/components/ui/overlays/UiModal.vue";
-import UiButton from "@/components/ui/buttons/UiButton.vue";
-import MapaFornecedores from "@/layers/fornecedores/components/MapaFornecedores.vue";
-import FormularioRota from "@/layers/rotas/components/FormularioRota.vue";
-import ListaFornecedoresRota from "@/layers/rotas/components/ListaFornecedoresRota.vue";
+import UiModal from "~/components/ui/UiModal.vue";
+import UiButton from "~/components/ui/UiButton.vue";
+import UiMapaPontos from "~/components/ui/UiMapaPontos.vue";
+import type { UiMapaPonto } from "~/components/ui/maps.types";
+import FormularioRota from "./FormularioRota.vue";
+import ListaFornecedoresRota from "./ListaFornecedoresRota.vue";
 
 interface FornecedorRota {
   name: string;
@@ -99,16 +97,14 @@ const isFormValid = computed(() => {
   );
 });
 
-const mapFornecedores = computed(() => {
+const pontosMapa = computed<UiMapaPonto[]>(() => {
   return fornecedores.value.map((f) => ({
-    fornecedor: f.name,
-    cidade: "Local",
-    fanta: "",
-    ultima_carga: "—",
+    id: f.name,
+    titulo: f.name,
     status: "ativo",
-    latitude: String(f.lat),
-    longitude: String(f.lng),
-    latlong: true,
+    latitude: f.lat,
+    longitude: f.lng,
+    linhas: [{ rotulo: "Cidade", valor: "Local" }],
   }));
 });
 

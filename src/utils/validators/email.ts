@@ -3,8 +3,8 @@ export function isValidEmail(email: string): boolean {
   return emailRegex.test(email);
 }
 
-export function isRequired(value: any): boolean {
-  if (typeof value === 'string') {
+export function isRequired(value: unknown): boolean {
+  if (typeof value === "string") {
     return value.trim().length > 0;
   }
   return value !== null && value !== undefined;

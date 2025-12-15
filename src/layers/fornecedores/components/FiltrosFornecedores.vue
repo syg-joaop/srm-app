@@ -26,11 +26,8 @@
     </div>
 
     <div class="flex flex-col md:flex-row gap-6">
-      <!-- Status Group -->
       <div class="space-y-2">
-        <label class="text-sm font-semibold" style="color: var(--color-text)"
-          >Status</label
-        >
+        <label class="text-sm font-semibold" style="color: var(--color-text)">Status</label>
         <div class="flex flex-wrap gap-2">
           <button
             v-for="status in statusOptions"
@@ -56,11 +53,8 @@
         </div>
       </div>
 
-      <!-- Sort Group -->
       <div class="space-y-2">
-        <label class="text-sm font-semibold" style="color: var(--color-text)"
-          >Ordenar por</label
-        >
+        <label class="text-sm font-semibold" style="color: var(--color-text)">Ordenar por</label>
         <div class="flex flex-wrap gap-2">
           <button
             v-for="opt in sortOptions"

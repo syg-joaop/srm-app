@@ -7,22 +7,17 @@
           :class="getStatusBarColor(ocorrencia?.status)"
         />
         <div class="flex-1 min-w-0">
-          <h2
-            class="text-base md:text-lg font-bold text-[var(--color-text)] truncate"
-          >
+          <h2 class="text-base md:text-lg font-bold text-[var(--color-text)] truncate">
             {{ ocorrencia?.titulo || "Sem descrição" }}
           </h2>
           <div class="flex items-center gap-1.5 md:gap-2 mt-0.5">
             <span class="text-[10px] md:text-xs text-[var(--color-text-muted)]"
               >#{{ ocorrencia?.id }}</span
             >
-            <span
-              class="w-1 h-1 rounded-full bg-[var(--color-text-muted)] opacity-50"
-            />
-            <span
-              class="text-[10px] md:text-xs text-[var(--color-text-muted)] truncate"
-              >{{ ocorrencia?.fornecedor }}</span
-            >
+            <span class="w-1 h-1 rounded-full bg-[var(--color-text-muted)] opacity-50" />
+            <span class="text-[10px] md:text-xs text-[var(--color-text-muted)] truncate">{{
+              ocorrencia?.fornecedor
+            }}</span>
           </div>
         </div>
       </div>
@@ -33,9 +28,7 @@
         v-if="ocorrencia?.proximoAtendimento"
         class="mx-4 md:mx-6 flex items-center gap-2 px-2.5 md:px-3 py-2 md:py-2.5 rounded-lg bg-[var(--color-primary-soft)] border border-[var(--color-primary-border)]"
       >
-        <Calendar
-          class="w-3.5 h-3.5 md:w-4 md:h-4 text-[var(--color-primary)] flex-shrink-0"
-        />
+        <Calendar class="w-3.5 h-3.5 md:w-4 md:h-4 text-[var(--color-primary)] flex-shrink-0" />
         <span class="text-xs md:text-sm font-medium text-[var(--color-primary)]"
           >Próximo: {{ ocorrencia.proximoAtendimento }}</span
         >
@@ -55,10 +48,7 @@
           "
           @click="abaAtiva = tab.id"
         >
-          <component
-            :is="tab.icon"
-            class="w-3.5 h-3.5 md:w-4 md:h-4 inline mr-1 md:mr-1.5"
-          />
+          <component :is="tab.icon" class="w-3.5 h-3.5 md:w-4 md:h-4 inline mr-1 md:mr-1.5" />
           {{ tab.label }}
           <div
             v-if="abaAtiva === tab.id"
@@ -69,11 +59,7 @@
 
       <div class="px-4 md:px-6">
         <Transition name="fade" mode="out-in">
-          <div
-            v-if="abaAtiva === 'dados'"
-            key="dados"
-            class="flex flex-col gap-4 md:gap-5"
-          >
+          <div v-if="abaAtiva === 'dados'" key="dados" class="flex flex-col gap-4 md:gap-5">
             <div class="flex flex-col gap-2.5 md:gap-3">
               <h3
                 class="text-[10px] md:text-xs font-semibold text-[var(--color-text-muted)] uppercase tracking-wider"
@@ -88,10 +74,7 @@
                   :class="getStatusBadgeClass(status.value)"
                   @click="changeStatus(status.value)"
                 >
-                  <span
-                    class="w-1.5 h-1.5 rounded-full"
-                    :class="getStatusDotClass(status.value)"
-                  />
+                  <span class="w-1.5 h-1.5 rounded-full" :class="getStatusDotClass(status.value)" />
                   {{ status.label }}
                 </button>
               </div>
@@ -124,26 +107,16 @@
             >
               <History class="w-5 h-5 md:w-6 md:h-6 opacity-50" />
             </div>
-            <p class="text-xs md:text-sm font-medium">
-              Nenhum histórico registrado
-            </p>
-            <p class="text-[10px] md:text-xs mt-1 opacity-70">
-              As interações aparecerão aqui
-            </p>
+            <p class="text-xs md:text-sm font-medium">Nenhum histórico registrado</p>
+            <p class="text-[10px] md:text-xs mt-1 opacity-70">As interações aparecerão aqui</p>
           </div>
         </Transition>
       </div>
     </div>
 
     <template #footer>
-      <div
-        class="flex flex-col-reverse sm:flex-row gap-2 sm:gap-3 w-full sm:w-auto sm:justify-end"
-      >
-        <UiButton
-          variant="secondary"
-          class="w-full sm:w-auto"
-          @click="isOpen = false"
-        >
+      <div class="flex flex-col-reverse sm:flex-row gap-2 sm:gap-3 w-full sm:w-auto sm:justify-end">
+        <UiButton variant="secondary" class="w-full sm:w-auto" @click="isOpen = false">
           Fechar
         </UiButton>
         <UiButton variant="ghost" class="w-full sm:w-auto">
@@ -162,8 +135,8 @@
 <script setup lang="ts">
 import { ref, computed, markRaw } from "vue";
 import { Calendar, CircleAlert, History, Send, Edit } from "lucide-vue-next";
-import UiModal from "@/components/ui/overlays/UiModal.vue";
-import UiButton from "@/components/ui/buttons/UiButton.vue";
+import UiModal from "~/components/ui/UiModal.vue";
+import UiButton from "~/components/ui/UiButton.vue";
 import DadoItem from "./DadoItem.vue";
 
 type OcorrenciaStatus = "pendente" | "acompanhamento" | "concluida";

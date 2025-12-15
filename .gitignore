@@ -100,6 +100,8 @@ ios/*.xcodeproj/project.xcworkspace/xcuserdata
 # Electron
 electron/dist
 electron/release
+electron/src/**/*.js
+electron/live-runner.js
 
 # Temporary files
 dashboard.json
@@ -119,3 +121,53 @@ coverage
 *.pem
 .cache
 
+# Agent tooling (local)
+.agent/
+.claude/
+GEMINI.md
+
+# ESLint/Prettier cache
+.eslintcache
+.stylelintcache
+.prettiercache
+
+# Bundle analyzer
+stats.html
+report.html
+*.stats.json
+
+# Service Worker (generated)
+public/sw.js
+public/workbox-*.js
+
+# pnpm
+.pnpm-store/
+.pnpm-debug.log
+
+# Playwright
+/test-results/
+/playwright-report/
+/blob-report/
+/playwright/.cache/
+
+# Storybook
+storybook-static/
+
+# Generated types
+*.generated.ts
+*.generated.d.ts
+auto-imports.d.ts
+components.d.ts
+
+# Vitest
+vitest.config.ts.timestamp-*
+
+# Runtime data
+pids
+*.pid
+*.seed
+*.pid.lock
+
+# Stores
+stores/*.json
+!stores/.gitkeep

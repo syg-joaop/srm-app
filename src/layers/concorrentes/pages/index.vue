@@ -5,13 +5,11 @@
   >
     <h1 class="text-2xl sm:text-3xl font-bold mb-4 sm:mb-6">Concorrentes</h1>
     <UiCard class="p-4 sm:p-6">
-      <p style="color: var(--color-text-muted)">
-        Lista de concorrentes será implementada aqui.
-      </p>
+      <p style="color: var(--color-text-muted)">Lista de concorrentes será implementada aqui.</p>
     </UiCard>
   </div>
 </template>
 
 <script setup lang="ts">
-definePageMeta({ layout: 'default' })
+definePageMeta({ layout: "default" });
 </script>

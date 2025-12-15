@@ -40,9 +40,7 @@
           </div>
 
           <div class="col-span-3 flex items-center">
-            <span
-              class="text-sm text-[var(--color-text-muted)] font-medium uppercase"
-            >
+            <span class="text-sm text-[var(--color-text-muted)] font-medium uppercase">
               {{ membro.setor }}
             </span>
           </div>
@@ -62,9 +60,7 @@
                 >
                   {{ membro.nome }}
                 </span>
-                <span
-                  class="text-[11px] text-[var(--color-text-muted)] truncate"
-                >
+                <span class="text-[11px] text-[var(--color-text-muted)] truncate">
                   {{ membro.email }}
                 </span>
               </div>

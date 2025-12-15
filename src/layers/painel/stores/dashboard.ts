@@ -1,36 +1,32 @@
 import { defineStore } from "pinia";
-import type {
-  DashboardApiResponse,
-  Attendance,
-  DashboardCount,
-  StatItem,
-  SummaryItem,
-  TableItem,
-  AniversarianteItem,
-  ChartData,
-  AtendenteItem,
-} from "../types/dashboard";
 import { formatarMoeda } from "~/utils/formatters/formatadores";
 import {
   emptyChartData,
   formatarLabel,
-  mapIcon,
   formatarResumoCompras,
   formatarResumoComprasAnterior,
-  transformPieData,
+  mapIcon,
+  transformDescData,
   transformLineData,
   transformMetaData,
-  transformDescData,
+  transformPieData,
   transformProdutosData,
-} from "~/utils/helpers";
+} from "../dashboard.helpers";
+import type {
+  AniversarianteItem,
+  AtendenteItem,
+  Attendance,
+  ChartData,
+  DashboardApiResponse,
+  DashboardCount,
+  StatItem,
+  SummaryItem,
+  TableItem,
+} from "../dashboard.types";
 
 export const useDashboardStore = defineStore("dashboard", () => {
-  // ==================== ESTADO ====================
   const rawData = ref<DashboardApiResponse | null>(null);
 
-  // ==================== COMPUTED ====================
-
-  // 1. Indicadores (Cards do Topo)
   const defaultStats: StatItem[] = [
     { label: "Fornecedores", value: 0, icon: "Building2", color: "bg-primary" },
     { label: "Prospectos", value: 0, icon: "UserPlus", color: "bg-primary" },
@@ -53,7 +49,6 @@ export const useDashboardStore = defineStore("dashboard", () => {
     }));
   });
 
-  // 2. Gráficos
   const chartData = computed<ChartData>(() => {
     const apiData = rawData.value;
     if (!apiData) return emptyChartData();
@@ -67,7 +62,6 @@ export const useDashboardStore = defineStore("dashboard", () => {
     };
   });
 
-  // 3. Tabelas de Compras
   const comprasMes = computed<SummaryItem[]>(() => {
     const data = rawData.value?.comprasMes?.data?.[0];
     return formatarResumoCompras(data);
@@ -81,7 +75,7 @@ export const useDashboardStore = defineStore("dashboard", () => {
   const compradorItems = computed<TableItem[]>(() => {
     const data = rawData.value?.comprasComprador?.data ?? [];
     return data.map((c) => ({
-      name: c.nome ?? "Não Identificado",
+      name: c.nome ?? "Não identificado",
       current: formatarMoeda(c.atual),
       previous: formatarMoeda(c.ant),
     }));
@@ -90,13 +84,12 @@ export const useDashboardStore = defineStore("dashboard", () => {
   const produtosItems = computed<TableItem[]>(() => {
     const data = rawData.value?.prodsMaisCompradosMes?.data ?? [];
     return data.map((p) => ({
-      name: p.produto ?? "Produto Desc.",
+      name: p.produto ?? "Produto desc.",
       current: formatarMoeda(p.mes_atual),
       previous: formatarMoeda(p.mes_anterior),
     }));
   });
 
-  // 4. Outras Tabelas
   const aniversariantesItems = computed<AniversarianteItem[]>(() => {
     const data = rawData.value?.aniversariantesFornecedores?.data ?? [];
     return data.map((a) => ({
@@ -135,7 +128,7 @@ export const useDashboardStore = defineStore("dashboard", () => {
           icon: "clock",
         },
         {
-          value: Number(a.atendimento_geral), // Usando Geral como o 4º item (X)
+          value: Number(a.atendimento_geral),
           label: "Geral",
           color: "red",
           icon: "x",
@@ -145,49 +138,44 @@ export const useDashboardStore = defineStore("dashboard", () => {
   });
 
   const atendimentosVencidos = computed<Attendance[]>(() => {
-    const data = rawData.value?.atendimentosVencidos?.data ?? [];
-    return data;
+    return rawData.value?.atendimentosVencidos?.data ?? [];
   });
 
-  // 5. Verificações de dados vazios para gráficos
   const isOcorrenciasPieEmpty = computed(() => {
-    return chartData.value.ocorrenciasPie.length === 0 ||
-      chartData.value.ocorrenciasPie.every((item) => item.value === 0);
+    const list = chartData.value.ocorrenciasPie;
+    return list.length === 0 || list.every((item) => item.value === 0);
   });
 
   const isOcorrenciasLineEmpty = computed(() => {
-    return chartData.value.ocorrenciasLine.values.length === 0 ||
-      chartData.value.ocorrenciasLine.values.every((v) => v === 0);
+    const values = chartData.value.ocorrenciasLine.values;
+    return values.length === 0 || values.every((v) => v === 0);
   });
 
   const isMetaDiariaEmpty = computed(() => {
-    return chartData.value.metaDiaria.values.length === 0 ||
-      chartData.value.metaDiaria.values.every((v) => v === 0);
+    const values = chartData.value.metaDiaria.values;
+    return values.length === 0 || values.every((v) => v === 0);
   });
 
   const isDescontosEmpty = computed(() => {
-    return chartData.value.descontos.values.length === 0 ||
-      chartData.value.descontos.values.every((v) => v === 0);
+    const values = chartData.value.descontos.values;
+    return values.length === 0 || values.every((v) => v === 0);
   });
 
   const isProdutosBarEmpty = computed(() => {
-    return chartData.value.produtosBar.names.length === 0 ||
-      (chartData.value.produtosBar.current.every((v) => v === 0) &&
-        chartData.value.produtosBar.previous.every((v) => v === 0));
+    const data = chartData.value.produtosBar;
+    return (
+      data.names.length === 0 ||
+      (data.current.every((v) => v === 0) && data.previous.every((v) => v === 0))
+    );
   });
 
-  // ==================== ACTIONS ====================
   function setDashboardData(data: DashboardApiResponse | null) {
     rawData.value = data;
   }
 
   return {
     rawData,
-
-    // Actions
     setDashboardData,
-
-    // Getters (UI Ready)
     stats,
     chartData,
     comprasMes,
@@ -197,8 +185,6 @@ export const useDashboardStore = defineStore("dashboard", () => {
     aniversariantesItems,
     atendentesItems,
     atendimentosVencidos,
-
-    // Empty state flags
     isOcorrenciasPieEmpty,
     isOcorrenciasLineEmpty,
     isMetaDiariaEmpty,

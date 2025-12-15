@@ -14,16 +14,10 @@
           <MessageSquare class="w-5 h-5 text-white" />
         </div>
         <div class="flex flex-col">
-          <span
-            class="text-base font-semibold leading-tight"
-            style="color: var(--color-text)"
-          >
+          <span class="text-base font-semibold leading-tight" style="color: var(--color-text)">
             {{ atendimento?.apelido || "19 Servico Notarial" }}
           </span>
-          <span
-            class="text-xs font-medium"
-            style="color: var(--color-text-muted)"
-          >
+          <span class="text-xs font-medium" style="color: var(--color-text-muted)">
             #{{ atendimento?.sr_recno || "224" }}
           </span>
         </div>
@@ -37,22 +31,15 @@
     </template>
 
     <div class="flex flex-col -mx-6 -mt-6 mb-6">
-      <!-- Banner -->
       <div
         class="px-6 py-3 flex items-center gap-2 mt-[1px]"
         style="background-color: var(--color-primary-dark); color: white"
       >
         <Calendar class="w-4 h-4" style="color: rgba(255, 255, 255, 0.7)" />
-        <span class="text-sm font-medium"
-          >Próximo atendimento marcado para 31/10/2025</span
-        >
+        <span class="text-sm font-medium">Próximo atendimento marcado para 31/10/2025</span>
       </div>
 
-      <!-- Tabs -->
-      <div
-        class="flex px-6 mt-4"
-        style="border-bottom: 1px solid var(--color-border)"
-      >
+      <div class="flex px-6 mt-4" style="border-bottom: 1px solid var(--color-border)">
         <button
           @click="activeTab = 'dados'"
           class="px-4 py-2 text-sm font-medium transition-colors border-b-2"
@@ -78,33 +65,19 @@
       </div>
     </div>
 
-    <!-- Tab Content Container -->
     <div style="min-height: 400px; display: flex; flex-direction: column">
-      <!-- Tab Dados -->
       <div v-if="activeTab === 'dados'" class="space-y-6">
-        <!-- Status Section -->
         <div>
-          <h4
-            class="text-sm font-semibold mb-3"
-            style="color: var(--color-text)"
-          >
-            Status
-          </h4>
+          <h4 class="text-sm font-semibold mb-3" style="color: var(--color-text)">Status</h4>
           <div class="flex flex-wrap gap-2">
-            <div
-              class="flex items-center gap-1.5 px-3 py-1.5 rounded-full status-pill"
-            >
+            <div class="flex items-center gap-1.5 px-3 py-1.5 rounded-full status-pill">
               <span
                 class="w-2 h-2 rounded-full"
                 style="background-color: var(--color-status-vencido)"
               ></span>
-              <span class="text-xs font-medium" style="color: var(--color-text)"
-                >Pendente</span
-              >
+              <span class="text-xs font-medium" style="color: var(--color-text)">Pendente</span>
             </div>
-            <div
-              class="flex items-center gap-1.5 px-3 py-1.5 rounded-full status-pill opacity-50"
-            >
+            <div class="flex items-center gap-1.5 px-3 py-1.5 rounded-full status-pill opacity-50">
               <span
                 class="w-2 h-2 rounded-full"
                 style="background-color: var(--color-text-muted)"
@@ -113,96 +86,52 @@
                 >Em acompanhamento</span
               >
             </div>
-            <div
-              class="flex items-center gap-1.5 px-3 py-1.5 rounded-full status-pill opacity-50"
-            >
+            <div class="flex items-center gap-1.5 px-3 py-1.5 rounded-full status-pill opacity-50">
               <span
                 class="w-2 h-2 rounded-full"
                 style="background-color: var(--color-text-muted)"
               ></span>
-              <span class="text-xs font-medium" style="color: var(--color-text)"
-                >Concluída</span
-              >
+              <span class="text-xs font-medium" style="color: var(--color-text)">Concluída</span>
             </div>
           </div>
         </div>
 
-        <!-- Data List -->
         <div>
-          <h4
-            class="text-sm font-semibold mb-3"
-            style="color: var(--color-text)"
-          >
-            Dados
-          </h4>
+          <h4 class="text-sm font-semibold mb-3" style="color: var(--color-text)">Dados</h4>
           <div class="space-y-3">
-            <div
-              class="flex justify-between items-center text-sm pb-2 last:pb-0 data-row"
-            >
+            <div class="flex justify-between items-center text-sm pb-2 last:pb-0 data-row">
               <span style="color: var(--color-text-muted)">Data</span>
               <span class="font-medium" style="color: var(--color-text)">{{
                 atendimento?.data_oco_formatada || "19/11/2025 - 12:00"
               }}</span>
             </div>
-            <div
-              class="flex justify-between items-center text-sm pb-2 last:pb-0 data-row"
-            >
+            <div class="flex justify-between items-center text-sm pb-2 last:pb-0 data-row">
               <span style="color: var(--color-text-muted)">Atendente</span>
-              <span class="font-medium" style="color: var(--color-text)"
-                >Alexnlv</span
-              >
+              <span class="font-medium" style="color: var(--color-text)">Alexnlv</span>
             </div>
-            <div
-              class="flex justify-between items-center text-sm pb-2 last:pb-0 data-row"
-            >
-              <span style="color: var(--color-text-muted)"
-                >Encaminhado para</span
-              >
-              <span class="font-medium" style="color: var(--color-text)"
-                >-</span
-              >
+            <div class="flex justify-between items-center text-sm pb-2 last:pb-0 data-row">
+              <span style="color: var(--color-text-muted)">Encaminhado para</span>
+              <span class="font-medium" style="color: var(--color-text)">-</span>
             </div>
-            <div
-              class="flex justify-between items-center text-sm pb-2 last:pb-0 data-row"
-            >
-              <span style="color: var(--color-text-muted)"
-                >Diagnosticado por</span
-              >
-              <span class="font-medium" style="color: var(--color-text)"
-                >-</span
-              >
+            <div class="flex justify-between items-center text-sm pb-2 last:pb-0 data-row">
+              <span style="color: var(--color-text-muted)">Diagnosticado por</span>
+              <span class="font-medium" style="color: var(--color-text)">-</span>
             </div>
-            <div
-              class="flex justify-between items-center text-sm pb-2 last:pb-0 data-row"
-            >
-              <span style="color: var(--color-text-muted)"
-                >Forma de atendimento</span
-              >
-              <span class="font-medium" style="color: var(--color-text)"
-                >Via Web</span
-              >
+            <div class="flex justify-between items-center text-sm pb-2 last:pb-0 data-row">
+              <span style="color: var(--color-text-muted)">Forma de atendimento</span>
+              <span class="font-medium" style="color: var(--color-text)">Via Web</span>
             </div>
-            <div
-              class="flex justify-between items-center text-sm pb-2 last:pb-0 data-row"
-            >
+            <div class="flex justify-between items-center text-sm pb-2 last:pb-0 data-row">
               <span style="color: var(--color-text-muted)">Status</span>
-              <span class="font-medium" style="color: var(--color-text)"
-                >Aberta</span
-              >
+              <span class="font-medium" style="color: var(--color-text)">Aberta</span>
             </div>
           </div>
         </div>
       </div>
 
-      <!-- Tab Historico -->
-      <div
-        v-else-if="activeTab === 'historico'"
-        class="h-full flex flex-col flex-1"
-      >
+      <div v-else-if="activeTab === 'historico'" class="h-full flex flex-col flex-1">
         <div class="flex justify-between items-center mb-4">
-          <h4 class="text-sm font-semibold" style="color: var(--color-text)">
-            Histórico
-          </h4>
+          <h4 class="text-sm font-semibold" style="color: var(--color-text)">Histórico</h4>
           <UiButton
             variant="ghost"
             class="!p-1.5 h-auto btn-action"
@@ -214,9 +143,7 @@
         </div>
 
         <div class="space-y-4 overflow-y-auto flex-1 pr-2">
-          <!-- Card Exemplo -->
           <div class="flex gap-4 p-4 rounded-lg history-card">
-            <!-- Avatar -->
             <div class="shrink-0">
               <div
                 class="w-10 h-10 rounded-full flex items-center justify-center"
@@ -226,18 +153,13 @@
               </div>
             </div>
 
-            <!-- Content -->
             <div class="flex-1 min-w-0">
               <div class="flex justify-between items-start mb-1">
-                <span
-                  class="text-sm font-medium"
-                  style="color: var(--color-text-muted)"
+                <span class="text-sm font-medium" style="color: var(--color-text-muted)"
                   >Alexnlv</span
                 >
                 <div class="text-right">
-                  <span
-                    class="block text-xs font-medium"
-                    style="color: var(--color-text)"
+                  <span class="block text-xs font-medium" style="color: var(--color-text)"
                     >19/11/2025</span
                   >
                   <span
@@ -252,15 +174,11 @@
                 Uma informação de atendimento
               </p>
 
-              <!-- Actions -->
               <div
                 class="flex justify-end gap-2 pt-2 mt-2"
                 style="border-top: 1px solid var(--color-border-subtle)"
               >
-                <button
-                  class="p-1.5 transition-colors rounded btn-icon-danger"
-                  title="Excluir"
-                >
+                <button class="p-1.5 transition-colors rounded btn-icon-danger" title="Excluir">
                   <Trash2 class="w-3.5 h-3.5" />
                 </button>
                 <button
@@ -277,10 +195,7 @@
     </div>
 
     <template #footer>
-      <div
-        v-if="activeTab === 'dados'"
-        class="flex w-full justify-between sm:justify-end gap-3"
-      >
+      <div v-if="activeTab === 'dados'" class="flex w-full justify-between sm:justify-end gap-3">
         <UiButton variant="ghost" class="btn-action">
           <Send class="w-4 h-4" />
           Encaminhar
@@ -312,20 +227,27 @@ import {
   User,
   Trash2,
 } from "lucide-vue-next";
-import UiModal from "@/components/ui/overlays/UiModal.vue";
-import UiButton from "@/components/ui/buttons/UiButton.vue";
-import ModalNovoComentario from "@/components/common/ModalNovoComentario.vue";
+import UiModal from "~/components/ui/UiModal.vue";
+import UiButton from "~/components/ui/UiButton.vue";
+import ModalNovoComentario from "~/components/common/ModalNovoComentario.vue";
 
-const props = defineProps({
-  modelValue: {
-    type: Boolean,
-    required: true,
+interface AtendimentoData {
+  apelido?: string;
+  sr_recno?: string;
+  data_oco?: string;
+  data_oco_formatada?: string;
+  [key: string]: unknown;
+}
+
+const props = withDefaults(
+  defineProps<{
+    modelValue: boolean;
+    atendimento?: AtendimentoData | null;
+  }>(),
+  {
+    atendimento: null,
   },
-  atendimento: {
-    type: Object,
-    default: null,
-  },
-});
+);
 
 defineEmits(["update:modelValue"]);
 

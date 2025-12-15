@@ -2,12 +2,10 @@
   <div
     class="flex flex-col h-full rounded-2xl border shadow-lg transition-all duration-300 group relative hover:shadow-xl bg-[var(--color-surface)] border-[var(--color-border-subtle)]"
   >
-    <!-- Hover accent line -->
     <div
       class="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-transparent via-[var(--color-primary)] to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500 rounded-t-2xl"
     />
 
-    <!-- Header -->
     <div
       class="px-4 md:px-6 pt-4 pb-3 flex flex-col md:flex-row md:items-center md:justify-between gap-3 border-b border-[var(--color-border-subtle)] shrink-0"
     >
@@ -17,9 +15,7 @@
         />
         <div class="min-w-0 flex-1">
           <div class="flex items-center justify-between gap-2">
-            <h3
-              class="font-bold text-base leading-none tracking-tight text-[var(--color-text)]"
-            >
+            <h3 class="font-bold text-base leading-none tracking-tight text-[var(--color-text)]">
               {{ title }}
             </h3>
             <div
@@ -29,17 +25,13 @@
               <slot name="action" />
             </div>
           </div>
-          <p
-            v-if="subtitle"
-            class="text-[11px] font-medium mt-1.5 text-[var(--color-text-muted)]"
-          >
+          <p v-if="subtitle" class="text-[11px] font-medium mt-1.5 text-[var(--color-text-muted)]">
             {{ subtitle }}
           </p>
         </div>
       </div>
 
       <div class="flex items-center gap-3 shrink-0">
-        <!-- Tabs inline -->
         <UiSegmentedControl
           v-if="showTabs && availableTabs.length > 1"
           :model-value="activeTab"
@@ -58,11 +50,9 @@
       </div>
     </div>
 
-    <!-- Content -->
     <div
       class="px-6 py-2 relative flex-1 flex flex-col overflow-y-auto overflow-x-hidden custom-scrollbar"
     >
-      <!-- Empty State -->
       <div
         v-if="showEmptyState"
         class="h-full flex flex-col items-center justify-center text-[var(--color-text-muted)] py-8"
@@ -78,13 +68,11 @@
         </p>
       </div>
 
-      <!-- Content Slot -->
       <template v-else>
         <slot :paginatedItems="paginatedItems" :activeTab="activeTab" />
       </template>
     </div>
 
-    <!-- Footer / Pagination -->
     <div
       v-if="$slots.footer || (paginated && items && totalPages > 1)"
       class="px-6 py-2 text-xs border-t border-[var(--color-border-subtle)] text-[var(--color-text-muted)] shrink-0 mt-auto"
@@ -124,10 +112,10 @@ export const DEFAULT_TABS: TabOption[] = [
 ];
 </script>
 
-<script setup lang="ts">
+<script setup lang="ts" generic="T = unknown">
 import { computed, ref, watch, type Component } from "vue";
 import { ChevronLeft, ChevronRight, Inbox } from "lucide-vue-next";
-import UiSegmentedControl from "~/components/ui/forms/UiSegmentedControl.vue";
+import UiSegmentedControl from "~/components/ui/UiSegmentedControl.vue";
 import type { TabOption } from "~/types/dashboard";
 
 const emit = defineEmits<{
@@ -139,7 +127,7 @@ const props = withDefaults(
   defineProps<{
     title: string;
     subtitle?: string;
-    items?: unknown[];
+    items?: T[];
     pageSize?: number;
     paginated?: boolean;
     isEmpty?: boolean;
@@ -160,7 +148,7 @@ const props = withDefaults(
     showTabs: false,
     tabs: () => [...DEFAULT_TABS],
     defaultTab: "fornecedores",
-  }
+  },
 );
 
 const availableTabs = computed<TabOption[]>(() => {
@@ -172,7 +160,7 @@ const activeTab = ref(
   props.activeTab ??
     availableTabs.value.find((tab) => tab.value === props.defaultTab)?.value ??
     availableTabs.value[0]?.value ??
-    ""
+    "",
 );
 
 watch(
@@ -181,7 +169,7 @@ watch(
     if (!newDefault || props.activeTab) return;
     if (!availableTabs.value.some((tab) => tab.value === newDefault)) return;
     activeTab.value = newDefault;
-  }
+  },
 );
 
 watch(
@@ -190,7 +178,7 @@ watch(
     if (!newValue) return;
     if (!availableTabs.value.some((tab) => tab.value === newValue)) return;
     activeTab.value = newValue;
-  }
+  },
 );
 
 watch(availableTabs, (newTabs) => {
@@ -224,10 +212,10 @@ const showEmptyState = computed(() => {
 const currentPage = ref(1);
 
 const totalPages = computed(() =>
-  props.items ? Math.ceil(props.items.length / props.pageSize) : 0
+  props.items ? Math.ceil(props.items.length / props.pageSize) : 0,
 );
 
-const paginatedItems = computed(() => {
+const paginatedItems = computed<T[]>(() => {
   if (!props.items) return [];
   if (!props.paginated) return props.items;
   const start = (currentPage.value - 1) * props.pageSize;

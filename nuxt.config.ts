@@ -15,7 +15,7 @@ export default defineNuxtConfig({
     "./src/layers/checkin",
   ],
 
-  // desabilita o devtools nativo do nuxt, me ferrei pra achar isso
+  // DevTools não agregam no modo SPA e adicionam ruído no bundle.
   devtools: { enabled: false },
 
   modules: ["@pinia/nuxt", "@nuxt/image", "nuxt-typed-router"],
@@ -33,7 +33,7 @@ export default defineNuxtConfig({
   },
 
   experimental: {
-    payloadExtraction: false, 
+    payloadExtraction: false,
   },
 
   css: [
@@ -58,16 +58,14 @@ export default defineNuxtConfig({
     apiV2UrlHomol: process.env.API_URL_HOMOL,
     public: {
       appName: process.env.NUXT_PUBLIC_APP_NAME ?? "SRM App",
-      appVersion:
-        process.env.NUXT_PUBLIC_APP_VERSION ??
-        process.env.npm_package_version ??
-        "0.0.0",
+      appVersion: process.env.NUXT_PUBLIC_APP_VERSION ?? process.env.npm_package_version ?? "0.0.0",
+      supportChatUrl: process.env.NUXT_PUBLIC_SUPPORT_CHAT_URL ?? "",
     },
   },
 
   app: {
-    baseURL: '/', 
-    buildAssetsDir: '/_nuxt/',
+    baseURL: "/",
+    buildAssetsDir: "/_nuxt/",
     head: {
       title: "SRM App",
       meta: [

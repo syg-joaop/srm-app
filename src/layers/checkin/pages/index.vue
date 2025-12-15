@@ -9,7 +9,7 @@
 </template>
 
 <script setup lang="ts">
-import AvisoEmConstrucao from "@/components/common/AvisoEmConstrucao.vue";
+import AvisoEmConstrucao from "~/components/common/AvisoEmConstrucao.vue";
 
 definePageMeta({ layout: "default" });
 </script>

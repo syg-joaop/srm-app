@@ -2,7 +2,6 @@ import { schemaFornecedor } from "~/server/schemas/fornecedores.schema";
 
 export default defineEventHandler(async (event) => {
   try {
-    // Extrair ID da rota
     const id = getRouterParam(event, "id");
 
     if (!id) {
@@ -12,11 +11,9 @@ export default defineEventHandler(async (event) => {
       });
     }
 
-    // Buscar fornecedor na API externa
     const apiClient = createApiClient(event, "v1");
     const data = await apiClient(`/suppliers/${id}`);
 
-    // Validar resposta
     const validatedSupplier = schemaFornecedor.parse(data);
 
     return validatedSupplier;

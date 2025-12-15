@@ -18,7 +18,7 @@
 
 <script setup lang="ts">
 import { User } from "lucide-vue-next";
-import UiStatusBadgeGroup from "@/components/ui/data-display/UiStatusBadgeGroup.vue";
+import UiStatusBadgeGroup from "~/components/ui/UiStatusBadgeGroup.vue";
 
 interface StatusItem {
   value: string | number;

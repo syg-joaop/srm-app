@@ -1,6 +1,5 @@
 import { z } from "zod";
 
-// Schema para fornecedor
 export const schemaFornecedor = z
   .object({
     codfor: z.string().or(z.number()), // Aceita string ou numero, backend as vezes manda numero
@@ -24,9 +23,8 @@ export const schemaFornecedor = z
     longitude: z.string().optional(),
     latlong: z.boolean().optional(),
   })
-  .passthrough(); // Permite campos adicionais
+  .passthrough();
 
-// Schema para lista de fornecedores
 export const schemaListaFornecedores = z.object({
   data: z.array(schemaFornecedor),
   total: z.number().optional(),
@@ -34,7 +32,6 @@ export const schemaListaFornecedores = z.object({
   limit: z.number().optional(),
 });
 
-// Schema para query parameters de busca
 export const schemaQueryFornecedor = z.object({
   page: z.coerce.number().optional().default(1),
   limit: z.coerce.number().optional().default(10),
@@ -42,7 +39,6 @@ export const schemaQueryFornecedor = z.object({
   status: z.string().optional(),
 });
 
-// Types exportados
 export type Fornecedor = z.infer<typeof schemaFornecedor>;
 export type ListaFornecedores = z.infer<typeof schemaListaFornecedores>;
 export type QueryFornecedor = z.infer<typeof schemaQueryFornecedor>;

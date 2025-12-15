@@ -1,9 +1,9 @@
 <script setup lang="ts">
 import { ref, watch, computed } from "vue";
 import { Eye, EyeOff, Moon, Sun, Info } from "lucide-vue-next";
-import UiButton from "@/components/ui/buttons/UiButton.vue";
-import UiInput from "@/components/ui/forms/UiInput.vue";
-import UiCheckbox from "@/components/ui/forms/UiCheckbox.vue";
+import UiButton from "~/components/ui/UiButton.vue";
+import UiInput from "~/components/ui/UiInput.vue";
+import UiCheckbox from "~/components/ui/UiCheckbox.vue";
 
 definePageMeta({
   layout: "blank",
@@ -85,7 +85,7 @@ watch(
   () => {
     errorMessage.value = "";
   },
-  { deep: true }
+  { deep: true },
 );
 </script>
 
@@ -94,25 +94,22 @@ watch(
     class="min-h-screen lg:h-screen w-full flex flex-col lg:flex-row lg:overflow-hidden transition-colors duration-300"
     style="background-color: var(--color-background); color: var(--color-text)"
   >
-    <!-- Left Side (Illustration) -->
     <div
       class="hidden lg:flex lg:w-1/2 relative overflow-hidden items-center justify-center"
       style="background-color: var(--color-surface)"
     >
       <img
-        src="@/assets/img/capa-srm.webp"
+        src="~/assets/img/capa-srm.webp"
         alt="SRM Illustration"
         class="w-full h-full object-cover opacity-80"
       />
       <div class="absolute inset-0 bg-black/10"></div>
     </div>
 
-    <!-- Right Side (Login Form) -->
     <div
       class="w-full lg:w-1/2 flex flex-col relative transition-colors duration-300 lg:overflow-y-auto"
       style="background-color: var(--color-background)"
     >
-      <!-- Top Actions -->
       <div
         class="absolute top-4 right-4 sm:top-6 sm:right-6 flex gap-4"
         style="color: var(--color-text-muted)"
@@ -120,11 +117,7 @@ watch(
         <button
           @click="toggleTheme"
           class="hover:text-primary transition-colors"
-          :title="
-            theme === 'dark'
-              ? 'Mudar para tema claro'
-              : 'Mudar para tema escuro'
-          "
+          :title="theme === 'dark' ? 'Mudar para tema claro' : 'Mudar para tema escuro'"
         >
           <Sun v-if="theme === 'dark'" class="w-5 h-5" />
           <Moon v-else class="w-5 h-5" />
@@ -134,25 +127,14 @@ watch(
         </button>
       </div>
 
-      <div
-        class="flex-1 flex flex-col items-center justify-center p-6 sm:p-12 md:p-16 py-10"
-      >
+      <div class="flex-1 flex flex-col items-center justify-center p-6 sm:p-12 md:p-16 py-10">
         <div class="w-full max-w-sm space-y-6 sm:space-y-8">
           <div class="text-center">
-            <img
-              src="@/assets/img/srm.png"
-              alt="SRM Logo"
-              class="h-12 sm:h-16 mx-auto mb-2"
-            />
-            <p class="text-xs" style="color: var(--color-text-muted)">
-              v{{ appVersion }}
-            </p>
+            <img src="~/assets/img/srm.png" alt="SRM Logo" class="h-12 sm:h-16 mx-auto mb-2" />
+            <p class="text-xs" style="color: var(--color-text-muted)">v{{ appVersion }}</p>
           </div>
 
-          <form
-            @submit.prevent="handleLogin"
-            class="space-y-5 sm:space-y-6 mt-6 sm:mt-8"
-          >
+          <form @submit.prevent="handleLogin" class="space-y-5 sm:space-y-6 mt-6 sm:mt-8">
             <div class="space-y-4">
               <UiInput
                 v-model="credentials.email"
@@ -189,16 +171,10 @@ watch(
               <div v-if="isSygecomUser" class="overflow-hidden mt-4">
                 <div
                   class="p-4 sm:p-5 rounded-lg border transition-all duration-300 ease-in-out"
-                  style="
-                    background-color: var(--color-surface);
-                    border-color: var(--color-border);
-                  "
+                  style="background-color: var(--color-surface); border-color: var(--color-border)"
                 >
                   <div class="flex items-center justify-between mb-4">
-                    <h3
-                      class="font-semibold text-sm"
-                      style="color: var(--color-primary)"
-                    >
+                    <h3 class="font-semibold text-sm" style="color: var(--color-primary)">
                       Usuário Sygecom
                     </h3>
                     <UiCheckbox
@@ -255,10 +231,7 @@ watch(
                     style="color: var(--color-text-muted)"
                   >
                     Aceito os termos
-                    <a
-                      href="#"
-                      class="hover:underline"
-                      style="color: var(--color-primary)"
+                    <a href="#" class="hover:underline" style="color: var(--color-primary)"
                       >Política de Privacidade</a
                     >
                   </span>

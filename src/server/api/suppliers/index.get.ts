@@ -2,11 +2,9 @@ import { schemaQueryFornecedor } from "~/server/schemas/fornecedores.schema";
 
 export default defineEventHandler(async (event) => {
   try {
-    // Validar query parameters
     const rawQuery = getQuery(event);
     const query = schemaQueryFornecedor.parse(rawQuery);
 
-    // Buscar fornecedores na API externa
     const apiClient = createApiClient(event, "v1");
     const data = await apiClient("/suppliers", {
       query,

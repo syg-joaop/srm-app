@@ -1,45 +1,43 @@
-# SRM App - Sistema de Relacionamento com Fornecedores
+# SRM App — Sistema de Relacionamento com Fornecedores
 
-> **Aplicação moderna construída com Nuxt 3 + Zod + Feature-Sliced Design**
+SPA em Nuxt 3 (`ssr: false`) organizada em feature-first via Nuxt Layers.
 
-## 🚀 Início Rápido
+## Comandos
 
 ```bash
-# Instalar dependências
 npm install
-
-# Desenvolvimento
 npm run dev
 
-# Build de produção
 npm run build
 npm run preview
 
-# Electron
-npm run electron:dev    # Dev mode
-npm run electron:build  # Build final
+npm run electron:dev
+npm run electron:build
+
+npm run lint
+npm run lint:fix
+npm run format
+npm run format:check
 ```
 
-## ✨ Características
+## Estrutura
 
-- 🎯 **Feature-Sliced Design** - Organização por domínio com 9 layers
-- 🔒 **Backend-for-Frontend** - API proxy com validação Zod
-- 🎨 **Auto-imports** - Zero imports manuais
-- 📱 **Desktop App** - Electron wrapper
-- 🔐 **Autenticação** - JWT com httpOnly cookies
-- 📊 **Dashboard** - Visualização com ECharts
-- 🎭 **Type-Safe** - TypeScript + Zod
+- `src/layers/<feature>`: páginas e lógica por feature (Nuxt Layer)
+- `src/components/ui`: design system compartilhado
+- `src/components/common`: componentes compartilhados com comportamento
+- `src/composables`, `src/stores`, `src/utils`, `src/types`: base compartilhada
+- `src/server`: backend-for-frontend (proxy/rotas/schemas)
 
-## 📚 Documentação Completa
+## Fronteiras (ESLint)
 
-- **[Arquitetura](./regras-srm.MD)** - Arquitetura e padrões do projeto
+- compartilhado não importa `src/layers/*`
+- feature não importa outra feature
+- dentro de `src/layers/*`, prefira imports relativos; use `~/` para shared
 
-## 🛠️ Stack
+## Configuração
 
-- Nuxt 3.13.0
-- Vue 3.5.24
-- TypeScript 5.9.3
-- Zod 3.23.8
-- Pinia 3.0.4
-- ECharts 6.0.0
-- Electron (Capacitor)
+- copie `.env.example` para `.env` e ajuste `API_*` e `NUXT_PUBLIC_*`
+
+## Docs
+
+- `regras-srm.MD`

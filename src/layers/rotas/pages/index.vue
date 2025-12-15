@@ -1,11 +1,7 @@
 <template>
   <div class="min-h-screen p-4 sm:p-6 bg-[var(--color-background)]">
-    <div
-      class="flex flex-col gap-4 mb-6 sm:mb-8"
-    >
-      <h1 class="text-xl sm:text-2xl font-bold text-[var(--color-text)]">
-        Rotas cadastradas
-      </h1>
+    <div class="flex flex-col gap-4 mb-6 sm:mb-8">
+      <h1 class="text-xl sm:text-2xl font-bold text-[var(--color-text)]">Rotas cadastradas</h1>
 
       <div class="flex flex-col sm:flex-row items-stretch sm:items-center gap-3 w-full sm:w-auto">
         <UiButton
@@ -64,17 +60,13 @@
                 {{ route.dateRange }}
               </span>
               <span class="sm:inline hidden text-[11px] text-[var(--color-text-muted)] truncate">
-                 {{ route.suppliersCount }} fornecedor{{ route.suppliersCount !== 1 ? "es" : "" }}
-                </span>
+                {{ route.suppliersCount }} fornecedor{{ route.suppliersCount !== 1 ? "es" : "" }}
+              </span>
             </div>
           </div>
 
           <div class="hidden md:flex col-span-2 justify-center">
-            <UiBadge
-              :variant="getStatusVariant(route.status)"
-              :dot="true"
-              size="small"
-            >
+            <UiBadge :variant="getStatusVariant(route.status)" :dot="true" size="small">
               {{ getStatusLabel(route.status) }}
             </UiBadge>
           </div>
@@ -124,11 +116,11 @@
 <script setup lang="ts">
 import { ref, computed } from "vue";
 import { Plus, Eye, Route as RouteIcon } from "lucide-vue-next";
-import UiButton from "@/components/ui/buttons/UiButton.vue";
-import UiBadge from "@/components/ui/data-display/UiBadge.vue";
-import UiEmptyState from "@/components/ui/feedback/UiEmptyState.vue";
-import UiCalendario from "@/components/ui/forms/UiCalendario.vue";
-import UiPaginacao from "@/components/ui/navigation/UiPaginacao.vue";
+import UiButton from "~/components/ui/UiButton.vue";
+import UiBadge from "~/components/ui/UiBadge.vue";
+import UiEmptyState from "~/components/ui/UiEmptyState.vue";
+import UiCalendario from "~/components/ui/UiCalendario.vue";
+import UiPaginacao from "~/components/ui/UiPaginacao.vue";
 import ModalNovaRota from "../components/ModalNovaRota.vue";
 
 definePageMeta({

@@ -1,11 +1,7 @@
 /**
- * Tipos relacionados ao Dashboard
- */
-
-/**
- * Opção de tab para componentes com abas
+ * Tipos pequenos usados no dashboard.
  */
 export interface TabOption {
-  label: string
-  value: string
+  label: string;
+  value: string;
 }

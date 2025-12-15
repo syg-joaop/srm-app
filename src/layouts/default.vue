@@ -1,10 +1,7 @@
 <template>
   <div
     class="app-layout min-h-screen flex flex-col lg:flex-row"
-    style="
-      background-color: var(--color-background);
-      transition: background-color 0.3s ease;
-    "
+    style="background-color: var(--color-background); transition: background-color 0.3s ease"
   >
     <div
       class="lg:hidden fixed top-0 left-0 h-16 w-full flex items-center justify-between px-4 z-30"
@@ -17,16 +14,12 @@
       "
     >
       <div class="flex items-center gap-3">
-        <div
-          class="w-10 h-10 rounded-full bg-primary flex items-center justify-center shadow-md"
-        >
+        <div class="w-10 h-10 rounded-full bg-primary flex items-center justify-center shadow-md">
           <User class="w-5 h-5 text-white" />
         </div>
 
         <div class="flex flex-col">
-          <span
-            class="font-bold text-sm leading-tight"
-            style="color: var(--color-text)"
+          <span class="font-bold text-sm leading-tight" style="color: var(--color-text)"
             >Olá, {{ userName }}</span
           >
           <span
@@ -41,19 +34,12 @@
         <button
           @click="toggleTheme"
           class="header-btn p-2 transition-colors rounded-lg"
-          :title="
-            theme === 'dark'
-              ? 'Mudar para tema claro'
-              : 'Mudar para tema escuro'
-          "
+          :title="theme === 'dark' ? 'Mudar para tema claro' : 'Mudar para tema escuro'"
         >
           <Sun v-if="theme === 'dark'" :size="24" />
           <Moon v-else :size="24" />
         </button>
-        <button
-          @click="mobileMenuOpen = true"
-          class="header-btn p-2 transition-colors rounded-lg"
-        >
+        <button @click="mobileMenuOpen = true" class="header-btn p-2 transition-colors rounded-lg">
           <Menu :size="24" />
         </button>
       </div>
@@ -71,9 +57,7 @@
       <button
         @click="toggleTheme"
         class="header-btn p-2 transition-colors rounded-lg"
-        :title="
-          theme === 'dark' ? 'Mudar para tema claro' : 'Mudar para tema escuro'
-        "
+        :title="theme === 'dark' ? 'Mudar para tema claro' : 'Mudar para tema escuro'"
       >
         <Sun v-if="theme === 'dark'" :size="20" />
         <Moon v-else :size="20" />
@@ -88,9 +72,7 @@
             {{ userRole }}
           </p>
         </div>
-        <div
-          class="w-10 h-10 rounded-full bg-primary flex items-center justify-center"
-        >
+        <div class="w-10 h-10 rounded-full bg-primary flex items-center justify-center">
           <User class="w-5 h-5 text-white" />
         </div>
       </div>
@@ -112,7 +94,7 @@
       <slot />
     </main>
 
-    <AiChatWidget />
+    <ChatSuporteWidget />
   </div>
 </template>
 
@@ -150,9 +132,7 @@ const sidebarWidth = computed(() => {
   if (windowWidth.value < 1024) {
     return "0px";
   }
-  return isSidebarExpanded.value
-    ? "var(--sidebar-width)"
-    : "var(--sidebar-width-collapsed)";
+  return isSidebarExpanded.value ? "var(--sidebar-width)" : "var(--sidebar-width-collapsed)";
 });
 </script>
 

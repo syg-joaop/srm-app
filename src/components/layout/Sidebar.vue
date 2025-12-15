@@ -16,14 +16,12 @@
       @mouseenter="isExpanded = true"
       @mouseleave="isExpanded = false"
     >
-      <!-- Logo -->
       <div class="logo-container">
         <div class="logo-bg">
-          <img src="@/assets/img/srm.png" alt="SRM Logo" class="logo-img" />
+          <img src="~/assets/img/srm.png" alt="SRM Logo" class="logo-img" />
         </div>
       </div>
 
-      <!-- Navigation -->
       <nav class="nav-menu">
         <NuxtLink
           v-for="item in menuItems"
@@ -38,7 +36,6 @@
         </NuxtLink>
       </nav>
 
-      <!-- Footer -->
       <div class="footer">
         <button class="nav-item w-full text-left">
           <Info :size="24" class="nav-icon" />
@@ -188,7 +185,7 @@ const menuItems = [
   display: flex;
   flex-direction: column;
   gap: 0.5rem;
-  width: 100%; 
+  width: 100%;
 }
 
 .nav-item {
@@ -205,8 +202,8 @@ const menuItems = [
   outline: none;
   background: transparent;
   width: 100%;
-  max-width: 100%; 
-  overflow: hidden; 
+  max-width: 100%;
+  overflow: hidden;
 }
 
 .nav-item:hover {

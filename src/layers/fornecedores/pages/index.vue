@@ -4,11 +4,7 @@
     style="background-color: var(--color-background); color: var(--color-text)"
   >
     <h1 class="text-xl sm:text-2xl font-bold mb-4 sm:mb-6">Fornecedores</h1>
-    <!-- Header Controls -->
-    <div
-      class="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-4"
-    >
-      <!-- Search and Filter Toggle -->
+    <div class="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-4">
       <div class="flex items-center gap-2 w-full md:max-w-xl">
         <div class="relative flex-1">
           <Search
@@ -56,7 +52,6 @@
         </button>
       </div>
 
-      <!-- View Toggle -->
       <UiSegmentedControl
         v-model="viewMode"
         :options="viewModeOptions"
@@ -64,7 +59,6 @@
       />
     </div>
 
-    <!-- Collapsible Filters -->
     <Transition
       enter-active-class="transition-all duration-200 ease-out"
       leave-active-class="transition-all duration-150 ease-in"
@@ -76,9 +70,7 @@
         class="mb-6 p-3 sm:p-4 rounded-lg border overflow-hidden"
         style="border-color: var(--color-border); background-color: var(--color-surface)"
       >
-        <!-- Filtros Unificados -->
         <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4 mb-4">
-          <!-- Fantasia -->
           <div>
             <label class="block text-xs font-medium mb-1.5" style="color: var(--color-text-muted)">
               Fantasia
@@ -88,11 +80,14 @@
               type="text"
               placeholder="Filtrar por fantasia"
               class="w-full rounded-lg px-4 py-2.5 text-sm focus:outline-none focus:ring-1 focus:ring-[var(--color-primary)] transition-all border"
-              style="background-color: var(--color-background); border-color: var(--color-border); color: var(--color-text)"
+              style="
+                background-color: var(--color-background);
+                border-color: var(--color-border);
+                color: var(--color-text);
+              "
             />
           </div>
 
-          <!-- Cidade -->
           <div>
             <label class="block text-xs font-medium mb-1.5" style="color: var(--color-text-muted)">
               Cidade
@@ -102,25 +97,29 @@
               type="text"
               placeholder="Filtrar por cidade"
               class="w-full rounded-lg px-4 py-2.5 text-sm focus:outline-none focus:ring-1 focus:ring-[var(--color-primary)] transition-all border"
-              style="background-color: var(--color-background); border-color: var(--color-border); color: var(--color-text)"
+              style="
+                background-color: var(--color-background);
+                border-color: var(--color-border);
+                color: var(--color-text);
+              "
             />
           </div>
 
-          <!-- Status -->
           <div class="space-y-2">
-            <label class="block text-xs font-semibold uppercase tracking-wide" style="color: var(--color-text-muted)">
+            <label
+              class="block text-xs font-semibold uppercase tracking-wide"
+              style="color: var(--color-text-muted)"
+            >
               Status
             </label>
-            <UiSegmentedControl
-              v-model="filters.status"
-              :options="statusOptions"
-              full-width
-            />
+            <UiSegmentedControl v-model="filters.status" :options="statusOptions" full-width />
           </div>
 
-          <!-- Ordenar por -->
           <div class="space-y-2">
-            <label class="block text-xs font-semibold uppercase tracking-wide" style="color: var(--color-text-muted)">
+            <label
+              class="block text-xs font-semibold uppercase tracking-wide"
+              style="color: var(--color-text-muted)"
+            >
               Ordenar por
             </label>
             <UiSegmentedControl
@@ -132,7 +131,6 @@
           </div>
         </div>
 
-        <!-- Botão Limpar -->
         <button
           v-if="activeFiltersCount > 0"
           class="flex items-center gap-1.5 text-sm font-medium transition-colors px-2 py-1.5 hover:opacity-80"
@@ -145,20 +143,14 @@
       </div>
     </Transition>
 
-    <!-- Content -->
     <div>
-      <!-- Loading State -->
       <div v-if="isLoading" class="flex flex-col items-center justify-center py-12">
         <UiSpinner size="large" text="Carregando dados..." />
       </div>
 
-      <!-- Data View -->
       <div v-else>
         <div v-if="viewMode === 'list'">
-          <div
-            class="mb-4 font-semibold text-sm"
-            style="color: var(--color-primary)"
-          >
+          <div class="mb-4 font-semibold text-sm" style="color: var(--color-primary)">
             {{ fornecedores?.data.totalItems }} resultados
           </div>
           <ListaFornecedores
@@ -169,7 +161,7 @@
           <UiPaginacao
             v-model:page="currentPage"
             :total-items="fornecedores?.data.totalItems"
-            :total-pages="fornecedores?.data.totalPages"
+            :total-pages="fornecedores?.data.totalPages ?? 0"
             class="mt-6"
           />
         </div>
@@ -189,11 +181,11 @@ import { ref, computed, watch } from "vue";
 import { Search, Filter, List, Map, X } from "lucide-vue-next";
 import ListaFornecedores from "../components/ListaFornecedores.vue";
 import MapaFornecedores from "../components/MapaFornecedores.vue";
-import UiSpinner from "@/components/ui/feedback/UiSpinner.vue";
-import UiPaginacao from "@/components/ui/navigation/UiPaginacao.vue";
-import UiSegmentedControl from "@/components/ui/forms/UiSegmentedControl.vue";
-import ModalDetalhesParceiro from "../../painel/components/ModalDetalhesParceiro.vue";
-import type { Fornecedor } from "../types/fornecedores";
+import UiSpinner from "~/components/ui/UiSpinner.vue";
+import UiPaginacao from "~/components/ui/UiPaginacao.vue";
+import UiSegmentedControl from "~/components/ui/UiSegmentedControl.vue";
+import ModalDetalhesParceiro from "~/components/common/ModalDetalhesParceiro.vue";
+import type { Fornecedor } from "../fornecedores.types";
 import { useFornecedorService } from "../composables/useFornecedorService";
 
 const showFilters = ref(false);
@@ -255,18 +247,23 @@ const fornecedorFilters = computed(() => ({
   sortBy: filters.value.sortBy,
 }));
 
-watch([search, filters], () => {
-  currentPage.value = 1;
-}, { deep: true });
+watch(
+  [search, filters],
+  () => {
+    currentPage.value = 1;
+  },
+  { deep: true },
+);
 
 watch(currentPage, () => {
-  window.scrollTo({ top: 0, behavior: 'smooth' });
+  window.scrollTo({ top: 0, behavior: "smooth" });
 });
 
-const {
-  data: fornecedores,
-  status,
-} = fetchFornecedor(currentPage, itemsPerPage, fornecedorFilters);
+const { data: fornecedores, status } = fetchFornecedor(
+  currentPage,
+  itemsPerPage,
+  fornecedorFilters,
+);
 
 const isLoading = computed(() => status.value === "pending");
 

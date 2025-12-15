@@ -35,10 +35,7 @@
     </div>
 
     <div>
-      <div
-        class="mb-4 font-semibold text-sm"
-        style="color: var(--color-primary)"
-      >
+      <div class="mb-4 font-semibold text-sm" style="color: var(--color-primary)">
         {{ filteredMembros.length }} resultados
       </div>
 
@@ -52,11 +49,7 @@
       />
     </div>
 
-    <ModalDetalhesParceiro
-      v-model="showModal"
-      :parceiro="membroSelecionado"
-      variant="time"
-    />
+    <ModalDetalhesParceiro v-model="showModal" :parceiro="membroSelecionado" variant="time" />
   </div>
 </template>
 
@@ -65,8 +58,8 @@ import { ref, computed, watch } from "vue";
 import { Search } from "lucide-vue-next";
 import ListaMembros from "../components/ListaMembros.vue";
 import type { Membro } from "../components/ListaMembros.vue";
-import UiPaginacao from "@/components/ui/navigation/UiPaginacao.vue";
-import ModalDetalhesParceiro from "../../painel/components/ModalDetalhesParceiro.vue";
+import UiPaginacao from "~/components/ui/UiPaginacao.vue";
+import ModalDetalhesParceiro from "~/components/common/ModalDetalhesParceiro.vue";
 
 definePageMeta({ layout: "default" });
 
@@ -175,13 +168,11 @@ const filteredMembros = computed(() => {
     (m) =>
       m.nome.toLowerCase().includes(query) ||
       m.email.toLowerCase().includes(query) ||
-      m.setor.toLowerCase().includes(query)
+      m.setor.toLowerCase().includes(query),
   );
 });
 
-const totalPages = computed(() =>
-  Math.ceil(filteredMembros.value.length / itemsPerPage)
-);
+const totalPages = computed(() => Math.ceil(filteredMembros.value.length / itemsPerPage));
 
 const paginatedMembros = computed(() => {
   const start = (currentPage.value - 1) * itemsPerPage;

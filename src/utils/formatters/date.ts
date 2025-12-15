@@ -1,43 +1,47 @@
-export function formatDate(date: string | Date, format: 'short' | 'long' = 'short'): string {
-  const dateObj = typeof date === 'string' ? new Date(date) : date;
+export function formatDate(date: string | Date, format: "short" | "long" = "short"): string {
+  const dateObj = typeof date === "string" ? new Date(date) : date;
 
   if (isNaN(dateObj.getTime())) {
-    return 'Data inválida';
+    return "Data invï¿½lida";
   }
 
-  if (format === 'short') {
-    return dateObj.toLocaleDateString('pt-BR', { day: '2-digit', month: '2-digit', year: 'numeric' });
+  if (format === "short") {
+    return dateObj.toLocaleDateString("pt-BR", {
+      day: "2-digit",
+      month: "2-digit",
+      year: "numeric",
+    });
   }
 
-  return dateObj.toLocaleDateString('pt-BR', {
-    day: '2-digit',
-    month: 'long',
-    year: 'numeric'
+  return dateObj.toLocaleDateString("pt-BR", {
+    day: "2-digit",
+    month: "long",
+    year: "numeric",
   });
 }
 
 export function formatDateTime(date: string | Date): string {
-  const dateObj = typeof date === 'string' ? new Date(date) : date;
+  const dateObj = typeof date === "string" ? new Date(date) : date;
 
   if (isNaN(dateObj.getTime())) {
-    return 'Data inválida';
+    return "Data invï¿½lida";
   }
 
-  return dateObj.toLocaleString('pt-BR', {
-    day: '2-digit',
-    month: '2-digit',
-    year: 'numeric',
-    hour: '2-digit',
-    minute: '2-digit'
+  return dateObj.toLocaleString("pt-BR", {
+    day: "2-digit",
+    month: "2-digit",
+    year: "numeric",
+    hour: "2-digit",
+    minute: "2-digit",
   });
 }
 
 export function formatDayMonth(date: string | Date): string {
-  const dateObj = typeof date === 'string' ? new Date(date) : date;
+  const dateObj = typeof date === "string" ? new Date(date) : date;
 
   if (isNaN(dateObj.getTime())) {
-    return '--/--';
+    return "--/--";
   }
 
-  return dateObj.toLocaleDateString('pt-BR', { day: '2-digit', month: '2-digit' });
+  return dateObj.toLocaleDateString("pt-BR", { day: "2-digit", month: "2-digit" });
 }

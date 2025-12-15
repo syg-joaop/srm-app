@@ -17,7 +17,9 @@
       </div>
 
       <div class="flex items-center justify-between py-2">
-        <span class="text-sm font-medium" style="color: var(--color-text)">Marcar como problema</span>
+        <span class="text-sm font-medium" style="color: var(--color-text)"
+          >Marcar como problema</span
+        >
         <UiToggle
           :model-value="isProblema"
           @update:model-value="$emit('update:isProblema', $event)"
@@ -25,35 +27,33 @@
       </div>
 
       <div class="flex justify-end pt-4">
-        <UiButton variant="primary" @click="$emit('confirm')">
-          Cadastrar
-        </UiButton>
+        <UiButton variant="primary" @click="$emit('confirm')"> Cadastrar </UiButton>
       </div>
     </div>
   </UiModal>
 </template>
 
 <script setup lang="ts">
-import UiModal from '@/components/ui/overlays/UiModal.vue';
-import UiButton from '@/components/ui/buttons/UiButton.vue';
-import UiToggle from '@/components/ui/forms/UiToggle.vue';
+import UiModal from "~/components/ui/UiModal.vue";
+import UiButton from "~/components/ui/UiButton.vue";
+import UiToggle from "~/components/ui/UiToggle.vue";
 
 defineProps({
   modelValue: {
     type: Boolean,
-    required: true
+    required: true,
   },
   descricao: {
     type: String,
-    default: ''
+    default: "",
   },
   isProblema: {
     type: Boolean,
-    default: false
-  }
+    default: false,
+  },
 });
 
-defineEmits(['update:modelValue', 'update:descricao', 'update:isProblema', 'confirm']);
+defineEmits(["update:modelValue", "update:descricao", "update:isProblema", "confirm"]);
 </script>
 
 <style scoped>

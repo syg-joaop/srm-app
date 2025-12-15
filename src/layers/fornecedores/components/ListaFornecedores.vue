@@ -30,7 +30,9 @@
               <Building2 class="w-4 h-4" />
             </div>
             <div class="flex flex-col min-w-0">
-              <span class="font-semibold text-[var(--color-text)] text-sm group-hover/item:text-[var(--color-primary)] transition-colors truncate">
+              <span
+                class="font-semibold text-[var(--color-text)] text-sm group-hover/item:text-[var(--color-primary)] transition-colors truncate"
+              >
                 {{ fornecedor.fornecedor }}
               </span>
               <span class="text-xs text-[var(--color-text-muted)] truncate">
@@ -63,21 +65,12 @@
           </div>
 
           <div class="col-span-2 flex items-center justify-end gap-2">
-            <UiButton
-              variant="primary"
-              size="small"
-              @click.stop="$emit('add-route', fornecedor)"
-            >
+            <UiButton variant="primary" size="small" @click.stop="$emit('add-route', fornecedor)">
               <MapPin class="w-3 h-3" />
               Adicionar à rota
             </UiButton>
 
-            <UiButton
-              variant="ghost"
-              size="small"
-              class="!px-2"
-              @click.stop
-            >
+            <UiButton variant="ghost" size="small" class="!px-2" @click.stop>
               <MessageSquareText class="w-4 h-4" />
             </UiButton>
           </div>
@@ -93,7 +86,9 @@
                 <Building2 class="w-3.5 h-3.5" />
               </div>
               <div class="flex flex-col min-w-0">
-                <span class="font-semibold text-[var(--color-text)] text-sm group-hover/item:text-[var(--color-primary)] transition-colors truncate">
+                <span
+                  class="font-semibold text-[var(--color-text)] text-sm group-hover/item:text-[var(--color-primary)] transition-colors truncate"
+                >
                   {{ fornecedor.fornecedor }}
                 </span>
                 <span class="text-[11px] text-[var(--color-text-muted)] truncate">
@@ -101,7 +96,9 @@
                 </span>
               </div>
             </div>
-            <span class="text-[11px] text-[var(--color-text-muted)] whitespace-nowrap flex-shrink-0">
+            <span
+              class="text-[11px] text-[var(--color-text-muted)] whitespace-nowrap flex-shrink-0"
+            >
               {{ fornecedor.cidade }}
             </span>
           </div>
@@ -113,9 +110,9 @@
 
 <script setup lang="ts">
 import { Building2, MessageSquareText, MapPin } from "lucide-vue-next";
-import UiBadge from "@/components/ui/data-display/UiBadge.vue";
-import UiButton from "@/components/ui/buttons/UiButton.vue";
-import type { Fornecedor } from "../types/fornecedores";
+import UiBadge from "~/components/ui/UiBadge.vue";
+import UiButton from "~/components/ui/UiButton.vue";
+import type { Fornecedor } from "../fornecedores.types";
 
 defineProps<{
   fornecedores: Fornecedor[];

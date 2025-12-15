@@ -9,17 +9,13 @@
     "
   >
     <div v-if="isLoading" class="flex items-center justify-center h-64">
-      <div
-        class="animate-spin rounded-full h-8 w-8 border-b-2 border-primary"
-      ></div>
+      <div class="animate-spin rounded-full h-8 w-8 border-b-2 border-primary"></div>
     </div>
 
     <div v-else class="space-y-6">
       <MobileStatsWidget :stats="stats" class="lg:hidden mb-6" />
 
-      <div
-        class="hidden lg:grid md:grid-cols-2 lg:grid-cols-4 xl:grid-cols-7 gap-4"
-      >
+      <div class="hidden lg:grid md:grid-cols-2 lg:grid-cols-4 xl:grid-cols-7 gap-4">
         <StatCard
           v-for="stat in stats"
           :key="stat.label"
@@ -81,16 +77,16 @@
           >
             <template #default="{ paginatedItems }">
               <div class="space-y-2">
-                <DashboardListItem
+                <UiListItem
                   v-for="item in paginatedItems"
                   :key="item.sr_recno"
                   class="cursor-pointer hover:bg-gray-50 dark:hover:bg-gray-800/50 transition-colors"
                   @click="handleOpenAtendimentoModal(item)"
                 >
                   <template #leading>
-                    <DateBox label="VENC" variant="danger">{{
+                    <UiDateBox label="VENC" variant="danger">{{
                       item.data_oco.substring(0, 2)
-                    }}</DateBox>
+                    }}</UiDateBox>
                   </template>
 
                   <div class="flex justify-between items-start">
@@ -124,7 +120,7 @@
                       </button>
                     </div>
                   </template>
-                </DashboardListItem>
+                </UiListItem>
               </div>
             </template>
           </DashboardWidget>
@@ -137,12 +133,8 @@
         <div class="grid grid-cols-1 lg:grid-cols-2 gap-4 sm:gap-6 mb-6">
           <div
             class="rounded-xl sm:rounded-2xl border p-4 sm:p-5 transition-all duration-300 hover:shadow-lg"
-            style="
-              background-color: var(--color-surface);
-              border-color: var(--color-border-subtle);
-            "
+            style="background-color: var(--color-surface); border-color: var(--color-border-subtle)"
           >
-            <!-- Header -->
             <div class="flex items-start justify-between mb-4">
               <div class="flex items-center gap-2.5">
                 <div
@@ -150,28 +142,20 @@
                   style="box-shadow: 0 0 8px rgba(0, 153, 255, 0.5)"
                 ></div>
                 <div>
-                  <h3
-                    class="text-sm sm:text-base font-bold"
-                    style="color: var(--color-text)"
-                  >
+                  <h3 class="text-sm sm:text-base font-bold" style="color: var(--color-text)">
                     Ocorrências
                   </h3>
-                  <p
-                    class="text-[10px] sm:text-xs mt-0.5"
-                    style="color: var(--color-text-muted)"
-                  >
+                  <p class="text-[10px] sm:text-xs mt-0.5" style="color: var(--color-text-muted)">
                     Últimos 12 meses por status
                   </p>
                 </div>
               </div>
             </div>
 
-            <!-- Chart -->
             <div v-if="!isOcorrenciasPieEmpty" class="h-[320px] sm:h-[350px]">
               <OcorrenciasChart :data="chartData.ocorrenciasPie" />
             </div>
 
-            <!-- Empty State -->
             <div v-else class="h-[320px] sm:h-[350px] flex items-center justify-center">
               <UiEmptyState
                 :icon="PieChart"
@@ -225,17 +209,9 @@
                     class="text-xs text-gray-500 dark:text-gray-400 uppercase bg-gray-50 dark:bg-gray-800/50 border-b border-gray-200 dark:border-gray-700"
                   >
                     <tr>
-                      <th class="px-6 py-3 font-semibold tracking-wider">
-                        Comprador
-                      </th>
-                      <th
-                        class="px-6 py-3 font-semibold text-center tracking-wider"
-                      >
-                        Mês atual
-                      </th>
-                      <th
-                        class="px-6 py-3 font-semibold text-center tracking-wider"
-                      >
+                      <th class="px-6 py-3 font-semibold tracking-wider">Comprador</th>
+                      <th class="px-6 py-3 font-semibold text-center tracking-wider">Mês atual</th>
+                      <th class="px-6 py-3 font-semibold text-center tracking-wider">
                         Mês anterior
                       </th>
                     </tr>
@@ -252,9 +228,7 @@
                         {{ item.name }}
                       </td>
                       <td class="px-6 py-3 text-center">
-                        <span
-                          class="font-bold text-xs text-green-600 dark:text-green-400"
-                        >
+                        <span class="font-bold text-xs text-green-600 dark:text-green-400">
                           {{ item.current }}
                         </span>
                       </td>
@@ -293,10 +267,7 @@
             empty-title="Sem descontos"
             empty-description="Não há dados de descontos disponíveis"
           >
-            <div
-              ref="discountChartRef"
-              class="w-full h-full min-h-[250px]"
-            ></div>
+            <div ref="discountChartRef" class="w-full h-full min-h-[250px]"></div>
           </DashboardWidget>
         </div>
 
@@ -315,13 +286,13 @@
           >
             <template #default="{ paginatedItems }">
               <div class="space-y-2">
-                <DashboardListItem
+                <UiListItem
                   v-for="item in paginatedItems"
                   :key="item.name"
                   @click="handleOpenParceiroModal(item)"
                 >
                   <template #leading>
-                    <DateBox label="DIA">{{ item.date.split("/")[0] }}</DateBox>
+                    <UiDateBox label="DIA">{{ item.date.split("/")[0] }}</UiDateBox>
                   </template>
 
                   <div class="flex justify-between items-start">
@@ -343,8 +314,14 @@
                     <span
                       class="text-[10px] px-1.5 py-0.5 rounded-full bg-gray-100 dark:bg-gray-800 border"
                       :style="{
-                        color: item.status === 'Ativo' ? 'var(--color-status-finalizado)' : 'var(--color-status-vencido)',
-                        borderColor: item.status === 'Ativo' ? 'var(--color-status-finalizado)' : 'var(--color-status-vencido)'
+                        color:
+                          item.status === 'Ativo'
+                            ? 'var(--color-status-finalizado)'
+                            : 'var(--color-status-vencido)',
+                        borderColor:
+                          item.status === 'Ativo'
+                            ? 'var(--color-status-finalizado)'
+                            : 'var(--color-status-vencido)',
                       }"
                     >
                       {{ item.status }}
@@ -359,7 +336,7 @@
                       <Gift class="w-3.5 h-3.5" />
                     </button>
                   </template>
-                </DashboardListItem>
+                </UiListItem>
               </div>
             </template>
           </DashboardWidget>
@@ -377,7 +354,7 @@
           >
             <template #default="{ paginatedItems }">
               <div class="space-y-3">
-                <DashboardListItem
+                <UiListItem
                   v-for="(item, idx) in paginatedItems"
                   :key="idx"
                   class="min-h-[60px]"
@@ -385,15 +362,13 @@
                 >
                   <template #leading>
                     <div class="flex items-center gap-2">
-                      <span
-                        class="font-medium text-sm text-gray-800 dark:text-gray-200"
-                      >
+                      <span class="font-medium text-sm text-gray-800 dark:text-gray-200">
                         {{ item.role }}
                       </span>
                     </div>
                   </template>
                   <UiStatusBadgeGroup :items="item.statuses" />
-                </DashboardListItem>
+                </UiListItem>
               </div>
             </template>
           </DashboardWidget>
@@ -407,47 +382,46 @@
       :variant="modalVariant"
     />
 
-    <ModalAtendimento
-      v-model="showAtendimentoModal"
-      :atendimento="atendimentoSelecionado"
-    />
+    <ModalAtendimento v-model="showAtendimentoModal" :atendimento="atendimentoSelecionado" />
   </div>
 </template>
 
 <script setup lang="ts">
+import * as echarts from "echarts";
 import {
-  Search,
-  List,
+  AlertCircle,
+  Cake,
   CheckSquare,
   Gift,
-  AlertCircle,
-  ShoppingCart,
-  Cake,
-  Users,
-  PieChart,
   LineChart,
-  Target,
-  Percent,
+  List,
   Package,
+  Percent,
+  PieChart,
+  Search,
+  ShoppingCart,
+  Target,
+  Users,
 } from "lucide-vue-next";
-import * as echarts from "echarts";
-import StatCard from "../components/StatCard.vue";
-import MobileStatsWidget from "../components/MobileStatsWidget.vue";
-import DashboardWidget from "../components/DashboardWidget.vue";
+import ModalAtendimento from "~/components/common/ModalAtendimento.vue";
+import ModalDetalhesParceiro from "~/components/common/ModalDetalhesParceiro.vue";
+import UiDateBox from "~/components/ui/UiDateBox.vue";
+import UiEmptyState from "~/components/ui/UiEmptyState.vue";
+import UiListItem from "~/components/ui/UiListItem.vue";
+import UiStatusBadgeGroup from "~/components/ui/UiStatusBadgeGroup.vue";
+import { getPremiumTooltip, premiumTooltipStyle, type TooltipParam } from "~/utils/formatters/chart";
+import { formatarKg, formatarMoeda } from "~/utils/formatters/formatadores";
 import ComprasCard from "../components/ComprasCard.vue";
+import DashboardWidget from "../components/DashboardWidget.vue";
+import MobileStatsWidget from "../components/MobileStatsWidget.vue";
 import OcorrenciasChart from "../components/OcorrenciasChart.vue";
 import ProdutosRankingList from "../components/ProdutosRankingList.vue";
-import DashboardListItem from "@/components/ui/DashboardListItem.vue";
-import DateBox from "~/components/ui/DateBox.vue";
-import UiEmptyState from "~/components/ui/feedback/UiEmptyState.vue";
-import UiStatusBadgeGroup from "~/components/ui/data-display/UiStatusBadgeGroup.vue";
-import ModalDetalhesParceiro from "../components/ModalDetalhesParceiro.vue";
-import ModalAtendimento from "~/components/common/ModalAtendimento.vue";
-import {
-  getPremiumTooltip,
-  premiumTooltipStyle,
-} from "~/utils/formatters/chart";
-import { formatarKg, formatarMoeda } from "~/utils/formatters/formatadores";
+import StatCard from "../components/StatCard.vue";
+import type {
+  Attendance,
+  AniversarianteItem,
+  AtendenteItem,
+} from "../dashboard.types";
 
 definePageMeta({
   layout: "default",
@@ -486,24 +460,24 @@ const {
 } = storeToRefs(dashboardStore);
 
 const showParceiroModal = ref(false);
-const parceiroSelecionado = ref(null);
-const modalVariant = ref("parceiro");
+const parceiroSelecionado = ref<AniversarianteItem | (AtendenteItem & { name: string }) | null>(null);
+const modalVariant = ref<"parceiro" | "atendente" | "time">("parceiro");
 
 const showAtendimentoModal = ref(false);
-const atendimentoSelecionado = ref(null);
+const atendimentoSelecionado = ref<Attendance | null>(null);
 
-const handleOpenAtendimentoModal = (atendimento: any) => {
+const handleOpenAtendimentoModal = (atendimento: Attendance) => {
   atendimentoSelecionado.value = atendimento;
   showAtendimentoModal.value = true;
 };
 
-const handleOpenParceiroModal = (parceiro: any) => {
+const handleOpenParceiroModal = (parceiro: AniversarianteItem) => {
   modalVariant.value = "parceiro";
   parceiroSelecionado.value = parceiro;
   showParceiroModal.value = true;
 };
 
-const handleOpenAtendenteModal = (atendente: any) => {
+const handleOpenAtendenteModal = (atendente: AtendenteItem) => {
   modalVariant.value = "atendente";
   parceiroSelecionado.value = {
     ...atendente,
@@ -512,18 +486,17 @@ const handleOpenAtendenteModal = (atendente: any) => {
   showParceiroModal.value = true;
 };
 
-// Métricas para os cards de compras (excluindo o primeiro item que é o total)
 const comprasMetricsMes = computed(() => {
-  return comprasMes.value.slice(1).map(item => ({
+  return comprasMes.value.slice(1).map((item) => ({
     label: item.label,
-    value: item.value
+    value: item.value,
   }));
 });
 
 const comprasMetricsMesAnterior = computed(() => {
-  return comprasMesAnterior.value.slice(1).map(item => ({
+  return comprasMesAnterior.value.slice(1).map((item) => ({
     label: item.label,
-    value: item.value
+    value: item.value,
   }));
 });
 
@@ -531,15 +504,14 @@ const lineChartRef = ref<HTMLElement | null>(null);
 const barChartRef = ref<HTMLElement | null>(null);
 const discountChartRef = ref<HTMLElement | null>(null);
 
-const clamp = (value: number, min: number, max: number) =>
-  Math.min(Math.max(value, min), max);
+const clamp = (value: number, min: number, max: number) => Math.min(Math.max(value, min), max);
 
 const boundedTooltipPosition = (
   point: number[],
-  _params: any,
+  _params: unknown,
   _dom: HTMLElement,
-  _rect: any,
-  size: any
+  _rect: unknown,
+  size: { viewSize?: number[]; contentSize?: number[] },
 ) => {
   if (!point || !size?.viewSize || !size?.contentSize) return point;
 
@@ -557,7 +529,7 @@ const boundedTooltipPosition = (
   return [left, top];
 };
 
-const axisTooltip = (formatter: (params: any) => string) => ({
+const axisTooltip = (formatter: (params: TooltipParam | TooltipParam[]) => string) => ({
   trigger: "axis",
   ...premiumTooltipStyle,
   appendToBody: false,
@@ -567,9 +539,7 @@ const axisTooltip = (formatter: (params: any) => string) => ({
 
 const initCharts = () => {
   const getStyle = (variable: string) =>
-    getComputedStyle(document.documentElement)
-      .getPropertyValue(variable)
-      .trim();
+    getComputedStyle(document.documentElement).getPropertyValue(variable).trim();
 
   const commonOptions = {
     grid: { left: "3%", right: "4%", bottom: "3%", containLabel: true },
@@ -590,11 +560,9 @@ const initCharts = () => {
   };
 
   if (lineChartRef.value) {
-    const chart =
-      echarts.getInstanceByDom(lineChartRef.value) ||
-      echarts.init(lineChartRef.value);
+    const chart = echarts.getInstanceByDom(lineChartRef.value) || echarts.init(lineChartRef.value);
     chart.setOption({
-      tooltip: axisTooltip((params: any) => getPremiumTooltip(params)),
+      tooltip: axisTooltip((params) => getPremiumTooltip(params)),
       grid: commonOptions.grid,
       xAxis: {
         type: "category",
@@ -627,13 +595,9 @@ const initCharts = () => {
   }
 
   if (barChartRef.value) {
-    const chart =
-      echarts.getInstanceByDom(barChartRef.value) ||
-      echarts.init(barChartRef.value);
+    const chart = echarts.getInstanceByDom(barChartRef.value) || echarts.init(barChartRef.value);
     chart.setOption({
-      tooltip: axisTooltip((params: any) =>
-        getPremiumTooltip(params, undefined, formatarKg)
-      ),
+      tooltip: axisTooltip((params) => getPremiumTooltip(params, undefined, formatarKg)),
       grid: commonOptions.grid,
       xAxis: {
         type: "category",
@@ -657,12 +621,9 @@ const initCharts = () => {
 
   if (discountChartRef.value) {
     const chart =
-      echarts.getInstanceByDom(discountChartRef.value) ||
-      echarts.init(discountChartRef.value);
+      echarts.getInstanceByDom(discountChartRef.value) || echarts.init(discountChartRef.value);
     chart.setOption({
-      tooltip: axisTooltip((params: any) =>
-        getPremiumTooltip(params, undefined, formatarMoeda)
-      ),
+      tooltip: axisTooltip((params) => getPremiumTooltip(params, undefined, formatarMoeda)),
       grid: commonOptions.grid,
       xAxis: {
         type: "category",
@@ -684,7 +645,6 @@ const initCharts = () => {
       ],
     });
   }
-
 };
 
 watch(
@@ -697,8 +657,10 @@ watch(
       });
     }
   },
-  { immediate: true }
+  { immediate: true },
 );
+
+let themeObserver: MutationObserver | null = null;
 
 onMounted(() => {
   nextTick(() => {
@@ -706,20 +668,19 @@ onMounted(() => {
   });
   window.addEventListener("resize", handleResize);
 
-  // Watch for theme changes
-  const observer = new MutationObserver(() => {
+  themeObserver = new MutationObserver(() => {
     initCharts();
   });
-  observer.observe(document.documentElement, {
+  themeObserver.observe(document.documentElement, {
     attributes: true,
     attributeFilter: ["data-theme"],
   });
+});
 
-  // Cleanup observer on unmount
-  onUnmounted(() => {
-    observer.disconnect();
-    window.removeEventListener("resize", handleResize);
-  });
+onUnmounted(() => {
+  themeObserver?.disconnect();
+  themeObserver = null;
+  window.removeEventListener("resize", handleResize);
 });
 
 const handleResize = () => {
