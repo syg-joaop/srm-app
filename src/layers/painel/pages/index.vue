@@ -411,7 +411,7 @@ import {
 import { formatarKg, formatarMoeda } from "~/utils/formatters/formatadores";
 import { dataAtualPrimeiroDiaMes, dataAtualUltimoDiaMes } from "~/utils/utils";
 import type { AniversarianteItem, Atendente, AtendenteItem } from "../dashboard.types";
-
+import { useDashboardStore } from "../stores/dashboard";
 definePageMeta({
   layout: "default",
 });
