@@ -138,22 +138,7 @@ import { Calendar, CircleAlert, History, Send, Edit } from "lucide-vue-next";
 import UiModal from "~/components/ui/UiModal.vue";
 import UiButton from "~/components/ui/UiButton.vue";
 import DadoItem from "./DadoItem.vue";
-
-type OcorrenciaStatus = "pendente" | "acompanhamento" | "concluida";
-
-interface Ocorrencia {
-  id: number;
-  titulo?: string;
-  fornecedor: string;
-  dataCadastro?: string;
-  atendente: string;
-  status: OcorrenciaStatus;
-  proximoAtendimento?: string;
-  encaminhadoPara?: string;
-  diagnosticadoPor?: string;
-  formaAtendimento?: string;
-  situacao?: string;
-}
+import type { Ocorrencia, OcorrenciaStatus } from "../ocorrencias.types";
 
 const props = defineProps<{
   modelValue: boolean;
