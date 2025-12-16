@@ -376,13 +376,13 @@
       </div>
     </div>
 
-    <ModalDetalhesParceiro
+    <CommonModalDetalhesParceiro
       v-model="showParceiroModal"
       :parceiro="parceiroSelecionado"
       :variant="modalVariant"
     />
 
-    <ModalAtendimento v-model="showAtendimentoModal" :atendimento="atendimentoSelecionado" />
+    <CommonModalAtendimento v-model="showAtendimentoModal" :atendimento="atendimentoSelecionado" />
   </div>
 </template>
 
@@ -403,24 +403,13 @@ import {
   Target,
   Users,
 } from "lucide-vue-next";
-import ModalAtendimento from "~/components/common/ModalAtendimento.vue";
-import ModalDetalhesParceiro from "~/components/common/ModalDetalhesParceiro.vue";
-import UiDateBox from "~/components/ui/UiDateBox.vue";
-import UiEmptyState from "~/components/ui/UiEmptyState.vue";
-import UiListItem from "~/components/ui/UiListItem.vue";
-import UiStatusBadgeGroup from "~/components/ui/UiStatusBadgeGroup.vue";
 import {
   getPremiumTooltip,
   premiumTooltipStyle,
   type TooltipParam,
 } from "~/utils/formatters/chart";
 import { formatarKg, formatarMoeda } from "~/utils/formatters/formatadores";
-import ComprasCard from "../components/ComprasCard.vue";
-import DashboardWidget from "../components/DashboardWidget.vue";
-import MobileStatsWidget from "../components/MobileStatsWidget.vue";
-import OcorrenciasChart from "../components/OcorrenciasChart.vue";
-import ProdutosRankingList from "../components/ProdutosRankingList.vue";
-import StatCard from "../components/StatCard.vue";
+import { dataAtualPrimeiroDiaMes, dataAtualUltimoDiaMes } from "~/utils/utils";
 import type { AniversarianteItem, Atendente, AtendenteItem } from "../dashboard.types";
 
 definePageMeta({
@@ -430,10 +419,10 @@ definePageMeta({
 const { fetchDashboard } = useDashboardService();
 
 const filters = ref({
-  data_inicial: "2025-10-01",
-  data_final: "2025-10-30",
-  data_inicial2: "2025-11-01",
-  data_final2: "2025-11-31",
+  data_inicial: dataAtualPrimeiroDiaMes(),
+  data_final: dataAtualUltimoDiaMes(),
+  data_inicial2: dataAtualPrimeiroDiaMes(),
+  data_final2: dataAtualUltimoDiaMes(),
   categoriaFornecedor: "12",
   filial: "TODAS",
   mes_grafico: "atual",

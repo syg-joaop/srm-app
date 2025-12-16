@@ -1,5 +1,9 @@
 export default defineNuxtConfig({
-  imports: {
-    dirs: ["stores"],
+  routeRules: {
+    "/painel": {
+      cache: {
+        maxAge: 600,
+      },
+    },
   },
 });

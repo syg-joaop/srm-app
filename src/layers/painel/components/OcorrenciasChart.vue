@@ -67,8 +67,8 @@
 </template>
 
 <script setup lang="ts">
-import { ref, computed, watch, onMounted, onUnmounted, nextTick } from "vue";
 import * as echarts from "echarts";
+import { computed, nextTick, onMounted, onUnmounted, ref, watch } from "vue";
 
 interface ChartDataItem {
   name: string;
@@ -190,8 +190,8 @@ const initChart = () => {
 
   chartInstance.setOption(option);
 
-  chartInstance.on("mouseover", (params: any) => {
-    hoveredItem.value = params.name;
+  chartInstance.on("mouseover", (params: echarts.TooltipComponentOption) => {
+    hoveredItem.value = params.name as string;
   });
 
   chartInstance.on("mouseout", () => {

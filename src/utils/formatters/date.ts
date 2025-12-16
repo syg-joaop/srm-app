@@ -2,7 +2,7 @@ export function formatDate(date: string | Date, format: "short" | "long" = "shor
   const dateObj = typeof date === "string" ? new Date(date) : date;
 
   if (isNaN(dateObj.getTime())) {
-    return "Data inv�lida";
+    return "Data inválida";
   }
 
   if (format === "short") {
@@ -24,7 +24,7 @@ export function formatDateTime(date: string | Date): string {
   const dateObj = typeof date === "string" ? new Date(date) : date;
 
   if (isNaN(dateObj.getTime())) {
-    return "Data inv�lida";
+    return "Data inválida";
   }
 
   return dateObj.toLocaleString("pt-BR", {
