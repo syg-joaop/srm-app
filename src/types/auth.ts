@@ -65,6 +65,7 @@ export const userSchema = z
     role: z.string().optional().default("user"),
     idempresa: z.string().optional(),
     iduser: z.string().optional(),
+    codcom: z.string().optional(),
     setor: z.string().optional(),
     nomefun: z.string().optional(),
     empresa: z.string().optional(),
