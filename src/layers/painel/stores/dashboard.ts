@@ -4,7 +4,6 @@ import {
   emptyChartData,
   formatarLabel,
   formatarResumoCompras,
-  formatarResumoComprasAnterior,
   mapIcon,
   transformDescData,
   transformLineData,
@@ -14,8 +13,8 @@ import {
 } from "../dashboard.helpers";
 import type {
   AniversarianteItem,
+  Atendente,
   AtendenteItem,
-  Attendance,
   ChartData,
   DashboardApiResponse,
   DashboardCount,
@@ -69,7 +68,7 @@ export const useDashboardStore = defineStore("dashboard", () => {
 
   const comprasMesAnterior = computed<SummaryItem[]>(() => {
     const data = rawData.value?.comprasMes?.data?.[0];
-    return formatarResumoComprasAnterior(data);
+    return formatarResumoCompras(data);
   });
 
   const compradorItems = computed<TableItem[]>(() => {
@@ -137,7 +136,7 @@ export const useDashboardStore = defineStore("dashboard", () => {
     }));
   });
 
-  const atendimentosVencidos = computed<Attendance[]>(() => {
+  const atendimentosVencidos = computed<Atendente[]>(() => {
     return rawData.value?.atendimentosVencidos?.data ?? [];
   });
 

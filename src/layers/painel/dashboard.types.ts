@@ -9,7 +9,7 @@ export interface DashboardIndicatorResponse {
   data: DashboardCount[];
 }
 
-export interface Attendance {
+export interface Atendente {
   num: string;
   codcli: string;
   codfor: string;
@@ -36,10 +36,10 @@ export interface Attendance {
   problema: string;
 }
 
-export interface AttendanceResponse {
+export interface AtendenteResponse {
   access: boolean;
   message: string;
-  data: Attendance[];
+  data: Atendente[];
 }
 
 export interface OccurrenceStat {
@@ -134,10 +134,10 @@ export interface TopProduct {
 export interface DashboardApiResponse {
   indicadoresDashboard: DashboardIndicatorResponse;
   indicadoresDashboardSemComprador: DashboardIndicatorResponse;
-  proximosAtendimentos: AttendanceResponse;
-  proximosAtendimentosNaoAdmin: AttendanceResponse;
-  atendimentosVencidos: AttendanceResponse;
-  atendimentosVencidosNaoAdmin: AttendanceResponse;
+  proximosAtendimentos: AtendenteResponse;
+  proximosAtendimentosNaoAdmin: AtendenteResponse;
+  atendimentosVencidos: AtendenteResponse;
+  atendimentosVencidosNaoAdmin: AtendenteResponse;
   ocorrencias12Meses: {
     access: boolean;
     message: string;
@@ -163,10 +163,11 @@ export interface DashboardApiResponse {
     message: string;
     data: SupplierBirthday[];
   };
-  aniversariantesContatos: { access: boolean; message: string; data: any[] };
+  aniversariantesContatos: { access: boolean; message: string; data: Atendente[] };
   atendentes: { access: boolean; message: string; data: StaffPerformance[] };
   metaDiaria: { access: boolean; message: string; data: DailyGoal[] };
   comprasMes: { access: boolean; message: string; data: PurchasingStats[] };
+  comprasMesAnterior: { access: boolean; message: string; data: PurchasingStats[] };
   comprasComprador: {
     access: boolean;
     message: string;
@@ -225,7 +226,7 @@ export interface AtendenteItem {
   statuses: StatusBadgeItem[];
 }
 
-export type AtendimentosVencidos = Attendance;
+export type AtendimentosVencidos = Atendente;
 
 export interface ChartData {
   ocorrenciasPie: {

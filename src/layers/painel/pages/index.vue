@@ -409,7 +409,11 @@ import UiDateBox from "~/components/ui/UiDateBox.vue";
 import UiEmptyState from "~/components/ui/UiEmptyState.vue";
 import UiListItem from "~/components/ui/UiListItem.vue";
 import UiStatusBadgeGroup from "~/components/ui/UiStatusBadgeGroup.vue";
-import { getPremiumTooltip, premiumTooltipStyle, type TooltipParam } from "~/utils/formatters/chart";
+import {
+  getPremiumTooltip,
+  premiumTooltipStyle,
+  type TooltipParam,
+} from "~/utils/formatters/chart";
 import { formatarKg, formatarMoeda } from "~/utils/formatters/formatadores";
 import ComprasCard from "../components/ComprasCard.vue";
 import DashboardWidget from "../components/DashboardWidget.vue";
@@ -417,11 +421,7 @@ import MobileStatsWidget from "../components/MobileStatsWidget.vue";
 import OcorrenciasChart from "../components/OcorrenciasChart.vue";
 import ProdutosRankingList from "../components/ProdutosRankingList.vue";
 import StatCard from "../components/StatCard.vue";
-import type {
-  Attendance,
-  AniversarianteItem,
-  AtendenteItem,
-} from "../dashboard.types";
+import type { AniversarianteItem, Atendente, AtendenteItem } from "../dashboard.types";
 
 definePageMeta({
   layout: "default",
@@ -460,13 +460,15 @@ const {
 } = storeToRefs(dashboardStore);
 
 const showParceiroModal = ref(false);
-const parceiroSelecionado = ref<AniversarianteItem | (AtendenteItem & { name: string }) | null>(null);
+const parceiroSelecionado = ref<AniversarianteItem | (AtendenteItem & { name: string }) | null>(
+  null,
+);
 const modalVariant = ref<"parceiro" | "atendente" | "time">("parceiro");
 
 const showAtendimentoModal = ref(false);
-const atendimentoSelecionado = ref<Attendance | null>(null);
+const atendimentoSelecionado = ref<Atendente | null>(null);
 
-const handleOpenAtendimentoModal = (atendimento: Attendance) => {
+const handleOpenAtendimentoModal = (atendimento: Atendente) => {
   atendimentoSelecionado.value = atendimento;
   showAtendimentoModal.value = true;
 };
