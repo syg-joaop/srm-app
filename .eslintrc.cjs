@@ -29,83 +29,13 @@ module.exports = {
     es2022: true,
   },
 
+  // Não precisamos mais definir globals manualmente!
+  // O TypeScript já conhece todos os auto-imports do Nuxt através de .nuxt/tsconfig.json
+  // O parser do TypeScript no ESLint vai usar essas informações automaticamente
   globals: {
-    // Vue Composition API (auto-imported by Nuxt)
-    computed: "readonly",
-    ref: "readonly",
-    reactive: "readonly",
-    readonly: "readonly",
-    watch: "readonly",
-    watchEffect: "readonly",
-    onMounted: "readonly",
-    onUnmounted: "readonly",
-    onBeforeMount: "readonly",
-    onBeforeUnmount: "readonly",
-    onUpdated: "readonly",
-    onBeforeUpdate: "readonly",
-    nextTick: "readonly",
-    defineProps: "readonly",
-    defineEmits: "readonly",
-    defineExpose: "readonly",
-    withDefaults: "readonly",
-    defineModel: "readonly",
-    defineOptions: "readonly",
-    defineSlots: "readonly",
-    // Nuxt auto-imports
-    useNuxtApp: "readonly",
-    useRoute: "readonly",
-    useRouter: "readonly",
-    navigateTo: "readonly",
-    useHead: "readonly",
-    useSeoMeta: "readonly",
-    useCookie: "readonly",
-    useRequestHeaders: "readonly",
-    useRequestURL: "readonly",
-    useRuntimeConfig: "readonly",
-    useState: "readonly",
-    useFetch: "readonly",
-    useLazyFetch: "readonly",
-    useAsyncData: "readonly",
-    useLazyAsyncData: "readonly",
-    definePageMeta: "readonly",
-    // Pinia
-    storeToRefs: "readonly",
-    defineStore: "readonly",
-    // Custom composables (auto-imported from composables/**)
-    useAuth: "readonly",
-    useAuthPersistence: "readonly",
-    useListFilter: "readonly",
-    useParametros: "readonly",
-    usePermissoes: "readonly",
-    useTheme: "readonly",
-    // Custom services (auto-imported from composables/**)
-    useDashboardService: "readonly",
-    useFornecedorService: "readonly",
-    useProspectoService: "readonly",
-    // Custom stores (auto-imported from stores/**)
-    useAuthStore: "readonly",
-    useDashboardStore: "readonly",
-    // Utils (auto-imported from utils/**)
-    useMainApi: "readonly",
-    useAuthApi: "readonly",
-    parseJwt: "readonly",
-    isTokenExpired: "readonly",
-    formatDate: "readonly",
-    formatDateTime: "readonly",
-    formatDayMonth: "readonly",
-    formatarMoeda: "readonly",
-    formatarNumero: "readonly",
-    formatarKg: "readonly",
-    groupBy: "readonly",
-    unique: "readonly",
-    sortBy: "readonly",
-    capitalize: "readonly",
-    truncate: "readonly",
-    slugify: "readonly",
-    isValidEmail: "readonly",
-    isRequired: "readonly",
-    minLength: "readonly",
-    maxLength: "readonly",
+    // Apenas globals do ambiente que não são cobertos pelo TypeScript
+    // Os auto-imports do Nuxt (Vue, composables, utils, etc.) são reconhecidos
+    // automaticamente através do tsconfig.json que estende .nuxt/tsconfig.json
   },
 
   parser: "vue-eslint-parser",
@@ -126,6 +56,9 @@ module.exports = {
   ],
 
   rules: {
+    // no-undef será desabilitado apenas para arquivos TypeScript/Vue nos overrides
+    // Para arquivos JS, mantemos a verificação padrão
+
     "no-unused-vars": "off",
     "@typescript-eslint/no-unused-vars": [
       "warn",
@@ -196,6 +129,23 @@ module.exports = {
   },
 
   overrides: [
+    {
+      // Para arquivos TypeScript e Vue, desabilita no-undef
+      // O TypeScript já faz essa verificação e conhece todos os auto-imports do Nuxt
+      // através do tsconfig.json que estende .nuxt/tsconfig.json
+      files: ["**/*.{ts,vue}"],
+      rules: {
+        "no-undef": "off",
+      },
+    },
+    {
+      // Para arquivos JavaScript puros (.js, .cjs), ainda precisamos de no-undef
+      // já que não têm verificação de tipos do TypeScript
+      files: ["**/*.{js,cjs,mjs}"],
+      rules: {
+        "no-undef": "error",
+      },
+    },
     {
       files: ["src/layers/**/*.{ts,vue}"],
       rules: {

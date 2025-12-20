@@ -1,4 +1,4 @@
-<template>
+﻿<template>
   <div
     class="app-layout min-h-screen flex flex-col lg:flex-row"
     style="background-color: var(--color-background); transition: background-color 0.3s ease"
@@ -13,14 +13,14 @@
           border-color 0.3s ease;
       "
     >
-      <div class="flex items-center gap-3">
+      <div class="flex items-center gap-3" @click="handleMobileMenuOpen()">
         <div class="w-10 h-10 rounded-full bg-primary flex items-center justify-center shadow-md">
           <User class="w-5 h-5 text-white" />
         </div>
 
         <div class="flex flex-col">
           <span class="font-bold text-sm leading-tight" style="color: var(--color-text)"
-            >Olá, {{ userName }}</span
+            >OlÃ¡, {{ userName }}</span
           >
           <span
             class="text-[10px] font-medium tracking-wide uppercase"
@@ -31,6 +31,7 @@
       </div>
 
       <div class="flex items-center gap-2">
+        <OfflineIndicator />
         <button
           @click="toggleTheme"
           class="header-btn p-2 transition-colors rounded-lg"
@@ -54,6 +55,8 @@
         borderBottom: '1px solid var(--color-border)',
       }"
     >
+      <OfflineIndicator />
+
       <button
         @click="toggleTheme"
         class="header-btn p-2 transition-colors rounded-lg"
@@ -84,6 +87,8 @@
       @close="mobileMenuOpen = false"
     />
 
+    <Profile v-if="profileOpen" :is-open="profileOpen" @close="profileOpen = false" />
+
     <main
       class="main-content flex-1 pt-16"
       style="transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1)"
@@ -99,14 +104,18 @@
 </template>
 
 <script setup lang="ts">
-import { ref, computed, onMounted, onUnmounted } from "vue";
-import { Menu, User, Moon, Sun } from "lucide-vue-next";
+import { Menu, Moon, Sun, User } from "lucide-vue-next";
+import OfflineIndicator from "~/components/common/OfflineIndicator.vue";
+import Profile from "~/layouts/profile.vue";
 
 const { theme, toggleTheme } = useTheme();
 const { userName, userRole } = useAuth();
+const { isOnline } = useNetworkStatus();
+const { pendingCount } = useSyncManager();
 
 const isSidebarExpanded = ref(false);
 const mobileMenuOpen = ref(false);
+const profileOpen = ref(false);
 const windowWidth = ref(0);
 
 const handleSidebarExpand = (expanded: boolean) => {
@@ -134,6 +143,15 @@ const sidebarWidth = computed(() => {
   }
   return isSidebarExpanded.value ? "var(--sidebar-width)" : "var(--sidebar-width-collapsed)";
 });
+
+const showStatusBar = computed(() => !isOnline.value || pendingCount.value > 0);
+
+const handleMobileMenuOpen = () => {
+  if (windowWidth.value < 1024) {
+    //toggle profile open
+    profileOpen.value = !profileOpen.value;
+  }
+};
 </script>
 
 <style scoped>

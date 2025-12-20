@@ -1,4 +1,4 @@
-<template>
+﻿<template>
   <div
     class="fixed bottom-4 right-4 sm:bottom-6 sm:right-6 flex flex-col items-end"
     style="z-index: 9999"
@@ -160,7 +160,6 @@
 </template>
 
 <script setup lang="ts">
-import { ref, nextTick, computed, watch } from "vue";
 import { X, Send } from "lucide-vue-next";
 
 type ChatMessage = {

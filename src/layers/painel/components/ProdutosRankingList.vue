@@ -1,14 +1,14 @@
-<template>
+﻿<template>
   <div class="flex flex-col">
     <div
       class="flex justify-between items-center pb-3 border-b border-[var(--color-border-subtle)] mb-2"
     >
       <div class="flex items-center gap-1.5">
         <span class="w-2 h-2 rounded-sm bg-[var(--color-primary)]"></span>
-        <span class="text-[11px] text-[var(--color-text-muted)]">Mês Atual</span>
+        <span class="text-[11px] text-[var(--color-text-muted)]">MÃªs Atual</span>
       </div>
       <div class="flex items-center gap-1.5">
-        <span class="text-[11px] text-[var(--color-text-muted)]">Mês Anterior</span>
+        <span class="text-[11px] text-[var(--color-text-muted)]">MÃªs Anterior</span>
         <span class="w-2 h-2 rounded-sm bg-[var(--color-text-muted)] opacity-50"></span>
       </div>
     </div>
@@ -60,8 +60,6 @@
 </template>
 
 <script setup lang="ts">
-import { computed } from "vue";
-import { formatarKg } from "~/utils/formatters/formatadores";
 
 interface Props {
   data: {

@@ -1,4 +1,4 @@
-<template>
+﻿<template>
   <UiModal v-model="isOpen" size="large" :show-close="true">
     <template #title>
       <div class="flex items-center gap-2">
@@ -11,11 +11,9 @@
       <div class="lg:col-span-4 flex flex-col gap-6">
         <FormularioRota
           v-model:nome="formData.nome"
-          v-model:comprador="formData.comprador"
           v-model:data-inicio="formData.dataInicio"
           v-model:data-fim="formData.dataFim"
           v-model:observacoes="formData.observacoes"
-          :compradores="compradores"
         />
 
         <ListaFornecedoresRota
@@ -46,7 +44,6 @@
 </template>
 
 <script setup lang="ts">
-import { ref, computed } from "vue";
 import { Route as RouteIcon, Plus } from "lucide-vue-next";
 import UiModal from "~/components/ui/UiModal.vue";
 import UiButton from "~/components/ui/UiButton.vue";
@@ -54,12 +51,7 @@ import UiMapaPontos from "~/components/ui/UiMapaPontos.vue";
 import type { UiMapaPonto } from "~/components/ui/maps.types";
 import FormularioRota from "./FormularioRota.vue";
 import ListaFornecedoresRota from "./ListaFornecedoresRota.vue";
-
-interface FornecedorRota {
-  name: string;
-  lat: number;
-  lng: number;
-}
+import type { FornecedorRotaSimples } from "../rotas.types";
 
 const props = defineProps<{
   modelValue: boolean;
@@ -67,7 +59,7 @@ const props = defineProps<{
 
 const emit = defineEmits<{
   "update:modelValue": [value: boolean];
-  save: [data: typeof formData.value & { fornecedores: FornecedorRota[] }];
+  save: [data: typeof formData.value & { fornecedores: FornecedorRotaSimples[] }];
 }>();
 
 const isOpen = computed({
@@ -75,23 +67,19 @@ const isOpen = computed({
   set: (val) => emit("update:modelValue", val),
 });
 
-const compradores = ["Alexsander", "João", "Maria", "Pedro"];
-
 const formData = ref({
   nome: "",
-  comprador: "",
   dataInicio: null as Date | null,
   dataFim: null as Date | null,
   observacoes: "",
 });
 
 const novoFornecedor = ref("");
-const fornecedores = ref<FornecedorRota[]>([]);
+const fornecedores = ref<FornecedorRotaSimples[]>([]);
 
 const isFormValid = computed(() => {
   return (
     formData.value.nome.trim() !== "" &&
-    formData.value.comprador !== "" &&
     formData.value.dataInicio !== null &&
     formData.value.dataFim !== null
   );
@@ -132,7 +120,6 @@ const removeFornecedor = (index: number) => {
 const resetForm = () => {
   formData.value = {
     nome: "",
-    comprador: "",
     dataInicio: null,
     dataFim: null,
     observacoes: "",

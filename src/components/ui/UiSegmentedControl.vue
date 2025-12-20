@@ -1,4 +1,4 @@
-<template>
+﻿<template>
   <div
     ref="containerRef"
     class="relative inline-flex gap-1 p-1 rounded-xl bg-[var(--color-hover)] font-medium max-w-full"
@@ -39,7 +39,6 @@
 </template>
 
 <script setup lang="ts">
-import { ref, computed, watch, onMounted, onUnmounted, nextTick, type Component } from "vue";
 
 export interface SegmentedOption {
   label: string;

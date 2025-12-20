@@ -22,3 +22,20 @@ export function formatarKg(valor: string | number | undefined): string {
         maximumFractionDigits: 0,
       }) + " KG";
 }
+
+export function formatarDistancia(metros: number): string {
+  if (metros >= 1000) {
+    return `${(metros / 1000).toFixed(1)} km`;
+  }
+  return `${Math.round(metros)} m`;
+}
+
+export function formatarDuracao(segundos: number): string {
+  const hours = Math.floor(segundos / 3600);
+  const minutes = Math.floor((segundos % 3600) / 60);
+
+  if (hours > 0) {
+    return `${hours}h ${minutes}min`;
+  }
+  return `${minutes}min`;
+}

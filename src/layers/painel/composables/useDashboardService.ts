@@ -1,6 +1,7 @@
-import { isRef, ref, type Ref } from "vue";
-import { useAuthStore } from "~/stores/auth";
+﻿import { useAuthStore } from "~/stores/auth";
 import type { DashboardApiResponse } from "../dashboard.types";
+
+type ApiDataWrapper<T> = { data: T };
 
 interface DashboardFilters {
   data_inicial: string;
@@ -12,30 +13,41 @@ interface DashboardFilters {
   mes_grafico: string;
 }
 
+const DASHBOARD_INDICATORS_ENDPOINT = "/dashboard/indicadores";
+
+const DASHBOARD_GRAPH_IDS = [
+  "INDICADORES_DASHBOARD",
+  "INDICADORES_DASHBOARD_COMPRADOR",
+  "PROXIMOS_ATENDIMENTOS",
+  "PROXIMOS_ATENDIMENTOS_NAO_ADMIN",
+  "ATENDIMENTOS_VENCIDOS",
+  "ATENDIMENTOS_VENCIDOS_NAO_ADMIN",
+  "OCORRENCIAS_12_MESES",
+  "OCORRENCIAS_12_MESES_NAO_ADMIN",
+  "OCORRENCIAS_6_MESES",
+  "OCORRENCIAS_6_MESES_NAO_ADMIN",
+  "ANIVERSIANTES_FORNECEDORES",
+  "ANIVERSIANTES_CONTATOS",
+  "ATENDENTES",
+  "META_DIARIA",
+  "COMPRAS_MES",
+  "COMPRAS_COMPRADOR",
+  "PROD_MAIS_COMPRADOS_MES",
+  "TOTAL_DESCONTOS",
+] as const;
+
+const DASHBOARD_GRAPH_IDS_PARAM = JSON.stringify(DASHBOARD_GRAPH_IDS);
+
+const unwrapApiData = <T>(response: T | ApiDataWrapper<T>): T => {
+  if (typeof response === "object" && response !== null && "data" in response) {
+    return (response as ApiDataWrapper<T>).data;
+  }
+  return response as T;
+};
+
 export const useDashboardService = () => {
   const api = useMainApi();
   const authStore = useAuthStore();
-
-  const idList = [
-    "INDICADORES_DASHBOARD",
-    "INDICADORES_DASHBOARD_COMPRADOR",
-    "PROXIMOS_ATENDIMENTOS",
-    "PROXIMOS_ATENDIMENTOS_NAO_ADMIN",
-    "ATENDIMENTOS_VENCIDOS",
-    "ATENDIMENTOS_VENCIDOS_NAO_ADMIN",
-    "OCORRENCIAS_12_MESES",
-    "OCORRENCIAS_12_MESES_NAO_ADMIN",
-    "OCORRENCIAS_6_MESES",
-    "OCORRENCIAS_6_MESES_NAO_ADMIN",
-    "ANIVERSIANTES_FORNECEDORES",
-    "ANIVERSIANTES_CONTATOS",
-    "ATENDENTES",
-    "META_DIARIA",
-    "COMPRAS_MES",
-    "COMPRAS_COMPRADOR",
-    "PROD_MAIS_COMPRADOS_MES",
-    "TOTAL_DESCONTOS",
-  ];
 
   const fetchDashboard = (filters: Ref<DashboardFilters> | DashboardFilters) => {
     const filtersRef = isRef(filters) ? filters : ref(filters);
@@ -43,15 +55,18 @@ export const useDashboardService = () => {
     return useAsyncData<DashboardApiResponse>(
       "dashboard-main-data",
       async () => {
-        const response = await api("/dashboard/indicadores", {
-          method: "GET",
-          query: {
-            graficos: JSON.stringify(idList),
-            ...filtersRef.value,
+        const response = await api<ApiDataWrapper<DashboardApiResponse> | DashboardApiResponse>(
+          DASHBOARD_INDICATORS_ENDPOINT,
+          {
+            method: "GET",
+            query: {
+              graficos: DASHBOARD_GRAPH_IDS_PARAM,
+              ...filtersRef.value,
+            },
           },
-        });
+        );
 
-        return (response as any)?.data ?? response;
+        return unwrapApiData<DashboardApiResponse>(response);
       },
       {
         watch: [filtersRef],

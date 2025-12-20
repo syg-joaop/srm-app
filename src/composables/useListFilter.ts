@@ -1,6 +1,4 @@
-import { ref, computed, unref } from "vue";
-import type { Ref, MaybeRef } from "vue";
-
+﻿
 export interface FilterConfig<T> {
   searchFields?: (keyof T)[];
   customFilters?: (item: T) => boolean;

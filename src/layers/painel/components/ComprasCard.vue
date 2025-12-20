@@ -1,4 +1,4 @@
-<template>
+﻿<template>
   <div
     class="relative overflow-hidden rounded-xl sm:rounded-2xl border transition-all duration-300 group hover:shadow-lg"
     style="background-color: var(--color-surface); border-color: var(--color-border-subtle)"
@@ -97,7 +97,6 @@
 </template>
 
 <script setup lang="ts">
-import { computed, type Component } from "vue";
 import { DollarSign, CalendarClock, TrendingUp, TrendingDown } from "lucide-vue-next";
 
 interface Metric {

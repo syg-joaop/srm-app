@@ -56,7 +56,7 @@
           <div class="col-span-2 flex justify-center">
             <UiBadge
               v-if="prospecto.status"
-              :variant="getStatusVariant(prospecto.status)"
+              :variant="getStatusVariant(prospecto.status) as Variant"
               :dot="true"
               size="small"
             >
@@ -77,7 +77,7 @@
         </div>
 
         <div class="flex md:hidden flex-col gap-1.5">
-          <div class="flex items-start justify-between gap-3">
+          <div class="flex items-start justify-between gap-2">
             <div class="flex items-center gap-2.5 min-w-0 flex-1">
               <div
                 class="flex-shrink-0 w-8 h-8 rounded-full flex items-center justify-center"
@@ -96,11 +96,23 @@
                 </span>
               </div>
             </div>
-            <span
-              class="text-[11px] text-[var(--color-text-muted)] whitespace-nowrap flex-shrink-0"
-            >
-              {{ prospecto.cidade }}
-            </span>
+            <div class="flex flex-col items-end gap-1 flex-shrink-0">
+              <UiBadge
+                v-if="prospecto.status"
+                :variant="getStatusVariant(prospecto.status) as Variant"
+                size="small"
+              >
+                {{ prospecto.status }}
+              </UiBadge>
+              <span class="text-[10px] text-[var(--color-text-muted)]">
+                {{ prospecto.ultima_interacao }}
+              </span>
+            </div>
+          </div>
+          <div
+            class="flex items-center justify-between pl-[42px] text-[11px] text-[var(--color-text-muted)]"
+          >
+            <span class="truncate">{{ prospecto.cidade }}</span>
           </div>
         </div>
       </div>
@@ -109,9 +121,16 @@
 </template>
 
 <script setup lang="ts">
-import { Building2, MessageSquareText, MapPin } from "lucide-vue-next";
+import { Building2, MapPin, MessageSquareText } from "lucide-vue-next";
+import type { Variant } from "~/components/ui/UiBadge.vue";
 import UiBadge from "~/components/ui/UiBadge.vue";
 import UiButton from "~/components/ui/UiButton.vue";
+import {
+  COMMON_STATUS_ICON_CLASSES,
+  COMMON_STATUS_VARIANTS,
+  resolveStatusIconClass,
+  resolveStatusVariant,
+} from "~/utils/status";
 import type { Prospecto } from "../prospecto.types";
 
 defineProps<{
@@ -123,25 +142,19 @@ defineEmits<{
   (e: "add-route", prospecto: Prospecto): void;
 }>();
 
-const getStatusVariant = (status: string): string => {
-  const normalized = (status || "").toLowerCase().trim();
-  const map: Record<string, string> = {
-    ativo: "success",
-    alerta: "warning",
-    inativo: "danger",
-    novo: "info",
-  };
-  return map[normalized] || "default";
+const STATUS_VARIANTS: Record<string, string> = {
+  ...COMMON_STATUS_VARIANTS,
+  novo: "info",
 };
 
-const getIconClass = (status: string): string => {
-  const normalized = (status || "").toLowerCase().trim();
-  const map: Record<string, string> = {
-    ativo: "bg-green-500/10 text-green-500",
-    alerta: "bg-yellow-500/10 text-yellow-500",
-    inativo: "bg-red-500/10 text-red-500",
-    novo: "bg-blue-500/10 text-blue-500",
-  };
-  return map[normalized] || "bg-[var(--color-primary)]/10 text-[var(--color-primary)]";
+const STATUS_ICON_CLASSES: Record<string, string> = {
+  ...COMMON_STATUS_ICON_CLASSES,
+  novo: "bg-blue-500/10 text-blue-500",
 };
+
+const getStatusVariant = (status: string): Variant =>
+  resolveStatusVariant(status, STATUS_VARIANTS) as Variant;
+
+const getIconClass = (status: string): string =>
+  resolveStatusIconClass(status, STATUS_ICON_CLASSES);
 </script>

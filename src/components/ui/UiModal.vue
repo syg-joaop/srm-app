@@ -1,4 +1,4 @@
-<template>
+﻿<template>
   <Teleport to="body">
     <Transition name="modal">
       <div v-if="modelValue" class="modal-overlay" @click="handleOverlayClick">
@@ -42,7 +42,6 @@
 </template>
 
 <script setup lang="ts">
-import { watch, onBeforeUnmount } from "vue";
 
 type Size = "small" | "medium" | "large" | "full";
 

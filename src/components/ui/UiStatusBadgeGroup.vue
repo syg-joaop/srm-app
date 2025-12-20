@@ -1,4 +1,4 @@
-<template>
+﻿<template>
   <div class="hidden sm:flex gap-2 text-xs justify-end">
     <div
       v-for="(item, index) in items"
@@ -38,7 +38,6 @@
 </template>
 
 <script setup lang="ts">
-import { ref } from "vue";
 import { Calendar, CheckCircle, Clock, XCircle, Circle } from "lucide-vue-next";
 
 interface StatusBadgeItem {

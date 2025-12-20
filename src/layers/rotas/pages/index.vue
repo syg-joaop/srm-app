@@ -1,4 +1,4 @@
-<template>
+﻿<template>
   <div class="min-h-screen p-4 sm:p-6 bg-[var(--color-background)]">
     <div class="flex flex-col gap-4 mb-6 sm:mb-8">
       <h1 class="text-xl sm:text-2xl font-bold text-[var(--color-text)]">Rotas cadastradas</h1>
@@ -20,198 +20,238 @@
           :end-date="filtroDataFim"
           placeholder="Filtrar período"
           class="w-full sm:w-auto"
-          @change="handleDateChange"
+          @change="(value) => handleDateChange(value as { start: Date | null; end: Date | null })"
+        />
+
+        <UiButton
+          v-if="filtroDataInicio || filtroDataFim"
+          variant="ghost"
+          size="small"
+          @click="limparFiltros"
+        >
+          <X class="w-4 h-4" />
+          Limpar
+        </UiButton>
+      </div>
+    </div>
+
+    <!-- Loading state -->
+    <div
+      v-if="isLoading"
+      class="flex flex-col items-center justify-center py-16 text-[var(--color-text-muted)]"
+    >
+      <div class="animate-spin rounded-full h-8 w-8 border-b-2 border-primary-600 mb-3"></div>
+      <span class="text-sm">Carregando rotas...</span>
+    </div>
+
+    <!-- Error state -->
+    <div
+      v-else-if="error"
+      class="flex flex-col items-center justify-center py-16 text-[var(--color-text-muted)]"
+    >
+      <Icon icon="heroicons:exclamation-triangle" class="w-12 h-12 text-red-500 mb-3" />
+      <span class="text-sm mb-3">{{ error }}</span>
+      <UiButton variant="primary" size="small" @click="recarregarRotas">
+        Tentar novamente
+      </UiButton>
+    </div>
+
+    <!-- Content -->
+    <template v-else>
+      <!-- Header da tabela -->
+      <div
+        v-if="rotas.length > 0"
+        class="hidden md:grid grid-cols-12 gap-4 px-6 py-3 bg-[var(--color-background)] rounded-t-lg border border-[var(--color-border)] text-xs font-semibold text-[var(--color-text-muted)] uppercase tracking-wider"
+      >
+        <div class="col-span-5">Descrição</div>
+        <div class="col-span-2 text-center">Progresso</div>
+        <div class="col-span-2 text-center">Status</div>
+        <div class="col-span-3 text-end">Ações</div>
+      </div>
+
+      <!-- Lista de rotas -->
+      <div class="flex flex-col gap-1.5 md:gap-0">
+        <RotaCardItem
+          v-for="rota in rotasPaginadas"
+          :key="rota.id"
+          :rota="rota"
+          @click="abrirDetalhes"
+          @adicao-rapida="adicionarRapido"
         />
       </div>
-    </div>
 
-    <div
-      class="hidden md:grid grid-cols-12 gap-4 px-6 py-3 bg-[var(--color-background)] rounded-t-lg border border-[var(--color-border)] text-xs font-semibold text-[var(--color-text-muted)] uppercase tracking-wider"
-    >
-      <div class="col-span-6">Descrição</div>
-      <div class="col-span-2 text-center">Status</div>
-      <div class="col-span-4 text-end">Ações</div>
-    </div>
+      <!-- Paginação -->
+      <UiPaginacao
+        v-if="rotas.length > 0"
+        :page="currentPage"
+        :total-pages="totalPages"
+        class="mt-6"
+        @update:page="(p) => (currentPage = p)"
+      />
+      />
 
-    <div class="flex flex-col gap-1.5 md:gap-0">
-      <div
-        v-for="route in paginatedRoutes"
-        :key="route.id"
-        class="group/item relative bg-[var(--color-surface)] md:rounded-none first:md:rounded-t-none last:md:rounded-b-lg rounded-lg border border-[var(--color-border-subtle)] md:border-[var(--color-border)] md:border-t-0 first:md:border-t hover:border-[var(--color-primary-border)] hover:bg-[var(--color-primary-soft)] transition-all duration-300 ease-out hover:shadow-sm px-3 py-2.5 md:px-6 md:py-3 cursor-pointer"
+      <!-- Empty state -->
+      <UiEmptyState
+        v-if="rotas.length === 0"
+        title="Nenhuma rota encontrada"
+        description="Crie sua primeira rota para começar a organizar seus fornecedores."
       >
-        <div
-          class="absolute left-0 top-1/2 -translate-y-1/2 w-0.5 h-0 bg-[var(--color-primary)] rounded-r-full opacity-0 group-hover/item:h-6 group-hover/item:opacity-100 transition-all duration-300"
-        ></div>
+        <template #icon>
+          <RouteIcon class="w-12 h-12" />
+        </template>
+        <template #action>
+          <UiButton variant="primary" @click="showNovaRotaModal = true">
+            <Plus class="w-4 h-4" />
+            Nova Rota
+          </UiButton>
+        </template>
+      </UiEmptyState>
+    </template>
 
-        <div class="flex md:grid md:grid-cols-12 gap-2.5 md:gap-4 items-center">
-          <div class="col-span-6 flex items-center gap-2.5 md:gap-3 flex-1 min-w-0">
-            <div
-              class="flex-shrink-0 w-8 h-8 md:w-9 md:h-9 rounded-full bg-[var(--color-primary-soft)] flex items-center justify-center text-[var(--color-primary)] group-hover/item:scale-105 transition-transform duration-200"
-            >
-              <RouteIcon class="w-3.5 h-3.5 md:w-4 md:h-4" />
-            </div>
-            <div class="flex flex-col min-w-0">
-              <span
-                class="font-semibold text-[var(--color-text)] text-sm group-hover/item:text-[var(--color-primary)] transition-colors truncate"
-              >
-                {{ route.name }}
-              </span>
-              <span class="text-[11px] text-[var(--color-text-muted)] truncate">
-                {{ route.dateRange }}
-              </span>
-              <span class="sm:inline hidden text-[11px] text-[var(--color-text-muted)] truncate">
-                {{ route.suppliersCount }} fornecedor{{ route.suppliersCount !== 1 ? "es" : "" }}
-              </span>
-            </div>
-          </div>
-
-          <div class="hidden md:flex col-span-2 justify-center">
-            <UiBadge :variant="getStatusVariant(route.status)" :dot="true" size="small">
-              {{ getStatusLabel(route.status) }}
-            </UiBadge>
-          </div>
-
-          <div class="col-span-4 flex items-center justify-end gap-1.5 md:gap-2">
-            <UiButton variant="primary" size="small" class="hidden md:flex">
-              <Plus class="w-3 h-3" />
-              Adição rápida
-            </UiButton>
-
-            <UiButton variant="ghost" size="small" class="!px-1.5 !py-1.5 md:!px-2">
-              <Eye class="w-4 h-4" />
-              <span class="hidden md:inline">Detalhes</span>
-            </UiButton>
-          </div>
-        </div>
-      </div>
-    </div>
-
-    <UiPaginacao
-      v-if="routes.length > 0"
-      v-model:current-page="currentPage"
-      :total-pages="totalPages"
-      class="mt-6"
-    />
-
-    <UiEmptyState
-      v-if="routes.length === 0"
-      title="Nenhuma rota encontrada"
-      description="Crie sua primeira rota para começar a organizar seus fornecedores."
-    >
-      <template #icon>
-        <RouteIcon class="w-12 h-12" />
-      </template>
-      <template #action>
-        <UiButton variant="primary" @click="showNovaRotaModal = true">
-          <Plus class="w-4 h-4" />
-          Nova Rota
-        </UiButton>
-      </template>
-    </UiEmptyState>
-
+    <!-- Modais -->
     <ModalNovaRota v-model="showNovaRotaModal" @save="handleRouteCreated" />
+    <ModalDetalhesRota v-model="showDetalhesModal" :rota="rotaSelecionada" />
   </div>
 </template>
 
 <script setup lang="ts">
-import { ref, computed } from "vue";
-import { Plus, Eye, Route as RouteIcon } from "lucide-vue-next";
+import { Icon, Plus, Route as RouteIcon, X } from "lucide-vue-next";
 import UiButton from "~/components/ui/UiButton.vue";
-import UiBadge from "~/components/ui/UiBadge.vue";
-import UiEmptyState from "~/components/ui/UiEmptyState.vue";
 import UiCalendario from "~/components/ui/UiCalendario.vue";
+import UiEmptyState from "~/components/ui/UiEmptyState.vue";
 import UiPaginacao from "~/components/ui/UiPaginacao.vue";
+import ModalDetalhesRota from "../components/ModalDetalhesRota.vue";
 import ModalNovaRota from "../components/ModalNovaRota.vue";
+import RotaCardItem from "../components/RotaCardItem.vue";
+import type { Rota, RotaFilters } from "../rotas.types";
 
 definePageMeta({
   layout: "default",
 });
 
-type RouteStatus = "pending" | "cancelled" | "completed";
-
-interface RouteItem {
-  id: number;
-  name: string;
-  dateRange: string;
-  suppliersCount: number;
-  status: RouteStatus;
-}
-
+// Estado
 const showNovaRotaModal = ref(false);
+const showDetalhesModal = ref(false);
+const rotaSelecionada = ref<Rota | null>(null);
 const filtroDataInicio = ref<Date | null>(null);
 const filtroDataFim = ref<Date | null>(null);
 const currentPage = ref(1);
 const itemsPerPage = 10;
 
-const routes = ref<RouteItem[]>([
-  {
-    id: 1,
-    name: "Rota dos vinhedos",
-    dateRange: "25/04 - 30/04",
-    suppliersCount: 3,
-    status: "pending",
-  },
-  {
-    id: 2,
-    name: "Rota 2",
-    dateRange: "25/04 - 30/04",
-    suppliersCount: 0,
-    status: "cancelled",
-  },
-  {
-    id: 3,
-    name: "Rota 91",
-    dateRange: "01/06 - 30/06",
-    suppliersCount: 3,
-    status: "completed",
-  },
-  {
-    id: 4,
-    name: "Rota dos vinhedos",
-    dateRange: "25/04 - 30/04",
-    suppliersCount: 3,
-    status: "pending",
-  },
-]);
+// Dados
+const rotas = ref<Rota[]>([]);
+const totalItems = ref(0);
+const isLoading = ref(false);
+const error = ref<string | null>(null);
 
-const totalPages = computed(() => Math.ceil(routes.value.length / itemsPerPage) || 1);
+// Service
+const rotaService = useRotaService();
 
-const paginatedRoutes = computed(() => {
-  const start = (currentPage.value - 1) * itemsPerPage;
-  const end = start + itemsPerPage;
-  return routes.value.slice(start, end);
+// Computed
+const totalPages = computed(() => Math.ceil(totalItems.value / itemsPerPage) || 1);
+
+const rotasPaginadas = computed(() => {
+  // Se os dados jÃ¡ vÃªm paginados do backend, retorna direto
+  return rotas.value;
 });
 
-const getStatusLabel = (status: RouteStatus): string => {
-  const map: Record<RouteStatus, string> = {
-    pending: "Pendente",
-    cancelled: "Cancelada",
-    completed: "Completo",
+const filtros = computed<RotaFilters>(() => {
+  const filters: RotaFilters = {
+    page: currentPage.value,
+    itens: itemsPerPage,
   };
-  return map[status];
+
+  if (filtroDataInicio.value) {
+    filters.data_inicio = filtroDataInicio.value.toISOString().split("T")[0];
+  }
+  if (filtroDataFim.value) {
+    filters.data_fim = filtroDataFim.value.toISOString().split("T")[0];
+  }
+
+  return filters;
+});
+
+/**
+ * Carrega rotas do backend
+ */
+const carregarRotas = async () => {
+  isLoading.value = true;
+  error.value = null;
+
+  try {
+    const response = await rotaService.fetchRotas(filtros.value);
+
+    if (response) {
+      rotas.value = response.data || [];
+      totalItems.value = response.total || response.data?.length || 0;
+    } else {
+      rotas.value = [];
+      totalItems.value = 0;
+    }
+  } catch (err) {
+    error.value = err instanceof Error ? err.message : "Erro ao carregar rotas";
+    console.error("[RotasPage] Erro ao carregar rotas:", err);
+  } finally {
+    isLoading.value = false;
+  }
 };
 
-const getStatusVariant = (status: RouteStatus): string => {
-  const map: Record<RouteStatus, string> = {
-    pending: "warning",
-    cancelled: "danger",
-    completed: "success",
-  };
-  return map[status];
+/**
+ * Recarrega rotas
+ */
+const recarregarRotas = () => {
+  carregarRotas();
 };
 
+/**
+ * Abre modal de detalhes
+ */
+const abrirDetalhes = (rota: Rota) => {
+  rotaSelecionada.value = rota;
+  showDetalhesModal.value = true;
+};
+
+/**
+ * Ação de adição rápida
+ */
+const adicionarRapido = (rota: Rota) => {
+  console.log("Adição rápida para rota:", rota.id);
+  // TODO: Implementar adição rápida de roteiros
+};
+
+/**
+ * Handler de filtro de data
+ */
 const handleDateChange = (value: { start: Date | null; end: Date | null }) => {
   filtroDataInicio.value = value.start;
   filtroDataFim.value = value.end;
+  currentPage.value = 1; // Reset para primeira página
 };
 
+/**
+ * Limpa filtros
+ */
+const limparFiltros = () => {
+  filtroDataInicio.value = null;
+  filtroDataFim.value = null;
+  currentPage.value = 1;
+};
+
+/**
+ * Handler de rota criada
+ */
 const handleRouteCreated = () => {
   console.log("Rota criada com sucesso!");
+  carregarRotas();
 };
-</script>
 
-<style scoped>
-.group\/item:hover {
-  transform: translateY(-1px);
-}
-</style>
+// Watch para recarregar quando filtros mudam
+watch([() => currentPage.value, () => filtroDataInicio.value, () => filtroDataFim.value], () => {
+  carregarRotas();
+});
+
+// Carrega dados iniciais
+onMounted(() => {
+  carregarRotas();
+});
+</script>

@@ -1,4 +1,4 @@
-<template>
+﻿<template>
   <div class="flex items-center gap-4 mb-8 pb-6 border-b" style="border-color: var(--color-border)">
     <div
       class="p-3 rounded-2xl border"
@@ -28,8 +28,6 @@
 </template>
 
 <script setup lang="ts">
-import { computed } from "vue";
-import type { Component } from "vue";
 
 const props = withDefaults(
   defineProps<{

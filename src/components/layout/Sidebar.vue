@@ -1,4 +1,4 @@
-<template>
+﻿<template>
   <div>
     <div
       v-if="isOpen"
@@ -55,7 +55,6 @@
 </template>
 
 <script setup lang="ts">
-import { ref, watch } from "vue";
 import {
   LayoutGrid,
   Recycle,
@@ -89,10 +88,10 @@ const handleLogout = async () => {
 };
 
 const menuItems = [
-  { label: "Início", path: "/", icon: LayoutGrid },
+  { label: "InÃ­cio", path: "/", icon: LayoutGrid },
   { label: "Fornecedores", path: "/fornecedores", icon: Recycle },
   { label: "Prospectos", path: "/prospectos", icon: HeartHandshake },
-  { label: "Ocorrências", path: "/ocorrencias", icon: MessageSquare },
+  { label: "OcorrÃªncias", path: "/ocorrencias", icon: MessageSquare },
   { label: "Check-in", path: "/checkin", icon: MapPin },
   { label: "Rota", path: "/rotas", icon: Route },
   { label: "Concorrentes", path: "/concorrentes", icon: Crosshair },

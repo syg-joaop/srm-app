@@ -1,4 +1,4 @@
-<template>
+﻿<template>
   <UiModal v-model="isOpen" size="medium" :show-close="true">
     <template #title>
       <div class="flex items-center gap-2.5 md:gap-3">
@@ -30,7 +30,7 @@
       >
         <Calendar class="w-3.5 h-3.5 md:w-4 md:h-4 text-[var(--color-primary)] flex-shrink-0" />
         <span class="text-xs md:text-sm font-medium text-[var(--color-primary)]"
-          >Próximo: {{ ocorrencia.proximoAtendimento }}</span
+          >Proximo: {{ formatarData(ocorrencia.proximoAtendimento) }}</span
         >
       </div>
 
@@ -108,7 +108,7 @@
               <History class="w-5 h-5 md:w-6 md:h-6 opacity-50" />
             </div>
             <p class="text-xs md:text-sm font-medium">Nenhum histórico registrado</p>
-            <p class="text-[10px] md:text-xs mt-1 opacity-70">As interações aparecerão aqui</p>
+            <p class="text-[10px] md:text-xs mt-1 opacity-70">As interaÃ§Ãµes aparecerÃ£o aqui</p>
           </div>
         </Transition>
       </div>
@@ -133,12 +133,11 @@
 </template>
 
 <script setup lang="ts">
-import { ref, computed, markRaw } from "vue";
-import { Calendar, CircleAlert, History, Send, Edit } from "lucide-vue-next";
-import UiModal from "~/components/ui/UiModal.vue";
+import { Calendar, CircleAlert, Edit, History, Send } from "lucide-vue-next";
 import UiButton from "~/components/ui/UiButton.vue";
-import DadoItem from "./DadoItem.vue";
+import UiModal from "~/components/ui/UiModal.vue";
 import type { Ocorrencia, OcorrenciaStatus } from "../ocorrencias.types";
+import DadoItem from "./DadoItem.vue";
 
 const props = defineProps<{
   modelValue: boolean;
@@ -158,8 +157,8 @@ const isOpen = computed({
 const abaAtiva = ref<"dados" | "historico">("dados");
 
 const tabs = [
-  { id: "dados" as const, label: "Dados", icon: markRaw(CircleAlert) },
-  { id: "historico" as const, label: "Histórico", icon: markRaw(History) },
+  { id: "dados" as const, label: "Dados", icon: CircleAlert },
+  { id: "historico" as const, label: "Histórico", icon: History },
 ];
 
 const statusOptions = [
@@ -178,22 +177,22 @@ const getStatusBarColor = (status?: string): string => {
 };
 
 const detalhesItems = computed(() => [
-  { label: "Data", valor: props.ocorrencia?.dataCadastro || "—" },
-  { label: "Atendente", valor: props.ocorrencia?.atendente || "—" },
+  { label: "Data", valor: formatarData(props.ocorrencia?.dataCadastro) || "-" },
+  { label: "Atendente", valor: props.ocorrencia?.atendente || "-" },
   {
     label: "Encaminhado para",
-    valor: props.ocorrencia?.encaminhadoPara || "—",
+    valor: props.ocorrencia?.encaminhadoPara || "-",
   },
   {
     label: "Diagnosticado por",
-    valor: props.ocorrencia?.diagnosticadoPor || "—",
+    valor: props.ocorrencia?.diagnosticadoPor || "-",
   },
   {
     label: "Forma de atendimento",
-    valor: props.ocorrencia?.formaAtendimento || "—",
+    valor: props.ocorrencia?.formaAtendimento || "-",
   },
   {
-    label: "Situação",
+    label: "Situacao",
     valor: getSituacaoLabel(props.ocorrencia?.situacao || ""),
   },
 ]);
@@ -236,7 +235,7 @@ const getSituacaoLabel = (situacao: string): string => {
     aberta: "Aberta",
     fechada: "Fechada",
   };
-  return map[situacao.toLowerCase()] || situacao || "—";
+  return map[situacao.toLowerCase()] || situacao || "-";
 };
 
 const changeStatus = (status: OcorrenciaStatus) => {

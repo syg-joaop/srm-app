@@ -69,20 +69,15 @@
 <script setup lang="ts">
 import { Building2, MapPin, Trash2, Plus } from "lucide-vue-next";
 import UiInput from "~/components/ui/UiInput.vue";
-
-interface FornecedorRota {
-  name: string;
-  lat: number;
-  lng: number;
-}
+import type { FornecedorRotaSimples } from "../rotas.types";
 
 defineProps<{
-  modelValue: FornecedorRota[];
+  modelValue: FornecedorRotaSimples[];
   novoFornecedor: string;
 }>();
 
 defineEmits<{
-  "update:modelValue": [value: FornecedorRota[]];
+  "update:modelValue": [value: FornecedorRotaSimples[]];
   "update:novoFornecedor": [value: string];
   add: [];
   remove: [index: number];

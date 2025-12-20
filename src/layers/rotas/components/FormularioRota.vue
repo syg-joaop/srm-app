@@ -7,14 +7,6 @@
       @update:model-value="$emit('update:nome', $event)"
     />
 
-    <UiSelect
-      label="Comprador"
-      :model-value="comprador"
-      :options="compradores"
-      placeholder="Selecione um comprador"
-      @update:model-value="$emit('update:comprador', $event)"
-    />
-
     <div class="flex flex-col gap-1.5">
       <label class="text-sm font-semibold text-[var(--color-text)]"> Período da rota </label>
       <UiCalendario
@@ -43,21 +35,17 @@
 
 <script setup lang="ts">
 import UiInput from "~/components/ui/UiInput.vue";
-import UiSelect from "~/components/ui/UiSelect.vue";
 import UiCalendario from "~/components/ui/UiCalendario.vue";
 
 defineProps<{
   nome: string;
-  comprador: string;
   dataInicio: Date | null;
   dataFim: Date | null;
   observacoes: string;
-  compradores: string[];
 }>();
 
 defineEmits<{
   "update:nome": [value: string];
-  "update:comprador": [value: string];
   "update:dataInicio": [value: Date | null];
   "update:dataFim": [value: Date | null];
   "update:observacoes": [value: string];

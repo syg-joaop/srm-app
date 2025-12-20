@@ -1,4 +1,4 @@
-<template>
+﻿<template>
   <div
     class="flex flex-col items-center justify-center w-auto min-w-[2.5rem] px-1.5 h-10 rounded-lg border shrink-0 transition-transform duration-300 group-hover/item:scale-105"
     :class="variantClasses"
@@ -13,7 +13,6 @@
 </template>
 
 <script setup lang="ts">
-import { computed } from "vue";
 
 const props = withDefaults(
   defineProps<{

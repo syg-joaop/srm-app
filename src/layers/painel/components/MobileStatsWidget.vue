@@ -1,4 +1,4 @@
-<template>
+﻿<template>
   <div
     class="relative overflow-hidden rounded-2xl shadow-xl"
     style="
@@ -78,7 +78,6 @@
 </template>
 
 <script setup lang="ts">
-import { computed } from "vue";
 import * as LucideIcons from "lucide-vue-next";
 
 interface StatItem {
@@ -97,7 +96,10 @@ const gridStats = computed(() => {
 
 const getIcon = (iconName?: string) => {
   if (!iconName) return LucideIcons.HelpCircle;
-  return (LucideIcons as any)[iconName] || LucideIcons.HelpCircle;
+  return (
+    ((LucideIcons as Record<string, unknown>)[iconName] as typeof LucideIcons.HelpCircle) ||
+    LucideIcons.HelpCircle
+  );
 };
 
 const formatLabel = (label?: string) => {

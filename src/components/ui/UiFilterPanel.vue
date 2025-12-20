@@ -1,4 +1,4 @@
-<template>
+﻿<template>
   <div>
     <button
       class="p-2.5 rounded-lg border transition-colors relative"
@@ -131,7 +131,6 @@
 </template>
 
 <script setup lang="ts">
-import { computed, ref } from "vue";
 import { Filter, X } from "lucide-vue-next";
 import UiSelect from "~/components/ui/UiSelect.vue";
 

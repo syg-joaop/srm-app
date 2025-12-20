@@ -1,4 +1,4 @@
-<template>
+﻿<template>
   <div
     class="h-[600px] w-full rounded-xl overflow-hidden border"
     style="border-color: var(--color-border)"
@@ -8,15 +8,12 @@
 </template>
 
 <script setup lang="ts">
-import { computed } from "vue";
 import UiMapaPontos from "~/components/ui/UiMapaPontos.vue";
 import type { UiMapaPonto, UiMapaStatusConfig } from "~/components/ui/maps.types";
 import type { ProspectoMapItem } from "../prospecto.types";
 
 const statusConfig: UiMapaStatusConfig = {
-  ativo: { color: "#10b981", label: "Ativo" },
-  alerta: { color: "#f59e0b", label: "Alerta" },
-  inativo: { color: "#ef4444", label: "Inativo" },
+  ...COMMON_MAP_STATUS_CONFIG,
   novo: { color: "#3b82f6", label: "Novo" },
 };
 
@@ -38,7 +35,7 @@ const pontos = computed<UiMapaPonto[]>(() => {
       longitude: p.longitude,
       linhas: [
         { rotulo: "Cidade", valor: p.cidade },
-        { rotulo: "Última interação", valor: p.ultima_interacao },
+        { rotulo: "Ãšltima interaÃ§Ã£o", valor: p.ultima_interacao },
       ],
     }));
 });

@@ -1,2 +1,3 @@
+export * from "./chart";
 export * from "./formatadores";
-export * from "./date";
+export * from "./location";

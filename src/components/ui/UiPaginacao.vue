@@ -1,4 +1,4 @@
-<template>
+﻿<template>
   <div v-if="totalPages > 1" class="flex justify-center items-center gap-2 sm:gap-2">
     <button
       class="hidden sm:flex w-10 h-10 md:w-9 md:h-9 items-center justify-center rounded-md transition-all duration-200"
@@ -57,7 +57,6 @@
 </template>
 
 <script setup lang="ts">
-import { computed, ref, onMounted, onUnmounted } from "vue";
 import { ChevronLeft, ChevronRight, ChevronsLeft, ChevronsRight } from "lucide-vue-next";
 
 interface Props {

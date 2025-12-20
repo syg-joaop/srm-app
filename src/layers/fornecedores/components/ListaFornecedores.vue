@@ -109,9 +109,15 @@
 </template>
 
 <script setup lang="ts">
-import { Building2, MessageSquareText, MapPin } from "lucide-vue-next";
-import UiBadge from "~/components/ui/UiBadge.vue";
+import { Building2, MapPin, MessageSquareText } from "lucide-vue-next";
+import UiBadge, { type Variant } from "~/components/ui/UiBadge.vue";
 import UiButton from "~/components/ui/UiButton.vue";
+import {
+  COMMON_STATUS_ICON_CLASSES,
+  COMMON_STATUS_VARIANTS,
+  resolveStatusIconClass,
+  resolveStatusVariant,
+} from "~/utils/status";
 import type { Fornecedor } from "../fornecedores.types";
 
 defineProps<{
@@ -123,23 +129,9 @@ defineEmits<{
   (e: "add-route", fornecedor: Fornecedor): void;
 }>();
 
-const getStatusVariant = (status: string): string => {
-  const normalized = (status || "").toLowerCase().trim();
-  const map: Record<string, string> = {
-    ativo: "success",
-    alerta: "warning",
-    inativo: "danger",
-  };
-  return map[normalized] || "default";
-};
+const getStatusVariant = (status: string): Variant =>
+  resolveStatusVariant(status, COMMON_STATUS_VARIANTS) as Variant;
 
-const getIconClass = (status: string): string => {
-  const normalized = (status || "").toLowerCase().trim();
-  const map: Record<string, string> = {
-    ativo: "bg-green-500/10 text-green-500",
-    alerta: "bg-yellow-500/10 text-yellow-500",
-    inativo: "bg-red-500/10 text-red-500",
-  };
-  return map[normalized] || "bg-[var(--color-primary)]/10 text-[var(--color-primary)]";
-};
+const getIconClass = (status: string): string =>
+  resolveStatusIconClass(status, COMMON_STATUS_ICON_CLASSES);
 </script>

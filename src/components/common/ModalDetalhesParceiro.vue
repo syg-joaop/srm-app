@@ -1,4 +1,4 @@
-<template>
+﻿<template>
   <UiModal
     :model-value="modelValue"
     size="large"
@@ -123,7 +123,6 @@
 </template>
 
 <script setup lang="ts">
-import { ref, computed, watch } from "vue";
 import { MessageSquare, Presentation, UserPlus, Edit } from "lucide-vue-next";
 import UiModal from "~/components/ui/UiModal.vue";
 import UiButton from "~/components/ui/UiButton.vue";

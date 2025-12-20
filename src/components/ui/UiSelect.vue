@@ -1,4 +1,4 @@
-<template>
+﻿<template>
   <div class="flex flex-col gap-1.5">
     <label v-if="label" class="text-sm font-semibold text-[var(--color-text)]">
       {{ label }}
@@ -62,7 +62,7 @@
                 v-if="filteredOptions.length === 0"
                 class="px-3 py-4 text-sm text-[var(--color-text-muted)] text-center"
               >
-                Nenhuma opção encontrada
+                Nenhuma opÃ§Ã£o encontrada
               </div>
 
               <button
@@ -93,7 +93,6 @@
 </template>
 
 <script setup lang="ts">
-import { ref, computed, watch, onMounted, onUnmounted, nextTick } from "vue";
 import { ChevronDown, Check, Search } from "lucide-vue-next";
 
 type OptionValue = string | number;
@@ -114,7 +113,7 @@ interface Props {
 
 const props = withDefaults(defineProps<Props>(), {
   label: "",
-  placeholder: "Selecione uma opção",
+  placeholder: "Selecione uma opÃ§Ã£o",
   disabled: false,
   required: false,
   searchable: false,

@@ -1,33 +1,15 @@
-import { useAuthStore } from "~/stores/auth";
-import type { CheckinFilters, PaginatedCheckinResponse } from "../checkin.types";
-import type { Ref } from "vue";
+﻿import type { CheckinFilters, PaginatedCheckinResponse } from "../checkin.types";
+
+const CHECKINS_LIST_ENDPOINT = "/sygecom/chameleon-mode/SRM_GET_CHECKIN";
 
 export const useCheckinService = () => {
-  const api = useMainApi(true);
-  const authStore = useAuthStore();
-
-  const fetchCheckins = (page: Ref<number>, size: Ref<number>, filters: Ref<CheckinFilters>) => {
-    return useAsyncData<PaginatedCheckinResponse>(
-      "checkins",
-      async () => {
-        const bodyParams: Record<string, unknown> = {
-          page: page.value,
-          size: size.value,
-          ...filters.value,
-        };
-
-        return api("/sygecom/chameleon-mode/SRM_GET_CHECKIN", {
-          method: "POST",
-          body: bodyParams,
-        });
-      },
-      {
-        immediate: authStore.isAuthenticated,
-        lazy: true,
-        watch: [page, filters],
-      },
-    );
-  };
+  const fetchCheckins = useOfflineAsyncData<PaginatedCheckinResponse, CheckinFilters>({
+    key: "checkins",
+    endpoint: CHECKINS_LIST_ENDPOINT,
+    buildBody: buildPagedBody,
+    homol: true,
+    cacheTtl: 1 * 60 * 1000,
+  });
 
   return { fetchCheckins };
 };

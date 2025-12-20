@@ -1,4 +1,4 @@
-<template>
+﻿<template>
   <div
     class="h-full flex flex-col items-center justify-center py-6 sm:py-8 px-4"
     style="color: var(--color-text-muted)"
@@ -30,7 +30,6 @@
 </template>
 
 <script setup lang="ts">
-import type { Component } from "vue";
 
 defineProps<{
   icon?: Component;

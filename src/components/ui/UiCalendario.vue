@@ -1,4 +1,4 @@
-<template>
+﻿<template>
   <div class="relative inline-block" ref="wrapperRef">
     <div class="cursor-pointer" @click="toggleCalendario">
       <slot name="trigger">
@@ -104,9 +104,9 @@
           >
             <div class="flex items-center justify-center gap-3 mb-3">
               <span class="text-sm text-[var(--color-text)] font-medium">
-                {{ internalStartDate ? formatDate(internalStartDate) : "Início" }}
+                {{ internalStartDate ? formatDate(internalStartDate) : "InÃ­cio" }}
               </span>
-              <span class="text-[var(--color-text-muted)]">→</span>
+              <span class="text-[var(--color-text-muted)]">â†’</span>
               <span class="text-sm text-[var(--color-text)] font-medium">
                 {{ internalEndDate ? formatDate(internalEndDate) : "Fim" }}
               </span>
@@ -136,7 +136,6 @@
 </template>
 
 <script setup lang="ts">
-import { ref, computed, watch, onMounted, onUnmounted, nextTick } from "vue";
 import { Calendar, ChevronDown, ChevronLeft, ChevronRight } from "lucide-vue-next";
 
 interface Props {
@@ -178,12 +177,12 @@ const internalStartDate = ref<Date | null>(props.startDate);
 const internalEndDate = ref<Date | null>(props.endDate);
 const selectingEnd = ref(false);
 
-const weekDays = ["Dom", "Seg", "Ter", "Qua", "Qui", "Sex", "Sáb"];
+const weekDays = ["Dom", "Seg", "Ter", "Qua", "Qui", "Sex", "SÃ¡b"];
 
 const monthNames = [
   "Janeiro",
   "Fevereiro",
-  "Março",
+  "MarÃ§o",
   "Abril",
   "Maio",
   "Junho",

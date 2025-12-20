@@ -23,6 +23,7 @@
     "@capacitor/cli": "^7.4.4",
     "@capacitor/core": "^7.4.4",
     "@capacitor/ios": "^7.4.4",
+    "@googlemaps/js-api-loader": "^2.0.2",
     "@pinia/nuxt": "^0.5.5",
     "@types/leaflet": "^1.9.21",
     "echarts": "^6.0.0",

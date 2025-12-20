@@ -1,5 +1,4 @@
-import { defineStore } from "pinia";
-import { formatarMoeda } from "~/utils/formatters/formatadores";
+﻿import { defineStore } from "pinia";
 import {
   emptyChartData,
   formatarLabel,
@@ -74,7 +73,7 @@ export const useDashboardStore = defineStore("dashboard", () => {
   const compradorItems = computed<TableItem[]>(() => {
     const data = rawData.value?.comprasComprador?.data ?? [];
     return data.map((c) => ({
-      name: c.nome ?? "Não identificado",
+      name: c.nome ?? "NÃ£o identificado",
       current: formatarMoeda(c.atual),
       previous: formatarMoeda(c.ant),
     }));
@@ -110,7 +109,7 @@ export const useDashboardStore = defineStore("dashboard", () => {
       statuses: [
         {
           value: Number(a.atendimento_periodo),
-          label: "Período",
+          label: "PerÃ­odo",
           color: "gray",
           icon: "calendar",
         },

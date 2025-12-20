@@ -1,4 +1,4 @@
-<template>
+﻿<template>
   <div class="flex flex-col h-full">
     <div class="relative flex-1 min-h-0">
       <div ref="chartRef" class="w-full h-full"></div>
@@ -20,7 +20,7 @@
           {{ total }}
         </span>
         <span class="text-[10px] font-medium mt-0.5" style="color: var(--color-text-muted)">
-          ocorrências
+          ocorrÃªncias
         </span>
       </div>
     </div>
@@ -68,7 +68,6 @@
 
 <script setup lang="ts">
 import * as echarts from "echarts";
-import { computed, nextTick, onMounted, onUnmounted, ref, watch } from "vue";
 
 interface ChartDataItem {
   name: string;

@@ -1,4 +1,4 @@
-<template>
+﻿<template>
   <div
     class="min-h-screen p-4 sm:p-6 pb-20 transition-colors"
     style="background-color: var(--color-background); color: var(--color-text)"
@@ -151,20 +151,20 @@
       <div v-else>
         <div v-if="viewMode === 'list'">
           <div class="mb-4 font-semibold text-sm" style="color: var(--color-primary)">
-            {{ prospectos?.data.totalItems }} resultados
+            {{ prospectos?.data?.totalItems ?? 0 }} resultados
           </div>
           <ListaProspectos :prospectos="paginatedProspectos" @select="handleSelectProspecto" />
 
           <UiPaginacao
             v-model:page="currentPage"
-            :total-items="prospectos?.data.totalItems"
-            :total-pages="prospectos?.data.totalPages"
+            :total-items="prospectos?.data?.totalItems ?? 0"
+            :total-pages="prospectos?.data?.totalPages ?? 0"
             class="mt-6"
           />
         </div>
 
         <div v-else>
-          <MapaProspectos :prospectos="prospectos?.data.items" />
+          <MapaProspectos :prospectos="prospectos?.data?.items ?? []" />
         </div>
       </div>
     </div>
@@ -174,16 +174,14 @@
 </template>
 
 <script setup lang="ts">
-import { ref, computed, watch } from "vue";
-import { Search, Filter, List, Map, X } from "lucide-vue-next";
-import ListaProspectos from "../components/ListaProspectos.vue";
-import MapaProspectos from "../components/MapaProspectos.vue";
-import UiSpinner from "~/components/ui/UiSpinner.vue";
+import { Filter, List, Map, Search, X } from "lucide-vue-next";
+import ModalDetalhesParceiro from "~/components/common/ModalDetalhesParceiro.vue";
 import UiPaginacao from "~/components/ui/UiPaginacao.vue";
 import UiSegmentedControl from "~/components/ui/UiSegmentedControl.vue";
-import ModalDetalhesParceiro from "~/components/common/ModalDetalhesParceiro.vue";
+import UiSpinner from "~/components/ui/UiSpinner.vue";
+import ListaProspectos from "../components/ListaProspectos.vue";
+import MapaProspectos from "../components/MapaProspectos.vue";
 import type { Prospecto } from "../prospecto.types";
-import { useProspectoService } from "../composables/useProspectoService";
 
 const showFilters = ref(false);
 const viewMode = ref<"list" | "map">("list");
@@ -214,7 +212,7 @@ const sortOptions = [
   { label: "Prospecto", value: "prospecto" },
   { label: "Cidade", value: "cidade" },
   { label: "Status", value: "status" },
-  { label: "Interação +60 dias", value: "sem_interacao" },
+  { label: "InteraÃ§Ã£o +60 dias", value: "sem_interacao" },
 ];
 
 const activeFiltersCount = computed(() => {
@@ -235,7 +233,7 @@ const clearFilters = () => {
   };
 };
 
-const { fetchProspecto } = useProspectoService();
+const { fetchProspectos } = useProspectoService();
 
 const prospectoFilters = computed(() => ({
   search: search.value,
@@ -257,19 +255,18 @@ watch(currentPage, () => {
   window.scrollTo({ top: 0, behavior: "smooth" });
 });
 
-const { data: prospectos, status } = fetchProspecto(currentPage, itemsPerPage, prospectoFilters);
+const { data: prospectos, status } = fetchProspectos(currentPage, itemsPerPage, prospectoFilters);
 
 const isLoading = computed(() => status.value === "pending");
 
-const paginatedProspectos = computed(() => prospectos.value?.data.items ?? []);
+const paginatedProspectos = computed(() => prospectos.value?.data?.items ?? []);
 
 const showModal = ref(false);
-const selectedProspecto = ref<any>(null);
+const selectedProspecto = ref<Prospecto | null>(null);
 
 const handleSelectProspecto = (prospecto: Prospecto) => {
   selectedProspecto.value = {
     ...prospecto,
-    name: prospecto.prospecto, // Modal usa `name` como título
   };
   showModal.value = true;
 };

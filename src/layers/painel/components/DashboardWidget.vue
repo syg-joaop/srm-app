@@ -1,4 +1,4 @@
-<template>
+﻿<template>
   <div
     class="flex flex-col h-full rounded-2xl border shadow-lg transition-all duration-300 group relative hover:shadow-xl bg-[var(--color-surface)] border-[var(--color-border-subtle)]"
   >
@@ -113,7 +113,6 @@ export const DEFAULT_TABS: TabOption[] = [
 </script>
 
 <script setup lang="ts" generic="T = unknown">
-import { computed, ref, watch, type Component } from "vue";
 import { ChevronLeft, ChevronRight, Inbox } from "lucide-vue-next";
 import UiSegmentedControl from "~/components/ui/UiSegmentedControl.vue";
 import type { TabOption } from "~/types/dashboard";
@@ -144,7 +143,7 @@ const props = withDefaults(
     paginated: false,
     isEmpty: false,
     emptyTitle: "Nenhum resultado",
-    emptyDescription: "Não há dados para exibir",
+    emptyDescription: "NÃ£o hÃ¡ dados para exibir",
     showTabs: false,
     tabs: () => [...DEFAULT_TABS],
     defaultTab: "fornecedores",

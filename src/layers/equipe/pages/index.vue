@@ -1,4 +1,4 @@
-<template>
+﻿<template>
   <div
     class="min-h-screen p-4 sm:p-6 pb-20 transition-colors"
     style="background-color: var(--color-background); color: var(--color-text)"
@@ -42,10 +42,11 @@
       <ListaMembros :membros="paginatedMembros" @select="handleSelectMembro" />
 
       <UiPaginacao
-        v-model:page="currentPage"
+        :page="currentPage"
         :total-items="filteredMembros.length"
         :total-pages="totalPages"
         class="mt-6"
+        @update:page="(p) => (currentPage = p)"
       />
     </div>
 
@@ -54,12 +55,10 @@
 </template>
 
 <script setup lang="ts">
-import { ref, computed, watch } from "vue";
 import { Search } from "lucide-vue-next";
-import ListaMembros from "../components/ListaMembros.vue";
-import type { Membro } from "../components/ListaMembros.vue";
-import UiPaginacao from "~/components/ui/UiPaginacao.vue";
 import ModalDetalhesParceiro from "~/components/common/ModalDetalhesParceiro.vue";
+import type { Membro } from "../components/ListaMembros.vue";
+import ListaMembros from "../components/ListaMembros.vue";
 
 definePageMeta({ layout: "default" });
 
@@ -69,13 +68,13 @@ const currentPage = ref(1);
 const itemsPerPage = 10;
 
 const showModal = ref(false);
-const membroSelecionado = ref<any>(null);
+const membroSelecionado = ref<Membro | null>(null);
 
 const membrosMock: Membro[] = [
   {
     id: 1,
     nome: "Lucas candido",
-    email: "Lucas Cândido Soares de Figueirêdo",
+    email: "Lucas Candido Soares de Figueiredo",
     setor: "ADMINISTRATIVO",
   },
   {
@@ -187,8 +186,6 @@ watch(currentPage, () => {
 const handleSelectMembro = (membro: Membro) => {
   membroSelecionado.value = {
     ...membro,
-    name: membro.nome,
-    role: membro.setor,
   };
   showModal.value = true;
 };

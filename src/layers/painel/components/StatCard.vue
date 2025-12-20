@@ -1,4 +1,4 @@
-<template>
+﻿<template>
   <UiCard
     class="stat-card group h-full border border-white/10 relative overflow-hidden"
     style="
@@ -43,7 +43,6 @@
 </template>
 
 <script setup lang="ts">
-import { computed } from "vue";
 import * as LucideIcons from "lucide-vue-next";
 import UiCard from "~/components/ui/UiCard.vue";
 
@@ -55,7 +54,10 @@ const props = defineProps<{
 }>();
 
 const iconComponent = computed(() => {
-  return (LucideIcons as any)[props.icon] || LucideIcons.HelpCircle;
+  return (
+    ((LucideIcons as Record<string, unknown>)[props.icon] as typeof LucideIcons.HelpCircle) ||
+    LucideIcons.HelpCircle
+  );
 });
 </script>
 

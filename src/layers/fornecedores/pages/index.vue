@@ -1,4 +1,4 @@
-<template>
+﻿<template>
   <div
     class="min-h-screen p-4 sm:p-6 pb-20 transition-colors"
     style="background-color: var(--color-background); color: var(--color-text)"
@@ -156,6 +156,7 @@
           <ListaFornecedores
             :fornecedores="paginatedFornecedores"
             @select="handleSelectFornecedor"
+            @add-route="handleAddToRoute"
           />
 
           <UiPaginacao
@@ -173,20 +174,25 @@
     </div>
 
     <ModalDetalhesParceiro v-model="showModal" :parceiro="selectedFornecedor" />
+    <ModalAdicionarARota
+      v-model="showAddRouteModal"
+      :fornecedor="fornecedorParaRota"
+      @added="handleRouteAdded"
+    />
   </div>
 </template>
 
 <script setup lang="ts">
-import { ref, computed, watch } from "vue";
-import { Search, Filter, List, Map, X } from "lucide-vue-next";
-import ListaFornecedores from "../components/ListaFornecedores.vue";
-import MapaFornecedores from "../components/MapaFornecedores.vue";
-import UiSpinner from "~/components/ui/UiSpinner.vue";
+import { Filter, List, Map, Search, X } from "lucide-vue-next";
+import ModalDetalhesParceiro from "~/components/common/ModalDetalhesParceiro.vue";
 import UiPaginacao from "~/components/ui/UiPaginacao.vue";
 import UiSegmentedControl from "~/components/ui/UiSegmentedControl.vue";
-import ModalDetalhesParceiro from "~/components/common/ModalDetalhesParceiro.vue";
+import UiSpinner from "~/components/ui/UiSpinner.vue";
+import ListaFornecedores from "../components/ListaFornecedores.vue";
+import MapaFornecedores from "../components/MapaFornecedores.vue";
+import ModalAdicionarARota from "../components/ModalAdicionarARota.vue";
 import type { Fornecedor } from "../fornecedores.types";
-import { useFornecedorService } from "../composables/useFornecedorService";
+import type { Rota } from "~/layers/rotas/rotas.types";
 
 const showFilters = ref(false);
 const viewMode = ref<"list" | "map">("list");
@@ -270,7 +276,7 @@ const isLoading = computed(() => status.value === "pending");
 const paginatedFornecedores = computed(() => fornecedores.value?.data.items ?? []);
 
 const showModal = ref(false);
-const selectedFornecedor = ref<any>(null);
+const selectedFornecedor = ref<Fornecedor | null>(null);
 
 const handleSelectFornecedor = (fornecedor: Fornecedor) => {
   selectedFornecedor.value = {
@@ -278,5 +284,19 @@ const handleSelectFornecedor = (fornecedor: Fornecedor) => {
     name: fornecedor.fornecedor,
   };
   showModal.value = true;
+};
+
+// Modal de adicionar Ã  rota
+const showAddRouteModal = ref(false);
+const fornecedorParaRota = ref<Fornecedor | null>(null);
+
+const handleAddToRoute = (fornecedor: Fornecedor) => {
+  fornecedorParaRota.value = fornecedor;
+  showAddRouteModal.value = true;
+};
+
+const handleRouteAdded = (rota: Rota) => {
+  console.log("Fornecedor adicionado Ã  rota:", rota.id);
+  // Pode redirecionar para a rota ou mostrar mensagem de sucesso
 };
 </script>
