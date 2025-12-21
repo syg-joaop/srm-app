@@ -212,7 +212,7 @@ const sortOptions = [
   { label: "Prospecto", value: "prospecto" },
   { label: "Cidade", value: "cidade" },
   { label: "Status", value: "status" },
-  { label: "InteraÃ§Ã£o +60 dias", value: "sem_interacao" },
+  { label: "Interação +60 dias", value: "sem_interacao" },
 ];
 
 const activeFiltersCount = computed(() => {

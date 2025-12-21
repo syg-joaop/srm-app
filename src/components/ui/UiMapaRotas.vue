@@ -2,12 +2,12 @@
   <div class="relative w-full h-full">
     <div ref="mapContainer" class="w-full h-full"></div>
 
-    <!-- BotÃ£o de geolocalizaÃ§Ã£o estilo Google Maps -->
+    <!-- Botão de geolocalização estilo Google Maps -->
     <button
       v-if="showMyLocationButton"
       class="absolute bottom-24 right-3 z-[1000] bg-white rounded-sm shadow-md hover:shadow-lg transition-shadow w-10 h-10 flex items-center justify-center border border-gray-300"
       :class="{ 'bg-blue-50': isGettingLocation }"
-      title="Minha localizaÃ§Ã£o"
+      title="Minha localização"
       @click="goToMyLocation"
     >
       <svg
@@ -87,7 +87,7 @@ const props = withDefaults(
       aguardando: { color: "#6b7280", label: "Aguardando" },
       pendente: { color: "#f59e0b", label: "Pendente" },
       em_andamento: { color: "#3b82f6", label: "Em Andamento" },
-      concluida: { color: "#10b981", label: "ConcluÃ­da" },
+      concluida: { color: "#10b981", label: "Concluída" },
       cancelada: { color: "#ef4444", label: "Cancelada" },
     }),
     polylineConfig: () => ({
@@ -103,7 +103,15 @@ const props = withDefaults(
   },
 );
 
-// GeolocalizaÃ§Ã£o
+// Geolocalização
+...
+  polylineCoords?: [number, number][]; // Ou coordenadas já decodificadas
+...
+  // Adiciona pontos ordenados por sequência
+...
+/**
+ * Método exposto para forçar resize do mapa
+ */
 const { position: geoPosition, getCurrentPosition } = useGeolocation({
   enableHighAccuracy: true,
   timeout: 10000,
@@ -144,7 +152,7 @@ const resolvedStatusConfig = computed<UiMapaStatusConfig>(() => ({
   aguardando: { color: "#6b7280", label: "Aguardando" },
   pendente: { color: "#f59e0b", label: "Pendente" },
   em_andamento: { color: "#3b82f6", label: "Em Andamento" },
-  concluida: { color: "#10b981", label: "ConcluÃ­da" },
+  concluida: { color: "#10b981", label: "Concluída" },
   cancelada: { color: "#ef4444", label: "Cancelada" },
   ...props.statusConfig,
 }));
@@ -241,7 +249,7 @@ const createPopupHtml = (ponto: RotaPonto) => {
 
   const sequenciaHtml =
     ponto.sequencia !== undefined
-      ? `<p style="margin-bottom: 4px;"><strong>SequÃªncia:</strong> ${ponto.sequencia}</p>`
+      ? `<p style="margin-bottom: 4px;"><strong>Sequência:</strong> ${ponto.sequencia}</p>`
       : "";
 
   return `
@@ -397,7 +405,7 @@ const renderPolyline = () => {
     coordinates = props.polylineCoords;
   }
 
-  // Fallback: desenha uma linha reta conectando os pontos quando nÃ†o hÃ† polyline (ou decode falha).
+  // Fallback: desenha uma linha reta conectando os pontos quando não há polyline (ou decode falha).
   if (coordinates.length < 2) {
     const fallbackCoords: [number, number][] = [];
     const sortedPontos = [...props.pontos].sort(
@@ -490,7 +498,7 @@ const updateMap = () => {
           fillColor: "#2563eb",
           fillOpacity: 1,
         }).addTo(map);
-        userMarker.bindPopup("Sua localizaÃ§Ã£o");
+        userMarker.bindPopup("Sua localização");
       } else {
         userMarker.setLatLng(userCoords);
       }
@@ -562,7 +570,7 @@ const goToMyLocation = async () => {
           fillColor: "#4285F4",
           fillOpacity: 1,
         }).addTo(map);
-        userMarker.bindPopup("Sua localizaÃ§Ã£o");
+        userMarker.bindPopup("Sua localização");
       } else {
         userMarker.setLatLng([pos.latitude, pos.longitude]);
       }
@@ -612,7 +620,7 @@ const initMap = async () => {
         fillColor: "#4285F4",
         fillOpacity: 1,
       }).addTo(map);
-      userMarker.bindPopup("Sua localizaÃ§Ã£o");
+      userMarker.bindPopup("Sua localização");
     }
   }
 };

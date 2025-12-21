@@ -143,7 +143,7 @@ const props = withDefaults(
     paginated: false,
     isEmpty: false,
     emptyTitle: "Nenhum resultado",
-    emptyDescription: "NÃ£o hÃ¡ dados para exibir",
+    emptyDescription: "Não há dados para exibir",
     showTabs: false,
     tabs: () => [...DEFAULT_TABS],
     defaultTab: "fornecedores",

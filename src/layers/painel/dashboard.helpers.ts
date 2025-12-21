@@ -34,9 +34,9 @@ export function mapIcon(tipo: string): string {
 export function formatarResumoCompras(data?: PurchasingStats): SummaryItem[] {
   if (!data) return [];
   return [
-    { label: "Total MÃªs", value: formatarMoeda(data.total) },
-    { label: "LÃ­quido", value: formatarMoeda(data.liquido) },
-    { label: "PreÃ§o MÃ©dio", value: formatarMoeda(data.preco_medio) },
+    { label: "Total Mês", value: formatarMoeda(data.total) },
+    { label: "Líquido", value: formatarMoeda(data.liquido) },
+    { label: "Preço Médio", value: formatarMoeda(data.preco_medio) },
     { label: "Descontos", value: formatarMoeda(data.desconto) },
   ];
 }
@@ -44,13 +44,13 @@ export function formatarResumoCompras(data?: PurchasingStats): SummaryItem[] {
 export function formatarResumoComprasAnterior(data?: DashboardApiResponse): SummaryItem[] {
   if (!data) return [];
   return [
-    { label: "Total MÃªs", value: formatarMoeda(data.comprasMes.data[0].total ?? 0) },
+    { label: "Total Mês", value: formatarMoeda(data.comprasMes.data[0].total ?? 0) },
     {
-      label: "PreÃ§o MÃ©dio",
+      label: "Preço Médio",
       value: formatarMoeda(data.comprasMes.data[0].preco_medio ?? 0),
     },
     {
-      label: "MÃ©dia DiÃ¡ria",
+      label: "Média Diária",
       value: formatarMoeda(data.comprasMes.data[0].media_diaria ?? 0),
     },
     { label: "Descontos", value: formatarMoeda(data.comprasMes.data[0].desconto ?? 0) },

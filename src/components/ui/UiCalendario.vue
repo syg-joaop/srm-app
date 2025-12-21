@@ -104,7 +104,7 @@
           >
             <div class="flex items-center justify-center gap-3 mb-3">
               <span class="text-sm text-[var(--color-text)] font-medium">
-                {{ internalStartDate ? formatDate(internalStartDate) : "InÃ­cio" }}
+                {{ internalStartDate ? formatDate(internalStartDate) : "Início" }}
               </span>
               <span class="text-[var(--color-text-muted)]">â†’</span>
               <span class="text-sm text-[var(--color-text)] font-medium">
@@ -177,12 +177,12 @@ const internalStartDate = ref<Date | null>(props.startDate);
 const internalEndDate = ref<Date | null>(props.endDate);
 const selectingEnd = ref(false);
 
-const weekDays = ["Dom", "Seg", "Ter", "Qua", "Qui", "Sex", "SÃ¡b"];
+const weekDays = ["Dom", "Seg", "Ter", "Qua", "Qui", "Sex", "Sáb"];
 
 const monthNames = [
   "Janeiro",
   "Fevereiro",
-  "MarÃ§o",
+  "Março",
   "Abril",
   "Maio",
   "Junho",

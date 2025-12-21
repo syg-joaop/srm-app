@@ -1,17 +1,17 @@
 ﻿import type {
+  CreateRoteiroPayload,
+  PolylineCache,
   Rota,
-  RotaResponse,
   RotaFilters,
+  RotaResponse,
   Roteiro,
-  RoteiroResponse,
   RoteiroFilters,
+  RoteiroResponse,
   VrpRouteRequest,
   VrpRouteResponse,
+  VrpSummary,
   VrpTask,
   VrpVehicle,
-  PolylineCache,
-  VrpSummary,
-  CreateRoteiroPayload,
 } from "../rotas.types";
 
 // Endpoints do backend NestJS
@@ -27,15 +27,19 @@ export const useRotaService = () => {
   const isLoading = ref(false);
   const error = ref<string | null>(null);
 
-  // ConfiguraÃ§Ã£o da API VRP (Fallback para valores hardcoded se nÃ£o houver config)
-  // TODO: Mover chaves definitivamente para variÃ¡veis de ambiente e remover fallback
-  const VRP_API_URL = (config.public?.vrpApiUrl as string) || "https://vrp-api-zockb2v.cluster.vortus.solutions/api/v1/route";
-  const VRP_API_KEY = (config.public?.vrpApiKey as string) || "85b95b01-c471-4566-8769-adfe00478afa";
+  // Configuração da API VRP (Fallback para valores hardcoded se não houver config)
+  // TODO: Mover chaves definitivamente para variáveis de ambiente e remover fallback
+  const VRP_API_URL =
+    (config.public?.vrpApiUrl as string) ||
+    "https://vrp-api-zockb2v.cluster.vortus.solutions/api/v1/route";
+  const VRP_API_KEY =
+    (config.public?.vrpApiKey as string) || "85b95b01-c471-4566-8769-adfe00478afa";
 
   /**
    * Busca lista de rotas do comprador
    */
-  const fetchRotas = async (filters?: RotaFilters): Promise<RotaResponse | null> => {    isLoading.value = true;
+  const fetchRotas = async (filters?: RotaFilters): Promise<RotaResponse | null> => {
+    isLoading.value = true;
     error.value = null;
 
     try {
@@ -65,9 +69,12 @@ export const useRotaService = () => {
   };
 
   /**
-   * Busca roteiros (pontos) de uma rota especÃ­fica
+   * Busca roteiros (pontos) de uma rota específica
    */
-  const fetchRoteiros = async (idRota: number, filters?: RoteiroFilters): Promise<RoteiroResponse | null> => {
+  const fetchRoteiros = async (
+    idRota: number,
+    filters?: RoteiroFilters,
+  ): Promise<RoteiroResponse | null> => {
     isLoading.value = true;
     error.value = null;
 
@@ -95,7 +102,7 @@ export const useRotaService = () => {
   };
 
   /**
-   * Busca uma rota especÃ­fica por ID
+   * Busca uma rota específica por ID
    */
   const fetchRotaById = async (id: number): Promise<Rota | null> => {
     const response = await fetchRotas();
@@ -155,28 +162,32 @@ export const useRotaService = () => {
   };
 
   /**
-   * Converte roteiros para tasks da API VRP (filtra coordenadas invÃ¡lidas)
+   * Converte roteiros para tasks da API VRP (filtra coordenadas inválidas)
    */
   const roteirosToVrpTasks = (roteiros: Roteiro[]): VrpTask[] => {
     return roteiros
       .filter((r) => {
         if (!r.endereco) return false;
-        const lat = typeof r.endereco.latitude === "string"
-          ? parseFloat(r.endereco.latitude)
-          : r.endereco.latitude;
-        const lng = typeof r.endereco.longitude === "string"
-          ? parseFloat(r.endereco.longitude)
-          : r.endereco.longitude;
+        const lat =
+          typeof r.endereco.latitude === "string"
+            ? parseFloat(r.endereco.latitude)
+            : r.endereco.latitude;
+        const lng =
+          typeof r.endereco.longitude === "string"
+            ? parseFloat(r.endereco.longitude)
+            : r.endereco.longitude;
         return isValidCoordinate(lat, lng);
       })
       .sort((a, b) => (a.sequencia || 0) - (b.sequencia || 0))
       .map((r) => {
-        const lat = typeof r.endereco.latitude === "string"
-          ? parseFloat(r.endereco.latitude)
-          : r.endereco.latitude;
-        const lng = typeof r.endereco.longitude === "string"
-          ? parseFloat(r.endereco.longitude)
-          : r.endereco.longitude;
+        const lat =
+          typeof r.endereco.latitude === "string"
+            ? parseFloat(r.endereco.latitude)
+            : r.endereco.latitude;
+        const lng =
+          typeof r.endereco.longitude === "string"
+            ? parseFloat(r.endereco.longitude)
+            : r.endereco.longitude;
 
         return {
           id: r.id,
@@ -192,22 +203,24 @@ export const useRotaService = () => {
   };
 
   /**
-   * Cria veÃ­culo virtual para calcular polyline
-   * Se userLocation for fornecido, usa como ponto de partida (estilo Uber)
+   * Cria veículo virtual para calcular polyline
+   * Se userLocation for fornecido, usa como ponto de partida
    */
   const createVirtualVehicle = (
     roteiros: Roteiro[],
-    userLocation?: { latitude: number; longitude: number } | null
+    userLocation?: { latitude: number; longitude: number } | null,
   ): VrpVehicle | null => {
     const sortedRoteiros = roteiros
       .filter((r) => {
         if (!r.endereco) return false;
-        const lat = typeof r.endereco.latitude === "string"
-          ? parseFloat(r.endereco.latitude)
-          : r.endereco.latitude;
-        const lng = typeof r.endereco.longitude === "string"
-          ? parseFloat(r.endereco.longitude)
-          : r.endereco.longitude;
+        const lat =
+          typeof r.endereco.latitude === "string"
+            ? parseFloat(r.endereco.latitude)
+            : r.endereco.latitude;
+        const lng =
+          typeof r.endereco.longitude === "string"
+            ? parseFloat(r.endereco.longitude)
+            : r.endereco.longitude;
         return isValidCoordinate(lat, lng);
       })
       .sort((a, b) => (a.sequencia || 0) - (b.sequencia || 0));
@@ -216,36 +229,44 @@ export const useRotaService = () => {
 
     const ultimo = sortedRoteiros[sortedRoteiros.length - 1];
 
-    // Ponto de partida: localizaÃ§Ã£o do usuÃ¡rio ou primeiro roteiro
+    // Ponto de partida: localização do usuário ou primeiro roteiro
     let startLat: number;
     let startLng: number;
 
     if (userLocation && isValidCoordinate(userLocation.latitude, userLocation.longitude)) {
-      // Usa localizaÃ§Ã£o do usuÃ¡rio como ponto de partida (estilo Uber)
+      // Usa localização do usuário como ponto de partida (estilo Uber)
       startLat = userLocation.latitude;
       startLng = userLocation.longitude;
-      console.log("[useRotaService] Usando localizaÃ§Ã£o do usuÃ¡rio como ponto de partida:", startLat, startLng);
+      console.log(
+        "[useRotaService] Usando localização do usuário como ponto de partida:",
+        startLat,
+        startLng,
+      );
     } else {
       // Fallback: usa primeiro roteiro
       const primeiro = sortedRoteiros[0];
-      startLat = typeof primeiro.endereco.latitude === "string"
-        ? parseFloat(primeiro.endereco.latitude)
-        : primeiro.endereco.latitude;
-      startLng = typeof primeiro.endereco.longitude === "string"
-        ? parseFloat(primeiro.endereco.longitude)
-        : primeiro.endereco.longitude;
+      startLat =
+        typeof primeiro.endereco.latitude === "string"
+          ? parseFloat(primeiro.endereco.latitude)
+          : primeiro.endereco.latitude;
+      startLng =
+        typeof primeiro.endereco.longitude === "string"
+          ? parseFloat(primeiro.endereco.longitude)
+          : primeiro.endereco.longitude;
     }
 
-    const ultimoLat = typeof ultimo.endereco.latitude === "string"
-      ? parseFloat(ultimo.endereco.latitude)
-      : ultimo.endereco.latitude;
-    const ultimoLng = typeof ultimo.endereco.longitude === "string"
-      ? parseFloat(ultimo.endereco.longitude)
-      : ultimo.endereco.longitude;
+    const ultimoLat =
+      typeof ultimo.endereco.latitude === "string"
+        ? parseFloat(ultimo.endereco.latitude)
+        : ultimo.endereco.latitude;
+    const ultimoLng =
+      typeof ultimo.endereco.longitude === "string"
+        ? parseFloat(ultimo.endereco.longitude)
+        : ultimo.endereco.longitude;
 
     return {
       id: 1,
-      description: "VeÃ­culo Virtual",
+      description: "Veículo Virtual",
       maxJobs: 100,
       avgSpeed: 60,
       location: {
@@ -268,11 +289,11 @@ export const useRotaService = () => {
   /**
    * Calcula polyline chamando a API VRP
    * @param roteiros - Lista de roteiros
-   * @param userLocation - LocalizaÃ§Ã£o atual do usuÃ¡rio (GPS) para usar como ponto de partida
+   * @param userLocation - Localização atual do usuário (GPS) para usar como ponto de partida
    */
   const calcularPolyline = async (
     roteiros: Roteiro[],
-    userLocation?: { latitude: number; longitude: number } | null
+    userLocation?: { latitude: number; longitude: number } | null,
   ): Promise<{ polyline: string; summary: VrpSummary } | null> => {
     isLoading.value = true;
     error.value = null;
@@ -281,7 +302,7 @@ export const useRotaService = () => {
       const tasks = roteirosToVrpTasks(roteiros);
 
       if (tasks.length === 0) {
-        error.value = "Nenhum ponto com coordenadas vÃ¡lidas para calcular a rota";
+        error.value = "Nenhum ponto com coordenadas válidas para calcular a rota";
         return null;
       }
 
@@ -289,7 +310,7 @@ export const useRotaService = () => {
         const minTasks = location ? 1 : 2;
         if (tasks.length < minTasks) return null;
 
-        // Cache por combinaÃ§Ã£o de pontos + localizaÃ§Ã£o (se houver)
+        // Cache por combinação de pontos + localização (se houver)
         const userLocStr = location
           ? `${location.latitude.toFixed(4)},${location.longitude.toFixed(4)}`
           : "";
@@ -331,7 +352,9 @@ export const useRotaService = () => {
         type VrpApiResponseShape = {
           response?: unknown;
           unassignedTasks?: unknown;
-          workDays?: Array<{ plans?: Array<{ route?: { polyline?: unknown }; summary?: unknown }> }>;
+          workDays?: Array<{
+            plans?: Array<{ route?: { polyline?: unknown }; summary?: unknown }>;
+          }>;
           summary?: unknown;
         };
 
@@ -367,10 +390,10 @@ export const useRotaService = () => {
         // Salva no cache
         savePolylineToCache(cacheKey, result.polyline, result.summary);
 
-        // Se houve tarefas nÃ£o atribuÃ­das, tenta recalcular sem localizaÃ§Ã£o do usuÃ¡rio (quando aplicÃ¡vel)
+        // Se houve tarefas não atribuídas, tenta recalcular sem localização do usuário (quando aplicável)
         if (unassignedCount > 0 && location) {
           console.warn(
-            "[useRotaService] VRP retornou tarefas nÃ£o atribuÃ­das ao usar localizaÃ§Ã£o do usuÃ¡rio; usando fallback sem localizaÃ§Ã£o.",
+            "[useRotaService] VRP retornou tarefas não atribuídas ao usar localização do usuário; usando fallback sem localização.",
             unassignedTasks,
           );
         }
@@ -378,13 +401,13 @@ export const useRotaService = () => {
         return result;
       };
 
-      // 1) Tenta com a localizaÃ§Ã£o do usuÃ¡rio (se houver)
+      // 1) Tenta com a localização do usuário (se houver)
       const resultWithUser = await callVrp(userLocation);
 
-      // Se VRP nÃ£o retornou polyline (ex.: tarefas ficaram unassigned por distÃ¢ncia/tempo), faz fallback sem userLocation.
+      // Se VRP não retornou polyline (ex.: tarefas ficaram unassigned por distância/tempo), faz fallback sem userLocation.
       if (!resultWithUser && userLocation && tasks.length >= 2) {
         console.warn(
-          "[useRotaService] VRP nÃ£o conseguiu gerar polyline com localizaÃ§Ã£o do usuÃ¡rio; tentando sem localizaÃ§Ã£o.",
+          "[useRotaService] VRP não conseguiu gerar polyline com localização do usuário; tentando sem localização.",
         );
         const fallback = await callVrp(null);
         if (fallback) return fallback;
@@ -392,7 +415,7 @@ export const useRotaService = () => {
 
       if (resultWithUser) return resultWithUser;
 
-      error.value = "API VRP nÃ£o retornou polyline";
+      error.value = "API VRP não retornou polyline";
       return null;
     } catch (err) {
       error.value = err instanceof Error ? err.message : "Erro ao calcular polyline";
@@ -406,11 +429,11 @@ export const useRotaService = () => {
   /**
    * Busca roteiros de uma rota e calcula a polyline
    * @param idRota - ID da rota
-   * @param userLocation - LocalizaÃ§Ã£o atual do usuÃ¡rio (GPS) para usar como ponto de partida
+   * @param userLocation - Localização atual do usuário (GPS) para usar como ponto de partida
    */
   const fetchRotaComPolyline = async (
     idRota: number,
-    userLocation?: { latitude: number; longitude: number } | null
+    userLocation?: { latitude: number; longitude: number } | null,
   ): Promise<{
     rota: Rota | null;
     roteiros: Roteiro[];
@@ -425,42 +448,57 @@ export const useRotaService = () => {
     const roteiros = roteirosResponse?.data || [];
 
     console.log("[useRotaService] fetchRotaComPolyline - Roteiros carregados:", roteiros.length);
-    console.log("[useRotaService] fetchRotaComPolyline - LocalizaÃ§Ã£o do usuÃ¡rio:", userLocation);
+    console.log("[useRotaService] fetchRotaComPolyline - Localização do usuário:", userLocation);
 
-    // Filtra roteiros com coordenadas vÃ¡lidas para o cÃ¡lculo
+    // Filtra roteiros com coordenadas válidas para o cálculo
     const roteirosValidos = roteiros.filter((r) => {
       if (!r.endereco) return false;
-      const lat = typeof r.endereco.latitude === "string"
-        ? parseFloat(r.endereco.latitude)
-        : r.endereco.latitude;
-      const lng = typeof r.endereco.longitude === "string"
-        ? parseFloat(r.endereco.longitude)
-        : r.endereco.longitude;
+      const lat =
+        typeof r.endereco.latitude === "string"
+          ? parseFloat(r.endereco.latitude)
+          : r.endereco.latitude;
+      const lng =
+        typeof r.endereco.longitude === "string"
+          ? parseFloat(r.endereco.longitude)
+          : r.endereco.longitude;
       return isValidCoordinate(lat, lng);
     });
 
-    console.log("[useRotaService] fetchRotaComPolyline - Roteiros com coordenadas vÃ¡lidas:", roteirosValidos.length);
+    console.log(
+      "[useRotaService] fetchRotaComPolyline - Roteiros com coordenadas válidas:",
+      roteirosValidos.length,
+    );
 
-    // Calcula polyline se houver roteiros vÃ¡lidos suficientes
-    // Com localizaÃ§Ã£o do usuÃ¡rio, precisamos de pelo menos 1 ponto
-    // Sem localizaÃ§Ã£o do usuÃ¡rio, precisamos de pelo menos 2 pontos
+    // Calcula polyline se houver roteiros válidos suficientes
+    // Com localização do usuário, precisamos de pelo menos 1 ponto
+    // Sem localização do usuário, precisamos de pelo menos 2 pontos
     let polyline: string | null = null;
     let summary: VrpSummary | null = null;
 
     const minPontos = userLocation ? 1 : 2;
 
     if (roteirosValidos.length >= minPontos) {
-      console.log("[useRotaService] fetchRotaComPolyline - Calculando polyline com userLocation:", !!userLocation);
+      console.log(
+        "[useRotaService] fetchRotaComPolyline - Calculando polyline com userLocation:",
+        !!userLocation,
+      );
       const result = await calcularPolyline(roteirosValidos, userLocation);
       if (result) {
         polyline = result.polyline;
         summary = result.summary;
-        console.log("[useRotaService] fetchRotaComPolyline - Polyline calculada:", polyline?.substring(0, 50) + "...");
+        console.log(
+          "[useRotaService] fetchRotaComPolyline - Polyline calculada:",
+          polyline?.substring(0, 50) + "...",
+        );
       } else {
         console.log("[useRotaService] fetchRotaComPolyline - Falha ao calcular polyline");
       }
     } else {
-      console.log("[useRotaService] fetchRotaComPolyline - Pontos insuficientes para calcular polyline (mÃ­nimo:", minPontos, ")");
+      console.log(
+        "[useRotaService] fetchRotaComPolyline - Pontos insuficientes para calcular polyline (mínimo:",
+        minPontos,
+        ")",
+      );
     }
 
     return { rota, roteiros, polyline, summary };
@@ -570,13 +608,13 @@ export const useRotaService = () => {
   };
 
   /**
-   * Atualiza a sequÃªncia de um roteiro
-   * Usa PUT conforme a API NestJS (nÃ£o PATCH)
+   * Atualiza a sequência de um roteiro
+   * Usa PUT conforme a API NestJS (não PATCH)
    */
   const updateRoteiroSequencia = async (
     id: number,
     sequencia: number,
-    idRota: number
+    idRota: number,
   ): Promise<boolean> => {
     error.value = null;
 
@@ -592,20 +630,20 @@ export const useRotaService = () => {
 
       return true;
     } catch (err) {
-      error.value = err instanceof Error ? err.message : "Erro ao atualizar sequÃªncia";
+      error.value = err instanceof Error ? err.message : "Erro ao atualizar sequência";
       console.error("[useRotaService] updateRoteiroSequencia error:", err);
       return false;
     }
   };
 
   /**
-   * Reordena mÃºltiplos roteiros de uma vez
-   * Como a API valida sequÃªncias duplicadas, usamos sequÃªncias temporÃ¡rias
-   * para evitar conflitos durante a reordenaÃ§Ã£o
+   * Reordena múltiplos roteiros de uma vez
+   * Como a API valida sequências duplicadas, usamos sequências temporárias
+   * para evitar conflitos durante a reordenação
    */
   const reordenarRoteiros = async (
     roteiros: Array<{ id: number; sequencia: number }>,
-    idRota: number
+    idRota: number,
   ): Promise<boolean> => {
     isLoading.value = true;
     error.value = null;
@@ -613,11 +651,11 @@ export const useRotaService = () => {
     try {
       const api = useMainApi(true);
 
-      // EstratÃ©gia: usar sequÃªncias temporÃ¡rias altas para evitar conflitos
-      // 1. Primeiro move todos para sequÃªncias temporÃ¡rias (10000+)
-      // 2. Depois move para as sequÃªncias finais
+      // Estratégia: usar sequências temporárias altas para evitar conflitos
+      // 1. Primeiro move todos para sequências temporárias (10000+)
+      // 2. Depois move para as sequências finais
 
-      // Passo 1: Mover para sequÃªncias temporÃ¡rias
+      // Passo 1: Mover para sequências temporárias
       for (let i = 0; i < roteiros.length; i++) {
         const roteiro = roteiros[i];
         await api(`${ROTEIRO_ENDPOINT}/${roteiro.id}`, {
@@ -626,7 +664,7 @@ export const useRotaService = () => {
         });
       }
 
-      // Passo 2: Mover para sequÃªncias finais
+      // Passo 2: Mover para sequências finais
       for (const roteiro of roteiros) {
         await api(`${ROTEIRO_ENDPOINT}/${roteiro.id}`, {
           method: "PUT",
@@ -648,7 +686,7 @@ export const useRotaService = () => {
   };
 
   /**
-   * Limpa cache de polyline para uma rota especÃ­fica
+   * Limpa cache de polyline para uma rota específica
    */
   const clearPolylineCacheForRota = (idRota: number): void => {
     const keysToRemove: string[] = [];
@@ -666,50 +704,42 @@ export const useRotaService = () => {
     isLoading,
     error,
 
-    // MÃ©todos de rotas
+    // Métodos de rotas
     fetchRotas,
     fetchRotaById,
     createRota,
 
-    // MÃ©todos de roteiros
+    // Métodos de roteiros
     fetchRoteiros,
     createRoteiro,
     deleteRoteiro,
     updateRoteiroSequencia,
     reordenarRoteiros,
 
-    // MÃ©todos de polyline
+    // Métodos de polyline
     calcularPolyline,
     fetchRotaComPolyline,
     clearPolylineCache,
 
-    // UtilitÃ¡rios
+    // Utilitários
     isValidCoordinate,
   };
 };
 
-// Composable para usar em pÃ¡ginas com useAsyncData
+// Composable para usar em páginas com useAsyncData
 export const useRotaAsyncData = () => {
   const service = useRotaService();
 
   const useRotasData = (filters?: Ref<RotaFilters>) => {
-    return useAsyncData(
-      "rotas-list",
-      () => service.fetchRotas(filters?.value),
-      {
-        watch: filters ? [filters] : undefined,
-      },
-    );
+    return useAsyncData("rotas-list", () => service.fetchRotas(filters?.value), {
+      watch: filters ? [filters] : undefined,
+    });
   };
 
   const useRoteirosData = (idRota: Ref<number>) => {
-    return useAsyncData(
-      `roteiros-${idRota.value}`,
-      () => service.fetchRoteiros(idRota.value),
-      {
-        watch: [idRota],
-      },
-    );
+    return useAsyncData(`roteiros-${idRota.value}`, () => service.fetchRoteiros(idRota.value), {
+      watch: [idRota],
+    });
   };
 
   return {

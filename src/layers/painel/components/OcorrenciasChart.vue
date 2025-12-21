@@ -20,7 +20,7 @@
           {{ total }}
         </span>
         <span class="text-[10px] font-medium mt-0.5" style="color: var(--color-text-muted)">
-          ocorrÃªncias
+          ocorrências
         </span>
       </div>
     </div>

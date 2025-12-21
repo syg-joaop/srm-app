@@ -35,7 +35,7 @@ export const useGeolocation = (options: UseGeolocationOptions = {}) => {
   };
 
   /**
-   * Callback de sucesso da geolocalizaÃ§Ã£o
+   * Callback de sucesso da geolocalização
    */
   const onSuccess = (pos: globalThis.GeolocationPosition) => {
     position.value = {
@@ -47,39 +47,39 @@ export const useGeolocation = (options: UseGeolocationOptions = {}) => {
     error.value = null;
     isLoading.value = false;
 
-    console.log("[useGeolocation] PosiÃ§Ã£o obtida:", position.value);
+    console.log("[useGeolocation] Posição obtida:", position.value);
   };
 
   /**
-   * Callback de erro da geolocalizaÃ§Ã£o
+   * Callback de erro da geolocalização
    */
   const onError = (err: GeolocationPositionError) => {
     isLoading.value = false;
 
     switch (err.code) {
       case err.PERMISSION_DENIED:
-        error.value = "PermissÃ£o de localizaÃ§Ã£o negada. Habilite nas configuraÃ§Ãµes do navegador.";
+        error.value = "Permissão de localização negada. Habilite nas configurações do navegador.";
         break;
       case err.POSITION_UNAVAILABLE:
-        error.value = "LocalizaÃ§Ã£o indisponÃ­vel. Verifique se o GPS estÃ¡ ativado.";
+        error.value = "Localização indisponível. Verifique se o GPS está ativado.";
         break;
       case err.TIMEOUT:
-        error.value = "Tempo esgotado ao obter localizaÃ§Ã£o.";
+        error.value = "Tempo esgotado ao obter localização.";
         break;
       default:
-        error.value = "Erro desconhecido ao obter localizaÃ§Ã£o.";
+        error.value = "Erro desconhecido ao obter localização.";
     }
 
     console.error("[useGeolocation] Erro:", error.value);
   };
 
   /**
-   * ObtÃ©m a posiÃ§Ã£o atual uma vez
+   * Obtém a posição atual uma vez
    */
   const getCurrentPosition = (): Promise<GeolocationPosition | null> => {
     return new Promise((resolve) => {
       if (!isSupported.value) {
-        error.value = "GeolocalizaÃ§Ã£o nÃ£o suportada neste navegador.";
+        error.value = "Geolocalização não suportada neste navegador.";
         resolve(null);
         return;
       }
@@ -102,11 +102,11 @@ export const useGeolocation = (options: UseGeolocationOptions = {}) => {
   };
 
   /**
-   * Inicia o monitoramento contÃ­nuo da posiÃ§Ã£o
+   * Inicia o monitoramento contínuo da posição
    */
   const startWatching = () => {
     if (!isSupported.value) {
-      error.value = "GeolocalizaÃ§Ã£o nÃ£o suportada neste navegador.";
+      error.value = "Geolocalização não suportada neste navegador.";
       return;
     }
 
@@ -121,7 +121,7 @@ export const useGeolocation = (options: UseGeolocationOptions = {}) => {
   };
 
   /**
-   * Para o monitoramento da posiÃ§Ã£o
+   * Para o monitoramento da posição
    */
   const stopWatching = () => {
     if (watchId !== null) {
@@ -131,16 +131,16 @@ export const useGeolocation = (options: UseGeolocationOptions = {}) => {
   };
 
   /**
-   * Solicita permissÃ£o de localizaÃ§Ã£o ao usuÃ¡rio
+   * Solicita permissão de localização ao usuário
    */
   const requestPermission = async (): Promise<boolean> => {
     if (!isSupported.value) {
-      error.value = "GeolocalizaÃ§Ã£o nÃ£o suportada neste navegador.";
+      error.value = "Geolocalização não suportada neste navegador.";
       return false;
     }
 
     try {
-      // Tenta obter a posiÃ§Ã£o para disparar o prompt de permissÃ£o
+      // Tenta obter a posição para disparar o prompt de permissão
       const result = await getCurrentPosition();
       return result !== null;
     } catch {
@@ -167,7 +167,7 @@ export const useGeolocation = (options: UseGeolocationOptions = {}) => {
     isLoading,
     isSupported,
 
-    // MÃ©todos
+    // Métodos
     getCurrentPosition,
     startWatching,
     stopWatching,

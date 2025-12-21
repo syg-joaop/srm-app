@@ -62,7 +62,7 @@
                 v-if="filteredOptions.length === 0"
                 class="px-3 py-4 text-sm text-[var(--color-text-muted)] text-center"
               >
-                Nenhuma opÃ§Ã£o encontrada
+                Nenhuma opção encontrada
               </div>
 
               <button
@@ -113,7 +113,7 @@ interface Props {
 
 const props = withDefaults(defineProps<Props>(), {
   label: "",
-  placeholder: "Selecione uma opÃ§Ã£o",
+  placeholder: "Selecione uma opção",
   disabled: false,
   required: false,
   searchable: false,

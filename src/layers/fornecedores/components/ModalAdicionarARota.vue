@@ -3,7 +3,7 @@
     <template #title>
       <div class="flex items-center gap-2">
         <Route class="w-5 h-5 text-[var(--color-primary)]" />
-        <span>Adicionar Ã  Rota</span>
+        <span>Adicionar à Rota</span>
       </div>
     </template>
 
@@ -113,18 +113,18 @@
         class="flex flex-col items-center justify-center py-8 text-[var(--color-text-muted)]"
       >
         <Route class="w-12 h-12 opacity-50 mb-2" />
-        <p class="text-sm">Nenhuma rota disponÃ­vel</p>
+        <p class="text-sm">Nenhuma rota disponível</p>
         <p class="text-xs">Crie uma rota primeiro para adicionar fornecedores</p>
       </div>
 
-      <!-- ObservaÃ§Ã£o -->
+      <!-- Observação -->
       <div v-if="selectedRota" class="flex flex-col gap-1.5">
         <label class="text-sm font-semibold text-[var(--color-text)]">
-          ObservaÃ§Ã£o (opcional)
+          Observação (opcional)
         </label>
         <textarea
           v-model="observacao"
-          placeholder="Adicione uma observaÃ§Ã£o para este ponto..."
+          placeholder="Adicione uma observação para este ponto..."
           rows="2"
           class="w-full px-3 py-2.5 rounded-md border border-[var(--color-border)] bg-[var(--color-surface)] text-sm text-[var(--color-text)] placeholder:text-[var(--color-text-muted)] focus:border-[var(--color-primary)] focus:outline-none transition-colors resize-none"
         />
@@ -179,7 +179,7 @@ const isAdding = ref(false);
 // eslint-disable-next-line no-undef
 const rotaService = useRotaService();
 
-// Verifica se fornecedor tem coordenadas vÃ¡lidas
+// Verifica se fornecedor tem coordenadas válidas
 const hasValidCoordinates = computed(() => {
   if (!props.fornecedor) return false;
   const lat = parseFloat(props.fornecedor.latitude);
@@ -188,7 +188,7 @@ const hasValidCoordinates = computed(() => {
 });
 
 /**
- * Carrega rotas disponÃ­veis
+ * Carrega rotas disponíveis
  */
 const carregarRotas = async () => {
   isLoadingRotas.value = true;
@@ -196,7 +196,7 @@ const carregarRotas = async () => {
   try {
     const response = await rotaService.fetchRotas({ itens: 50 });
     if (response?.data) {
-      // Filtra apenas rotas nÃ£o concluÃ­das/canceladas
+      // Filtra apenas rotas não concluídas/canceladas
       rotas.value = response.data.filter(
         (r) => !["concluida", "cancelada"].includes(r.status?.toLowerCase() || "")
       );
@@ -209,7 +209,7 @@ const carregarRotas = async () => {
 };
 
 /**
- * Adiciona fornecedor Ã  rota
+ * Adiciona fornecedor à rota
  */
 const handleAdd = async () => {
   if (!selectedRota.value || !props.fornecedor) return;
@@ -221,7 +221,7 @@ const handleAdd = async () => {
     const lat = parseFloat(fornecedor.latitude) || 0;
     const lng = parseFloat(fornecedor.longitude) || 0;
 
-    // Busca quantidade atual de roteiros para definir sequÃªncia
+    // Busca quantidade atual de roteiros para definir sequência
     const roteirosResponse = await rotaService.fetchRoteiros(selectedRota.value.id);
     const currentSequence = roteirosResponse?.data?.length || 0;
 
@@ -262,7 +262,7 @@ const handleCancel = () => {
 };
 
 /**
- * Reseta formulÃ¡rio
+ * Reseta formulário
  */
 const resetForm = () => {
   selectedRota.value = null;
@@ -273,7 +273,7 @@ const resetForm = () => {
  * Formata range de datas
  */
 const formatDateRange = (inicio?: string, fim?: string): string => {
-  if (!inicio && !fim) return "â€”";
+  if (!inicio && !fim) return "—";
 
   const formatDate = (dateStr?: string) => {
     if (!dateStr) return "";
@@ -288,7 +288,7 @@ const formatDateRange = (inicio?: string, fim?: string): string => {
     return `${dataInicio} - ${dataFim}`;
   }
 
-  return dataInicio || dataFim || "â€”";
+  return dataInicio || dataFim || "—";
 };
 
 /**
@@ -298,10 +298,10 @@ const getStatusLabel = (status?: string): string => {
   const map: Record<string, string> = {
     aguardando: "Aguardando",
     em_andamento: "Em Andamento",
-    concluida: "ConcluÃ­da",
+    concluida: "Concluída",
     cancelada: "Cancelada",
   };
-  return map[status?.toLowerCase() || ""] || status || "â€”";
+  return map[status?.toLowerCase() || ""] || status || "—";
 };
 
 /**

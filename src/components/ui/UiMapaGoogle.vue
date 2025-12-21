@@ -3,7 +3,7 @@
     <!-- Mapa -->
     <div ref="mapContainer" class="w-full h-full"></div>
 
-    <!-- Aviso de permissÃƒÂ£o/localizaÃƒÂ§ÃƒÂ£o -->
+    <!-- Aviso de permissão/localização -->
     <div
       v-if="geoError"
       class="absolute top-4 left-4 right-4 z-10 bg-yellow-100 dark:bg-yellow-900 border border-yellow-300 dark:border-yellow-700 rounded-lg shadow-lg p-3"
@@ -36,12 +36,12 @@
       </div>
     </div>
 
-    <!-- BotÃ£o de localizaÃ§Ã£o -->
+    <!-- Botão de localização -->
     <button
       v-if="showMyLocationButton"
       class="absolute bottom-4 right-4 z-10 p-3 bg-white dark:bg-gray-800 rounded-full shadow-lg hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors"
       :class="{ 'animate-pulse': isGettingLocation }"
-      title="Minha localizaÃ§Ã£o"
+      title="Minha localização"
       @click="goToMyLocation"
     >
       <Navigation
@@ -107,7 +107,7 @@ const props = withDefaults(
       aguardando: { color: "#6b7280", label: "Aguardando" },
       pendente: { color: "#f59e0b", label: "Pendente" },
       em_andamento: { color: "#3b82f6", label: "Em Andamento" },
-      concluida: { color: "#10b981", label: "ConcluÃ­da" },
+      concluida: { color: "#10b981", label: "Concluída" },
       cancelada: { color: "#ef4444", label: "Cancelada" },
     }),
   },
@@ -140,7 +140,7 @@ const resolvedStatusConfig = computed<UiMapaStatusConfig>(() => ({
   aguardando: { color: "#6b7280", label: "Aguardando" },
   pendente: { color: "#f59e0b", label: "Pendente" },
   em_andamento: { color: "#3b82f6", label: "Em Andamento" },
-  concluida: { color: "#10b981", label: "ConcluÃ­da" },
+  concluida: { color: "#10b981", label: "Concluída" },
   cancelada: { color: "#ef4444", label: "Cancelada" },
   ...props.statusConfig,
 }));
@@ -241,7 +241,7 @@ const addMarker = (ponto: GoogleMapPonto): google.maps.LatLng | null => {
       </p>`
           : ""
       }
-      ${ponto.sequencia !== undefined ? `<p style="margin-bottom: 4px;"><strong>SequÃªncia:</strong> ${ponto.sequencia}</p>` : ""}
+      ${ponto.sequencia !== undefined ? `<p style="margin-bottom: 4px;"><strong>Sequência:</strong> ${ponto.sequencia}</p>` : ""}
       <p><strong>Status:</strong> <span style="color: ${getStatusConfig(ponto.status).color}; font-weight: bold;">${label}</span></p>
     </div>
   `;
@@ -500,7 +500,7 @@ const loadGoogleMapsScript = (): Promise<void> => {
  */
 const initMap = async () => {
   if (!mapContainer.value || !props.apiKey) {
-    mapError.value = "API Key do Google Maps nÃ£o configurada";
+    mapError.value = "API Key do Google Maps não configurada";
     isLoadingMap.value = false;
     return;
   }
@@ -509,9 +509,9 @@ const initMap = async () => {
     // Carrega o script do Google Maps
     await loadGoogleMapsScript();
 
-    // Aguarda o google.maps estar disponÃ­vel
+    // Aguarda o google.maps estar disponível
     if (!window.google?.maps) {
-      throw new Error("Google Maps nÃ£o carregou corretamente");
+      throw new Error("Google Maps não carregou corretamente");
     }
 
     map = new google.maps.Map(mapContainer.value, {

@@ -30,8 +30,8 @@
         <h2 class="text-lg sm:text-xl font-semibold mb-3 sm:mb-4">Compras</h2>
         <div class="grid grid-cols-1 lg:grid-cols-2 gap-4 sm:gap-6">
           <ComprasCard
-            title="Compras do mÃªs"
-            subtitle="PerÃ­odo atual"
+            title="Compras do mês"
+            subtitle="Período atual"
             :main-value="comprasMes[0]?.value || 'R$ 0,00'"
             main-label="Total"
             :metrics="comprasMetricsMes"
@@ -39,8 +39,8 @@
           />
 
           <ComprasCard
-            title="MÃªs anterior"
-            subtitle="PerÃ­odo comparativo"
+            title="Mês anterior"
+            subtitle="Período comparativo"
             :main-value="comprasMesAnterior[0]?.value || 'R$ 0,00'"
             main-label="Total"
             :metrics="comprasMetricsMesAnterior"
@@ -54,26 +54,26 @@
         <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
           <DashboardWidget
             class="!h-[470px]"
-            title="PrÃ³ximos atendimentos"
-            subtitle="OcorrÃªncias com data de prÃ³ximo atendimento"
+            title="Próximos atendimentos"
+            subtitle="Ocorrências com data de próximo atendimento"
           >
             <UiEmptyState
               :icon="Search"
               title="Sem agendamentos"
-              description="NÃ£o existem atendimentos agendados"
+              description="Não existem atendimentos agendados"
             />
           </DashboardWidget>
 
           <DashboardWidget
             class="!h-[470px]"
             title="Atendimentos vencidos"
-            subtitle="OcorrÃªncias abertas com data vencida"
+            subtitle="Ocorrências abertas com data vencida"
             :items="atendimentosVencidos"
             :paginated="true"
             :page-size="6"
             :empty-icon="AlertCircle"
             empty-title="Nenhum atendimento vencido"
-            empty-description="NÃ£o existem atendimentos com data vencida"
+            empty-description="Não existem atendimentos com data vencida"
           >
             <template #default="{ paginatedItems }">
               <div class="space-y-2">
@@ -128,7 +128,7 @@
       </div>
 
       <div>
-        <h2 class="text-lg sm:text-xl font-semibold mb-3 sm:mb-4">RelatÃ³rios</h2>
+        <h2 class="text-lg sm:text-xl font-semibold mb-3 sm:mb-4">Relatórios</h2>
 
         <div class="grid grid-cols-1 lg:grid-cols-2 gap-4 sm:gap-6 mb-6">
           <div
@@ -143,10 +143,10 @@
                 ></div>
                 <div>
                   <h3 class="text-sm sm:text-base font-bold" style="color: var(--color-text)">
-                    OcorrÃªncias
+                    Ocorrências
                   </h3>
                   <p class="text-[10px] sm:text-xs mt-0.5" style="color: var(--color-text-muted)">
-                    Ãšltimos 12 meses por status
+                    Últimos 12 meses por status
                   </p>
                 </div>
               </div>
@@ -159,20 +159,20 @@
             <div v-else class="h-[320px] sm:h-[350px] flex items-center justify-center">
               <UiEmptyState
                 :icon="PieChart"
-                title="Sem ocorrÃªncias"
-                description="NÃ£o hÃ¡ ocorrÃªncias no perÃ­odo"
+                title="Sem ocorrências"
+                description="Não há ocorrências no período"
               />
             </div>
           </div>
 
           <DashboardWidget
             class="!h-[450px]"
-            title="OcorrÃªncias"
-            subtitle="Quantidade por mÃªs nos Ãºltimos 6 meses"
+            title="Ocorrências"
+            subtitle="Quantidade por mês nos últimos 6 meses"
             :is-empty="isOcorrenciasLineEmpty"
             :empty-icon="LineChart"
-            empty-title="Sem ocorrÃªncias"
-            empty-description="NÃ£o hÃ¡ ocorrÃªncias nos Ãºltimos 6 meses"
+            empty-title="Sem ocorrências"
+            empty-description="Não há ocorrências nos últimos 6 meses"
           >
             <div ref="lineChartRef" class="w-full h-full min-h-[250px]"></div>
           </DashboardWidget>
@@ -181,12 +181,12 @@
         <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-6">
           <DashboardWidget
             class="h-[450px]"
-            title="Meta diÃ¡ria"
+            title="Meta diária"
             subtitle="Por KG"
             :is-empty="isMetaDiariaEmpty"
             :empty-icon="Target"
             empty-title="Sem dados de meta"
-            empty-description="NÃ£o hÃ¡ dados de meta diÃ¡ria disponÃ­veis"
+            empty-description="Não há dados de meta diária disponíveis"
           >
             <div ref="barChartRef" class="w-full h-full min-h-[250px]"></div>
           </DashboardWidget>
@@ -194,13 +194,13 @@
           <DashboardWidget
             class="!h-[450px]"
             title="Compras X Comprador"
-            subtitle="Quantidade por mÃªs nos Ãºltimos 6 meses"
+            subtitle="Quantidade por mês nos últimos 6 meses"
             :items="compradorItems"
             :paginated="true"
             :page-size="6"
             :empty-icon="ShoppingCart"
             empty-title="Nenhuma compra registrada"
-            empty-description="NÃ£o existem compras no perÃ­odo selecionado"
+            empty-description="Não existem compras no período selecionado"
           >
             <template #default="{ paginatedItems }">
               <div class="-mx-6">
@@ -210,9 +210,9 @@
                   >
                     <tr>
                       <th class="px-6 py-3 font-semibold tracking-wider">Comprador</th>
-                      <th class="px-6 py-3 font-semibold text-center tracking-wider">MÃªs atual</th>
+                      <th class="px-6 py-3 font-semibold text-center tracking-wider">Mês atual</th>
                       <th class="px-6 py-3 font-semibold text-center tracking-wider">
-                        MÃªs anterior
+                        Mês anterior
                       </th>
                     </tr>
                   </thead>
@@ -253,7 +253,7 @@
             :is-empty="isProdutosBarEmpty"
             :empty-icon="Package"
             empty-title="Sem produtos"
-            empty-description="NÃ£o hÃ¡ dados de produtos comprados"
+            empty-description="Não há dados de produtos comprados"
           >
             <ProdutosRankingList :data="chartData.produtosBar" />
           </DashboardWidget>
@@ -265,7 +265,7 @@
             :is-empty="isDescontosEmpty"
             :empty-icon="Percent"
             empty-title="Sem descontos"
-            empty-description="NÃ£o hÃ¡ dados de descontos disponÃ­veis"
+            empty-description="Não há dados de descontos disponíveis"
           >
             <div ref="discountChartRef" class="w-full h-full min-h-[250px]"></div>
           </DashboardWidget>
@@ -275,14 +275,14 @@
           <DashboardWidget
             class="!h-[505px]"
             title="Aniversariantes"
-            subtitle="Contatos com aniversÃ¡rio prÃ³ximo"
+            subtitle="Contatos com aniversário próximo"
             :items="aniversariantesItems"
             :paginated="true"
             :page-size="6"
             :show-tabs="true"
             :empty-icon="Cake"
             empty-title="Nenhum aniversariante"
-            empty-description="NÃ£o hÃ¡ aniversariantes prÃ³ximos"
+            empty-description="Não há aniversariantes próximos"
           >
             <template #default="{ paginatedItems }">
               <div class="space-y-2">
@@ -331,7 +331,7 @@
                   <template #action>
                     <button
                       class="p-1.5 rounded-full shadow-sm transition-colors text-[var(--color-text-muted)] group-hover/item:text-[var(--color-primary)] hover:bg-[var(--color-hover)]"
-                      title="Enviar felicitaÃ§Ãµes"
+                      title="Enviar felicitações"
                     >
                       <Gift class="w-3.5 h-3.5" />
                     </button>
@@ -344,13 +344,13 @@
           <DashboardWidget
             class="!h-[505px]"
             title="Atendentes"
-            subtitle="Atendimentos por usuÃ¡rios"
+            subtitle="Atendimentos por usuários"
             :items="atendentesItems"
             :paginated="true"
             :page-size="6"
             :empty-icon="Users"
             empty-title="Nenhum atendente"
-            empty-description="NÃ£o hÃ¡ dados de atendentes disponÃ­veis"
+            empty-description="Não há dados de atendentes disponíveis"
           >
             <template #default="{ paginatedItems }">
               <div class="space-y-3">
@@ -565,7 +565,7 @@ const initCharts = () => {
       },
       series: [
         {
-          name: "OcorrÃªncias",
+          name: "Ocorrências",
           data: chartData.value.ocorrenciasLine.values,
           type: "line",
           smooth: true,
@@ -599,7 +599,7 @@ const initCharts = () => {
       },
       series: [
         {
-          name: "Meta DiÃ¡ria: ",
+          name: "Meta Diária: ",
           data: chartData.value.metaDiaria.values,
           type: "bar",
           itemStyle: { color: "#0099ff" },

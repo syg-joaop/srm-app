@@ -6,7 +6,7 @@
       <div class="col-span-4">Fornecedor</div>
       <div class="col-span-2">Cidade</div>
       <div class="col-span-2">Data Check-in</div>
-      <div class="col-span-2">Responsavel</div>
+      <div class="col-span-2">Responsável</div>
       <div class="col-span-2 text-center">Status</div>
     </div>
 

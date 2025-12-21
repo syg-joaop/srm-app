@@ -88,7 +88,6 @@
         class="mt-6"
         @update:page="(p) => (currentPage = p)"
       />
-      />
 
       <!-- Empty state -->
       <UiEmptyState
@@ -151,7 +150,7 @@ const rotaService = useRotaService();
 const totalPages = computed(() => Math.ceil(totalItems.value / itemsPerPage) || 1);
 
 const rotasPaginadas = computed(() => {
-  // Se os dados jÃ¡ vÃªm paginados do backend, retorna direto
+  // Se os dados já vêm paginados do backend, retorna direto
   return rotas.value;
 });
 

@@ -69,7 +69,7 @@
             <div class="font-bold" style="color: var(--color-success)">
               {{ rota.progresso.concluidos }}
             </div>
-            <div style="color: var(--color-text-muted)">ConcluÃ­dos</div>
+            <div style="color: var(--color-text-muted)">Concluídos</div>
           </div>
           <div>
             <div class="font-bold" style="color: var(--color-warning)">
@@ -95,7 +95,7 @@
         :hide-labels-on-mobile="false"
       />
 
-      <!-- ConteÃºdo das abas -->
+      <!-- Conteúdo das abas -->
       <div class="min-h-[300px]">
         <!-- ABA MAPA -->
         <RotaAbaMapa
@@ -295,7 +295,7 @@ watch(
 );
 
 /**
- * Handler quando roteiro Ã© adicionado
+ * Handler quando roteiro é adicionado
  */
 const handleRoteiroAdded = async () => {
   await carregarDados();

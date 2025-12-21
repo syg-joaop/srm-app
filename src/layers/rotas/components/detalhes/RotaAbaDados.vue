@@ -5,12 +5,12 @@
         <div
           class="text-xs uppercase font-medium mb-1 text-[var(--color-text-muted)]"
         >
-          CÃ³digo
+          Código
         </div>
         <div
           class="text-lg font-mono font-medium text-[var(--color-text)]"
         >
-          {{ rota?.codigo || rota?.id || "â€”" }}
+          {{ rota?.codigo || rota?.id || "—" }}
         </div>
       </UiCard>
 
@@ -32,11 +32,11 @@
         <div
           class="text-xs uppercase font-medium mb-1 text-[var(--color-text-muted)]"
         >
-          ResponsÃ¡vel
+          Responsável
         </div>
         <div class="flex items-center gap-2 text-[var(--color-text)]">
           <User class="w-4 h-4 text-[var(--color-primary)]" />
-          <span class="font-medium truncate">{{ rota?.usuario || "â€”" }}</span>
+          <span class="font-medium truncate">{{ rota?.usuario || "—" }}</span>
         </div>
       </UiCard>
 
@@ -49,7 +49,7 @@
         <div class="flex items-center gap-2 text-[var(--color-text)]">
           <User class="w-4 h-4 text-[var(--color-text-muted)]" />
           <span class="font-medium truncate">{{
-            rota?.usuario_created || "â€”"
+            rota?.usuario_created || "—"
           }}</span>
         </div>
       </UiCard>
@@ -58,7 +58,7 @@
         <div
           class="text-xs uppercase font-medium mb-1 text-[var(--color-text-muted)]"
         >
-          PerÃ­odo de ExecuÃ§Ã£o
+          Período de Execução
         </div>
         <div class="flex items-center gap-2 text-[var(--color-text)]">
           <Calendar class="w-4 h-4 text-[var(--color-primary)]" />
@@ -72,7 +72,7 @@
         <div
           class="text-xs uppercase font-medium mb-1 text-[var(--color-text-muted)]"
         >
-          ObservaÃ§Ãµes
+          Observações
         </div>
         <p class="text-sm leading-relaxed text-[var(--color-text)]">
           {{ rota.observacao }}
@@ -80,12 +80,12 @@
       </UiCard>
     </div>
 
-    <!-- Resumo logÃ­stico -->
+    <!-- Resumo logístico -->
     <UiCard v-if="summary">
       <template #header>
         <div class="flex items-center gap-2 text-[var(--color-primary)]">
           <TrendingUp class="w-4 h-4" />
-          <span class="font-semibold">Resumo LogÃ­stico</span>
+          <span class="font-semibold">Resumo Logístico</span>
         </div>
       </template>
       <div class="grid grid-cols-3 gap-4 text-center">

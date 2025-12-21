@@ -88,10 +88,10 @@ const handleLogout = async () => {
 };
 
 const menuItems = [
-  { label: "InÃ­cio", path: "/", icon: LayoutGrid },
+  { label: "Início", path: "/", icon: LayoutGrid },
   { label: "Fornecedores", path: "/fornecedores", icon: Recycle },
   { label: "Prospectos", path: "/prospectos", icon: HeartHandshake },
-  { label: "OcorrÃªncias", path: "/ocorrencias", icon: MessageSquare },
+  { label: "Ocorrências", path: "/ocorrencias", icon: MessageSquare },
   { label: "Check-in", path: "/checkin", icon: MapPin },
   { label: "Rota", path: "/rotas", icon: Route },
   { label: "Concorrentes", path: "/concorrentes", icon: Crosshair },

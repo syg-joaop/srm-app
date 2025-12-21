@@ -2,12 +2,12 @@
   <div class="relative w-full h-full">
     <div ref="mapContainer" class="w-full h-full"></div>
 
-    <!-- BotÃ£o de geolocalizaÃ§Ã£o estilo Google Maps -->
+    <!-- Botão de geolocalização estilo Google Maps -->
     <button
       v-if="showMyLocationButton"
       class="absolute bottom-24 right-3 z-[1000] bg-white rounded-sm shadow-md hover:shadow-lg transition-shadow w-10 h-10 flex items-center justify-center border border-gray-300"
       :class="{ 'bg-blue-50': isGettingLocation }"
-      title="Minha localizaÃ§Ã£o"
+      title="Minha localização"
       @click="goToMyLocation"
     >
       <svg
@@ -28,7 +28,7 @@
       </svg>
     </button>
 
-    <!-- Mensagem de erro de geolocalizaÃ§Ã£o -->
+    <!-- Mensagem de erro de geolocalização -->
     <div
       v-if="geoError"
       class="absolute top-4 left-4 right-4 z-[1000] bg-white rounded shadow-lg p-3 border border-yellow-400"
@@ -98,14 +98,14 @@ let map: L.Map | null = null;
 let markers: L.Marker[] = [];
 let userMarker: L.CircleMarker | null = null;
 
-// GeolocalizaÃ§Ã£o
+// Geolocalização
 const { position, getCurrentPosition, error } = useGeolocation({
   enableHighAccuracy: true,
   timeout: 10000,
   maximumAge: 30000,
 });
 
-// Observa erros de geolocalizaÃ§Ã£o
+// Observa erros de geolocalização
 watch(error, (newError) => {
   if (newError) {
     geoError.value = newError;
@@ -229,7 +229,7 @@ const updateUserLocationMarker = (lat: number, lng: number) => {
   if (userMarker) {
     userMarker.setLatLng([lat, lng]);
   } else {
-    // Cria marcador estilo Google Maps (cÃ­rculo azul com borda branca)
+    // Cria marcador estilo Google Maps (círculo azul com borda branca)
     userMarker = L.circleMarker([lat, lng], {
       radius: 8,
       fillColor: "#4285F4",
@@ -239,9 +239,9 @@ const updateUserLocationMarker = (lat: number, lng: number) => {
       fillOpacity: 1,
     });
 
-    // Adiciona cÃ­rculo de precisÃ£o
+    // Adiciona círculo de precisão
     const accuracyCircle = L.circle([lat, lng], {
-      radius: 50, // Pode ajustar baseado na precisÃ£o real
+      radius: 50, // Pode ajustar baseado na precisão real
       fillColor: "#4285F4",
       color: "#4285F4",
       weight: 1,
@@ -252,7 +252,7 @@ const updateUserLocationMarker = (lat: number, lng: number) => {
     userMarker.addTo(map);
     accuracyCircle.addTo(map);
 
-    userMarker.bindPopup("Sua localizaÃ§Ã£o atual");
+    userMarker.bindPopup("Sua localização atual");
   }
 };
 
@@ -270,7 +270,7 @@ const goToMyLocation = async () => {
       });
     }
   } catch (err) {
-    geoError.value = "NÃ£o foi possÃ­vel obter sua localizaÃ§Ã£o";
+    geoError.value = "Não foi possível obter sua localização";
   } finally {
     isGettingLocation.value = false;
   }
@@ -323,7 +323,7 @@ const initMap = async () => {
   }
 };
 
-// Observa mudanÃ§as na posiÃ§Ã£o do usuÃ¡rio
+// Observa mudanças na posição do usuário
 watch(position, (newPos) => {
   if (newPos && map && !isGettingLocation.value) {
     updateUserLocationMarker(newPos.latitude, newPos.longitude);

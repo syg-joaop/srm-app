@@ -286,7 +286,7 @@ const handleSelectFornecedor = (fornecedor: Fornecedor) => {
   showModal.value = true;
 };
 
-// Modal de adicionar Ã  rota
+// Modal de adicionar à rota
 const showAddRouteModal = ref(false);
 const fornecedorParaRota = ref<Fornecedor | null>(null);
 
@@ -296,7 +296,7 @@ const handleAddToRoute = (fornecedor: Fornecedor) => {
 };
 
 const handleRouteAdded = (rota: Rota) => {
-  console.log("Fornecedor adicionado Ã  rota:", rota.id);
+  console.log("Fornecedor adicionado à rota:", rota.id);
   // Pode redirecionar para a rota ou mostrar mensagem de sucesso
 };
 </script>

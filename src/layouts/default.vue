@@ -20,7 +20,7 @@
 
         <div class="flex flex-col">
           <span class="font-bold text-sm leading-tight" style="color: var(--color-text)"
-            >OlÃ¡, {{ userName }}</span
+            >Olá, {{ userName }}</span
           >
           <span
             class="text-[10px] font-medium tracking-wide uppercase"

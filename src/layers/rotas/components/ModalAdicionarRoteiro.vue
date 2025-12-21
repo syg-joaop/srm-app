@@ -12,7 +12,7 @@
       <div class="flex gap-2">
         <UiInput
           v-model="searchTerm"
-          placeholder="Buscar fornecedor por nome, cÃ³digo ou cidade..."
+          placeholder="Buscar fornecedor por nome, código ou cidade..."
           class="flex-1"
           @keyup.enter="buscarFornecedores"
         />
@@ -39,7 +39,7 @@
           }"
           @click="selectFornecedor(fornecedor)"
         >
-          <!-- Ãcone de localizaÃ§Ã£o -->
+          <!-- Ícone de localização -->
           <div
             class="flex-shrink-0 w-10 h-10 rounded-full flex items-center justify-center"
             :class="
@@ -58,7 +58,7 @@
               {{ fornecedor.fanta || fornecedor.fornecedor }}
             </div>
             <div class="text-xs text-[var(--color-text-muted)] truncate">
-              CÃ³digo: {{ fornecedor.codfor }} | {{ fornecedor.cidade }} - {{ fornecedor.uf }}
+              Código: {{ fornecedor.codfor }} | {{ fornecedor.cidade }} - {{ fornecedor.uf }}
             </div>
             <div class="text-xs text-[var(--color-text-muted)] truncate">
               {{ fornecedor.ende }}
@@ -81,7 +81,7 @@
             </span>
           </div>
 
-          <!-- Checkbox de seleÃ§Ã£o -->
+          <!-- Checkbox de seleção -->
           <div class="flex-shrink-0">
             <div
               class="w-5 h-5 rounded-full border-2 flex items-center justify-center transition-colors"
@@ -119,14 +119,14 @@
         <p class="text-sm">Busque um fornecedor para adicionar ao roteiro</p>
       </div>
 
-      <!-- ObservaÃ§Ã£o -->
+      <!-- Observação -->
       <div v-if="selectedFornecedor" class="flex flex-col gap-1.5">
         <label class="text-sm font-semibold text-[var(--color-text)]">
-          ObservaÃ§Ã£o (opcional)
+          Observação (opcional)
         </label>
         <textarea
           v-model="observacao"
-          placeholder="Adicione uma observaÃ§Ã£o para este ponto..."
+          placeholder="Adicione uma observação para este ponto..."
           rows="2"
           class="w-full px-3 py-2.5 rounded-md border border-[var(--color-border)] bg-[var(--color-surface)] text-sm text-[var(--color-text)] placeholder:text-[var(--color-text-muted)] focus:border-[var(--color-primary)] focus:outline-none transition-colors resize-none"
         />
@@ -186,7 +186,7 @@ const fornecedorService = useFornecedorService();
 const rotaService = useRotaService();
 
 /**
- * Verifica se fornecedor tem coordenadas vÃ¡lidas
+ * Verifica se fornecedor tem coordenadas válidas
  */
 const hasValidCoordinates = (fornecedor: Fornecedor): boolean => {
   if (!fornecedor.latitude || !fornecedor.longitude) return false;
@@ -282,7 +282,7 @@ const handleCancel = () => {
 };
 
 /**
- * Reseta o formulÃ¡rio
+ * Reseta o formulário
  */
 const resetForm = () => {
   searchTerm.value = "";

@@ -67,7 +67,7 @@
       </div>
     </div>
 
-    <!-- Aviso de permissÃ£o/localizaÃ§Ã£o -->
+    <!-- Aviso de permissão/localização -->
     <div
       v-if="geoError"
       class="absolute top-4 left-4 right-4 z-[2000] bg-yellow-100 dark:bg-yellow-900 border border-yellow-300 dark:border-yellow-700 rounded-lg shadow-lg p-3"
@@ -89,11 +89,11 @@
       </div>
     </div>
 
-    <!-- BotÃ£o de localizaÃ§Ã£o -->
+    <!-- Botão de localização -->
     <button
       class="absolute bottom-2 right-4 z-[2000] p-3 bg-white dark:bg-gray-800 rounded-full shadow-lg hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors"
       :class="{ 'animate-pulse': isGettingLocation }"
-      title="Minha localizaÃ§Ã£o"
+      title="Minha localização"
       @click="recalcularApartirDeMim"
     >
       <Navigation
@@ -115,7 +115,7 @@
             {{ roteirosInvalidos.length === 1 ? "ponto" : "pontos" }} sem coordenadas GPS
           </span>
           <p class="text-xs text-yellow-700 dark:text-yellow-300 mt-0.5">
-            Esses pontos nÃ£o serÃ£o exibidos no mapa
+            Esses pontos não serão exibidos no mapa
           </p>
         </div>
       </div>
@@ -231,7 +231,7 @@ const statusConfig: UiMapaStatusConfig = {
   aguardando: { color: "#6b7280", label: "Aguardando" },
   pendente: { color: "#f59e0b", label: "Pendente" },
   em_andamento: { color: "#3b82f6", label: "Em Andamento" },
-  concluida: { color: "#10b981", label: "ConcluÃ­da" },
+  concluida: { color: "#10b981", label: "Concluída" },
   cancelada: { color: "#ef4444", label: "Cancelada" },
 };
 
@@ -320,7 +320,7 @@ const calcularPolylineParaMapa = async (
   error.value = null;
 
   try {
-    loadingMessage.value = userLoc ? "Calculando rota a partir de vocÃª..." : "Calculando rota...";
+    loadingMessage.value = userLoc ? "Calculando rota a partir de você..." : "Calculando rota...";
 
     const result = await rotaService.calcularPolyline(roteirosValidos, userLoc);
 
@@ -329,7 +329,7 @@ const calcularPolylineParaMapa = async (
     routeWarning.value = result
       ? null
       : rotaService.error.value ||
-        "NÃ†o foi possÂ¡vel calcular a rota. Exibindo linha reta entre os pontos.";
+        "Não foi possível calcular a rota. Exibindo linha reta entre os pontos.";
 
     emit("loaded", { polyline: polyline.value, summary: summary.value });
   } catch (err) {
@@ -397,7 +397,7 @@ const carregarRota = async () => {
 
     console.log("[MapaRota] Rota carregada:", {
       roteiros: result.roteiros.length,
-      polyline: result.polyline ? "sim" : "nÃ£o",
+      polyline: result.polyline ? "sim" : "não",
     });
   } catch (err) {
     error.value = err instanceof Error ? err.message : "Erro ao carregar rota";
@@ -472,7 +472,7 @@ onMounted(() => {
   }
 });
 
-// Watch para mudanÃ§a de idRota
+// Watch para mudança de idRota
 watch(
   () => props.idRota,
   (newId) => {

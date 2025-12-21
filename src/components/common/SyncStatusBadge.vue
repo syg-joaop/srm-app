@@ -23,17 +23,17 @@ const { pendingCount, isSyncing, syncPending } = useSyncManager();
 const isVisible = computed(() => isSyncing.value || pendingCount.value > 0);
 
 const label = computed(() => {
-  if (isSyncing.value) return "Sincronizandoâ€¦";
+  if (isSyncing.value) return "Sincronizando...";
   const count = pendingCount.value;
-  return `${count} pendÃªncia${count === 1 ? "" : "s"}`;
+  return `${count} pendência${count === 1 ? "" : "s"}`;
 });
 
 const canSync = computed(() => isOnline.value && !isSyncing.value && pendingCount.value > 0);
 
 const title = computed(() => {
-  if (!isOnline.value) return "VocÃª estÃ¡ offline";
+  if (!isOnline.value) return "Você está offline";
   if (isSyncing.value) return "Sincronizando";
-  return canSync.value ? "Sincronizar agora" : "Sem pendÃªncias";
+  return canSync.value ? "Sincronizar agora" : "Sem pendências";
 });
 
 const styles = computed(() => {
