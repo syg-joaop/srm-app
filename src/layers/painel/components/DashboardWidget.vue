@@ -50,6 +50,10 @@
       </div>
     </div>
 
+    <div v-if="hasSubheader()" class="px-6">
+      <slot name="subheader" />
+    </div>
+
     <div
       class="px-6 py-2 relative flex-1 flex flex-col overflow-y-auto overflow-x-hidden custom-scrollbar"
     >
@@ -122,6 +126,8 @@ const emit = defineEmits<{
   (e: "tab-change", value: string): void;
 }>();
 
+const slots = useSlots();
+
 const props = withDefaults(
   defineProps<{
     title: string;
@@ -149,6 +155,12 @@ const props = withDefaults(
     defaultTab: "fornecedores",
   },
 );
+
+const hasSubheader = () => {
+  if (!slots.subheader) return false;
+  const content = slots.subheader();
+  return Array.isArray(content) && content.length > 0;
+};
 
 const availableTabs = computed<TabOption[]>(() => {
   if (props.tabs && props.tabs.length > 0) return props.tabs;

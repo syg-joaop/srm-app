@@ -1,4 +1,5 @@
 ﻿import type { Fornecedor, FornecedorFilters, FornecedorResponse } from "../fornecedores.types";
+import { schemaFornecedorResponse } from "~/server/schemas/fornecedores.schema";
 
 const FORNECEDORES_LIST_ENDPOINT = "/sygecom/chameleon-mode/SRM_GET_FORNECEDORES";
 const FORNECEDORES_CREATE_ENDPOINT = "/sygecom/chameleon-mode/SRM_POST_FORNECEDOR";
@@ -10,6 +11,7 @@ export const useFornecedorService = () => {
     buildBody: buildPagedListBody,
     homol: true,
     cacheTtl: 5 * 60 * 1000,
+    schema: schemaFornecedorResponse,
   });
 
   const createFornecedor = useOfflineMutation<Partial<Fornecedor>>({

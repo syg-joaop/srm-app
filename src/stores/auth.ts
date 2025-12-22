@@ -1,9 +1,73 @@
 import { defineStore } from "pinia";
 import type { LoginCredentials, Parametros, Permissao, User } from "~/types/auth";
+import { loginResponseSchema } from "~/types/auth";
 
 const STORAGE_KEY = "srm_auth_user";
+const DEFAULT_ORIGEM = "SRM";
 
 type LoginResult = { success: true; data: { user: User[] } } | { success: false; error: string };
+
+const isClient = () => import.meta.client;
+
+const readStoredUser = (): User | null => {
+  if (!isClient()) return null;
+  const stored = localStorage.getItem(STORAGE_KEY);
+  if (!stored) return null;
+  try {
+    return JSON.parse(stored) as User;
+  } catch {
+    return null;
+  }
+};
+
+const writeStoredUser = (userData: User) => {
+  if (!isClient()) return;
+  localStorage.setItem(STORAGE_KEY, JSON.stringify(userData));
+};
+
+const clearStoredUser = () => {
+  if (!isClient()) return;
+  localStorage.removeItem(STORAGE_KEY);
+};
+
+const buildLoginPayload = (credentials: LoginCredentials) => {
+  const payload: Record<string, unknown> = {
+    email: credentials.email,
+    password: credentials.password,
+    origem: credentials.origem ?? DEFAULT_ORIGEM,
+    homol: false,
+  };
+
+  if (credentials.colaborador) payload.colaborador = credentials.colaborador;
+  if (credentials.password_colaborador) {
+    payload.password_colaborador = credentials.password_colaborador;
+  }
+
+  return payload;
+};
+
+const parseLoginResponse = (response: unknown): { user: User | null; error: string | null } => {
+  const parsed = loginResponseSchema.safeParse(response);
+  if (!parsed.success) {
+    return { user: null, error: "Resposta de login invalida" };
+  }
+
+  const loggedUser = parsed.data.user?.[0];
+  if (!loggedUser) {
+    return { user: null, error: "Credenciais invalidas" };
+  }
+
+  if (!loggedUser.token) {
+    return { user: null, error: "Login sem token" };
+  }
+
+  return { user: loggedUser, error: null };
+};
+
+const getErrorMessage = (err: unknown): string => {
+  const error = err as { data?: { message?: string }; message?: string };
+  return error?.data?.message ?? error?.message ?? "Erro ao fazer login";
+};
 
 export const useAuthStore = defineStore("auth", () => {
   const user = ref<User | null>(null);
@@ -11,7 +75,7 @@ export const useAuthStore = defineStore("auth", () => {
   const error = ref<string | null>(null);
   const initialized = ref(false);
 
-  const isAuthenticated = computed(() => Boolean(user.value));
+  const isAuthenticated = computed(() => Boolean(user.value?.token));
   const userEmail = computed(() => user.value?.email ?? "");
   const userName = computed(() => user.value?.usuario ?? "");
   const userRole = computed(() => user.value?.role ?? "user");
@@ -20,41 +84,21 @@ export const useAuthStore = defineStore("auth", () => {
     () => (user.value?.parametros as Partial<Parametros>) ?? {},
   );
 
-  const saveUserToStorage = (userData: User) => {
-    if (!import.meta.client) return;
-    localStorage.setItem(STORAGE_KEY, JSON.stringify(userData));
+  const setUser = (userData: User | null) => {
+    user.value = userData;
   };
 
-  const loadUserFromStorage = (): User | null => {
-    if (!import.meta.client) return null;
-    const stored = localStorage.getItem(STORAGE_KEY);
-    if (!stored) return null;
-    try {
-      return JSON.parse(stored) as User;
-    } catch {
-      return null;
-    }
-  };
-
-  const removeUserFromStorage = () => {
-    if (!import.meta.client) return;
-    localStorage.removeItem(STORAGE_KEY);
-  };
-
-  const checkSession = async (): Promise<boolean> => {
-    if (!import.meta.client) return isAuthenticated.value;
-    try {
-      await $fetch("/api/session", { credentials: "include" });
-      return true;
-    } catch {
-      return false;
-    }
+  const clearSession = () => {
+    user.value = null;
+    error.value = null;
+    initialized.value = false;
+    clearStoredUser();
   };
 
   const initAuth = async (): Promise<boolean> => {
     if (initialized.value) return isAuthenticated.value;
 
-    const savedUser = loadUserFromStorage();
+    const savedUser = readStoredUser();
     if (savedUser) {
       user.value = savedUser;
     }
@@ -62,15 +106,17 @@ export const useAuthStore = defineStore("auth", () => {
     initialized.value = true;
 
     if (!user.value) return false;
-
-    const sessionOk = await checkSession();
-    if (!sessionOk) {
-      user.value = null;
-      removeUserFromStorage();
+    if (!isAuthenticated.value) {
+      clearSession();
       return false;
     }
 
     return true;
+  };
+
+  const failLogin = (message: string): LoginResult => {
+    error.value = message;
+    return { success: false, error: message };
   };
 
   const login = async (credentials: LoginCredentials): Promise<LoginResult> => {
@@ -78,60 +124,36 @@ export const useAuthStore = defineStore("auth", () => {
     error.value = null;
 
     try {
-      const requestBody = {
-        email: credentials.email,
-        password: credentials.password,
-        origem: credentials.origem ?? "SRM",
-        remember: credentials.remember,
-        terms: credentials.terms,
-        colaborador: credentials.colaborador,
-        password_colaborador: credentials.password_colaborador,
-        remember_colaborador: credentials.remember_colaborador,
-      };
-
       const api = useAuthApi();
       const response = await api<{ user: User[] }>("/login", {
         method: "POST",
-        body: requestBody,
+        body: buildLoginPayload(credentials),
       });
 
-      const loggedUser = response.user?.[0];
+      const { user: loggedUser, error: parseError } = parseLoginResponse(response);
       if (!loggedUser) {
-        error.value = "Credenciais inválidas";
-        return { success: false, error: error.value };
+        return failLogin(parseError ?? "Erro ao fazer login");
       }
 
-      const { token: _token, ...safeUser } = loggedUser as any;
-      const storedUser = safeUser as User;
-      user.value = storedUser;
+      setUser(loggedUser);
       initialized.value = true;
-      saveUserToStorage(storedUser);
+      writeStoredUser(loggedUser);
 
       if (credentials.remember || credentials.remember_colaborador) {
         useAuthPersistence().persistCredentials(credentials);
       }
 
-      return { success: true, data: { user: [storedUser] } };
-    } catch (err: any) {
-      const errorMessage = err.data?.message ?? err.message ?? "Erro ao fazer login";
-      error.value = errorMessage;
-      return { success: false, error: errorMessage };
+      return { success: true, data: { user: [loggedUser] } };
+    } catch (err) {
+      return failLogin(getErrorMessage(err));
     } finally {
       loading.value = false;
     }
   };
 
   const logout = async () => {
-    try {
-      await $fetch("/api/logout", { method: "POST", credentials: "include" });
-    } catch {
-    } finally {
-      user.value = null;
-      error.value = null;
-      initialized.value = false;
-      removeUserFromStorage();
-      await navigateTo("/login");
-    }
+    clearSession();
+    await navigateTo("/login");
   };
 
   const clearError = () => {

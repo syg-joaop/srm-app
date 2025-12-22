@@ -1,4 +1,11 @@
-﻿import type {
+﻿import {
+  schemaRota,
+  schemaRotaResponse,
+  schemaRoteiro,
+  schemaRoteiroResponse,
+} from "~/server/schemas/rotas.schema";
+import { isValidCoordinate } from "~/utils/validators/geo";
+import type {
   CreateRoteiroPayload,
   PolylineCache,
   Rota,
@@ -14,13 +21,86 @@
   VrpVehicle,
 } from "../rotas.types";
 
+const LOG_PREFIX = "[useRotaService]";
+
 // Endpoints do backend NestJS
 const ROTAS_ENDPOINT = "/srm/rotas";
 const ROTEIRO_ENDPOINT = "/srm/roteiro";
-const ROTAS_CREATE_ENDPOINT = "/srm/rotas";
 
 // Cache TTL (24 horas)
-const POLYLINE_CACHE_TTL = 24 * 60 * 60 * 1000;
+const POLYLINE_CACHE_TTL_MS = 24 * 60 * 60 * 1000;
+const CACHE_PREFIX = "polyline:";
+
+// VRP constants
+const VRP_TIMEZONE = "America/Sao_Paulo";
+const VRP_TASK_DURATION = "00:10";
+const VRP_MIN_TASKS_WITH_USER = 1;
+const VRP_MIN_TASKS_WITHOUT_USER = 2;
+const VRP_MAX_DAYS_WORKING = 1;
+const VRP_LOCATION_PRECISION = 4;
+const VRP_VEHICLE_ID = 1;
+const VRP_VEHICLE_DESCRIPTION = "Veiculo Virtual";
+const VRP_VEHICLE_MAX_JOBS = 100;
+const VRP_VEHICLE_AVG_SPEED = 60;
+const VRP_WORK_START = "06:00";
+const VRP_WORK_END = "22:00";
+
+// Sequencing
+const TEMP_SEQUENCE_BASE = 10000;
+const DEFAULT_ROTA_TIPO = "COMPRA";
+const DEFAULT_ROTEIROS_PAGE_SIZE = 100;
+
+const logDebug = (...args: unknown[]) => console.log(LOG_PREFIX, ...args);
+const logWarn = (...args: unknown[]) => console.warn(LOG_PREFIX, ...args);
+const logError = (...args: unknown[]) => console.error(LOG_PREFIX, ...args);
+
+const toNumber = (value: string | number | null | undefined): number | null => {
+  if (value === null || value === undefined) return null;
+  const parsed = typeof value === "string" ? Number.parseFloat(value) : value;
+  return Number.isFinite(parsed) ? parsed : null;
+};
+
+const getRoteiroCoordinates = (
+  roteiro: Roteiro,
+): { latitude: number; longitude: number } | null => {
+  if (!roteiro.endereco) return null;
+  const lat = toNumber(roteiro.endereco.latitude);
+  const lng = toNumber(roteiro.endereco.longitude);
+  if (lat === null || lng === null) return null;
+  return isValidCoordinate(lat, lng) ? { latitude: lat, longitude: lng } : null;
+};
+
+const sortBySequencia = (a: Roteiro, b: Roteiro) => (a.sequencia ?? 0) - (b.sequencia ?? 0);
+
+type RoteiroWithCoords = {
+  roteiro: Roteiro;
+  coords: { latitude: number; longitude: number };
+};
+
+const getRoteirosWithCoords = (roteiros: Roteiro[]): RoteiroWithCoords[] => {
+  return [...roteiros]
+    .sort(sortBySequencia)
+    .map((roteiro) => {
+      const coords = getRoteiroCoordinates(roteiro);
+      return coords ? { roteiro, coords } : null;
+    })
+    .filter((item): item is RoteiroWithCoords => Boolean(item));
+};
+
+const isVrpSummary = (value: unknown): value is VrpSummary => {
+  if (!value || typeof value !== "object") return false;
+  return "distance" in value && "time" in value;
+};
+
+const DEFAULT_VRP_SUMMARY: VrpSummary = {
+  distance: { meters: 0 },
+  time: { duration: 0, traveling: 0 },
+};
+
+const appendQueryParam = (params: URLSearchParams, key: string, value?: string | number | null) => {
+  if (value === undefined || value === null || value === "") return;
+  params.append(key, String(value));
+};
 
 export const useRotaService = () => {
   const config = useRuntimeConfig();
@@ -29,11 +109,8 @@ export const useRotaService = () => {
 
   // Configuração da API VRP (Fallback para valores hardcoded se não houver config)
   // TODO: Mover chaves definitivamente para variáveis de ambiente e remover fallback
-  const VRP_API_URL =
-    (config.public?.vrpApiUrl as string) ||
-    "https://vrp-api-zockb2v.cluster.vortus.solutions/api/v1/route";
-  const VRP_API_KEY =
-    (config.public?.vrpApiKey as string) || "85b95b01-c471-4566-8769-adfe00478afa";
+  const VRP_API_URL = (config.public?.vrpApiUrl as string) || "";
+  const VRP_API_KEY = (config.public?.vrpApiKey as string) || "";
 
   /**
    * Busca lista de rotas do comprador
@@ -43,14 +120,14 @@ export const useRotaService = () => {
     error.value = null;
 
     try {
-      const api = useMainApi(true); // homol = true
+      const api = useMainApi(true);
       const queryParams = new URLSearchParams();
 
-      if (filters?.page) queryParams.append("page", filters.page.toString());
-      if (filters?.itens) queryParams.append("itens", filters.itens.toString());
-      if (filters?.status) queryParams.append("status", filters.status);
-      if (filters?.data_inicio) queryParams.append("data_inicio", filters.data_inicio);
-      if (filters?.data_fim) queryParams.append("data_fim", filters.data_fim);
+      appendQueryParam(queryParams, "page", filters?.page ?? null);
+      appendQueryParam(queryParams, "itens", filters?.itens ?? null);
+      appendQueryParam(queryParams, "status", filters?.status ?? null);
+      appendQueryParam(queryParams, "data_inicio", filters?.data_inicio ?? null);
+      appendQueryParam(queryParams, "data_fim", filters?.data_fim ?? null);
 
       const url = queryParams.toString() ? `${ROTAS_ENDPOINT}?${queryParams}` : ROTAS_ENDPOINT;
 
@@ -58,10 +135,10 @@ export const useRotaService = () => {
         method: "GET",
       });
 
-      return response;
+      return schemaRotaResponse.parse(response) as RotaResponse;
     } catch (err) {
       error.value = err instanceof Error ? err.message : "Erro ao buscar rotas";
-      console.error("[useRotaService] fetchRotas error:", err);
+      logError("fetchRotas error:", err);
       return null;
     } finally {
       isLoading.value = false;
@@ -82,19 +159,19 @@ export const useRotaService = () => {
       const api = useMainApi(true);
       const queryParams = new URLSearchParams();
 
-      queryParams.append("id_rota", idRota.toString());
-      if (filters?.page) queryParams.append("page", filters.page.toString());
-      if (filters?.itens) queryParams.append("itens", filters.itens.toString());
-      if (filters?.id_usuario) queryParams.append("id_usuario", filters.id_usuario.toString());
+      appendQueryParam(queryParams, "id_rota", idRota);
+      appendQueryParam(queryParams, "page", filters?.page ?? null);
+      appendQueryParam(queryParams, "itens", filters?.itens ?? null);
+      appendQueryParam(queryParams, "id_usuario", filters?.id_usuario ?? null);
 
       const response = await api<RoteiroResponse>(`${ROTEIRO_ENDPOINT}?${queryParams}`, {
         method: "GET",
       });
 
-      return response;
+      return schemaRoteiroResponse.parse(response) as RoteiroResponse;
     } catch (err) {
       error.value = err instanceof Error ? err.message : "Erro ao buscar roteiros";
-      console.error("[useRotaService] fetchRoteiros error:", err);
+      logError("fetchRoteiros error:", err);
       return null;
     } finally {
       isLoading.value = false;
@@ -115,10 +192,10 @@ export const useRotaService = () => {
    */
   const generateCacheKey = (roteiros: Roteiro[]): string => {
     const ids = [...roteiros]
-      .sort((a, b) => (a.sequencia ?? 0) - (b.sequencia ?? 0))
+      .sort(sortBySequencia)
       .map((r) => `${r.id}:${r.sequencia ?? 0}`)
       .join("-");
-    return `polyline:${ids}`;
+    return `${CACHE_PREFIX}${ids}`;
   };
 
   /**
@@ -153,11 +230,11 @@ export const useRotaService = () => {
         polyline,
         summary,
         timestamp: Date.now(),
-        ttl: POLYLINE_CACHE_TTL,
+        ttl: POLYLINE_CACHE_TTL_MS,
       };
       localStorage.setItem(cacheKey, JSON.stringify(data));
     } catch (err) {
-      console.warn("[useRotaService] Erro ao salvar cache:", err);
+      logWarn("Erro ao salvar cache:", err);
     }
   };
 
@@ -165,41 +242,14 @@ export const useRotaService = () => {
    * Converte roteiros para tasks da API VRP (filtra coordenadas inválidas)
    */
   const roteirosToVrpTasks = (roteiros: Roteiro[]): VrpTask[] => {
-    return roteiros
-      .filter((r) => {
-        if (!r.endereco) return false;
-        const lat =
-          typeof r.endereco.latitude === "string"
-            ? parseFloat(r.endereco.latitude)
-            : r.endereco.latitude;
-        const lng =
-          typeof r.endereco.longitude === "string"
-            ? parseFloat(r.endereco.longitude)
-            : r.endereco.longitude;
-        return isValidCoordinate(lat, lng);
-      })
-      .sort((a, b) => (a.sequencia || 0) - (b.sequencia || 0))
-      .map((r) => {
-        const lat =
-          typeof r.endereco.latitude === "string"
-            ? parseFloat(r.endereco.latitude)
-            : r.endereco.latitude;
-        const lng =
-          typeof r.endereco.longitude === "string"
-            ? parseFloat(r.endereco.longitude)
-            : r.endereco.longitude;
-
-        return {
-          id: r.id,
-          type: "catch-only" as const,
-          description: r.nome || `Ponto ${r.sequencia}`,
-          duration: "00:10",
-          location: {
-            latitude: lat,
-            longitude: lng,
-          },
-        };
-      });
+    const roteirosWithCoords = getRoteirosWithCoords(roteiros);
+    return roteirosWithCoords.map(({ roteiro, coords }) => ({
+      id: roteiro.id,
+      type: "catch-only" as const,
+      description: roteiro.nome || `Ponto ${roteiro.sequencia}`,
+      duration: VRP_TASK_DURATION,
+      location: coords,
+    }));
   };
 
   /**
@@ -210,78 +260,34 @@ export const useRotaService = () => {
     roteiros: Roteiro[],
     userLocation?: { latitude: number; longitude: number } | null,
   ): VrpVehicle | null => {
-    const sortedRoteiros = roteiros
-      .filter((r) => {
-        if (!r.endereco) return false;
-        const lat =
-          typeof r.endereco.latitude === "string"
-            ? parseFloat(r.endereco.latitude)
-            : r.endereco.latitude;
-        const lng =
-          typeof r.endereco.longitude === "string"
-            ? parseFloat(r.endereco.longitude)
-            : r.endereco.longitude;
-        return isValidCoordinate(lat, lng);
-      })
-      .sort((a, b) => (a.sequencia || 0) - (b.sequencia || 0));
+    const roteirosWithCoords = getRoteirosWithCoords(roteiros);
+    if (roteirosWithCoords.length === 0) return null;
 
-    if (sortedRoteiros.length === 0) return null;
+    const primeiro = roteirosWithCoords[0];
+    const ultimo = roteirosWithCoords[roteirosWithCoords.length - 1];
 
-    const ultimo = sortedRoteiros[sortedRoteiros.length - 1];
+    const hasValidUserLocation =
+      !!userLocation && isValidCoordinate(userLocation.latitude, userLocation.longitude);
+    const start = hasValidUserLocation
+      ? { latitude: userLocation!.latitude, longitude: userLocation!.longitude }
+      : primeiro.coords;
 
-    // Ponto de partida: localização do usuário ou primeiro roteiro
-    let startLat: number;
-    let startLng: number;
-
-    if (userLocation && isValidCoordinate(userLocation.latitude, userLocation.longitude)) {
-      // Usa localização do usuário como ponto de partida (estilo Uber)
-      startLat = userLocation.latitude;
-      startLng = userLocation.longitude;
-      console.log(
-        "[useRotaService] Usando localização do usuário como ponto de partida:",
-        startLat,
-        startLng,
-      );
-    } else {
-      // Fallback: usa primeiro roteiro
-      const primeiro = sortedRoteiros[0];
-      startLat =
-        typeof primeiro.endereco.latitude === "string"
-          ? parseFloat(primeiro.endereco.latitude)
-          : primeiro.endereco.latitude;
-      startLng =
-        typeof primeiro.endereco.longitude === "string"
-          ? parseFloat(primeiro.endereco.longitude)
-          : primeiro.endereco.longitude;
+    if (hasValidUserLocation && userLocation) {
+      logDebug("Usando localizacao do usuario como ponto de partida:", start);
     }
 
-    const ultimoLat =
-      typeof ultimo.endereco.latitude === "string"
-        ? parseFloat(ultimo.endereco.latitude)
-        : ultimo.endereco.latitude;
-    const ultimoLng =
-      typeof ultimo.endereco.longitude === "string"
-        ? parseFloat(ultimo.endereco.longitude)
-        : ultimo.endereco.longitude;
-
     return {
-      id: 1,
-      description: "Veículo Virtual",
-      maxJobs: 100,
-      avgSpeed: 60,
+      id: VRP_VEHICLE_ID,
+      description: VRP_VEHICLE_DESCRIPTION,
+      maxJobs: VRP_VEHICLE_MAX_JOBS,
+      avgSpeed: VRP_VEHICLE_AVG_SPEED,
       location: {
-        start: {
-          latitude: startLat,
-          longitude: startLng,
-        },
-        end: {
-          latitude: ultimoLat,
-          longitude: ultimoLng,
-        },
+        start,
+        end: ultimo.coords,
       },
       work: {
-        start: "06:00",
-        end: "22:00",
+        start: VRP_WORK_START,
+        end: VRP_WORK_END,
       },
     };
   };
@@ -298,6 +304,13 @@ export const useRotaService = () => {
     isLoading.value = true;
     error.value = null;
 
+    if (!VRP_API_URL || !VRP_API_KEY) {
+      error.value = "VRP API nao configurada";
+      logWarn("VRP API config ausente.");
+      isLoading.value = false;
+      return null;
+    }
+
     try {
       const tasks = roteirosToVrpTasks(roteiros);
 
@@ -306,49 +319,7 @@ export const useRotaService = () => {
         return null;
       }
 
-      const callVrp = async (location?: { latitude: number; longitude: number } | null) => {
-        const minTasks = location ? 1 : 2;
-        if (tasks.length < minTasks) return null;
-
-        // Cache por combinação de pontos + localização (se houver)
-        const userLocStr = location
-          ? `${location.latitude.toFixed(4)},${location.longitude.toFixed(4)}`
-          : "";
-        const cacheKey = generateCacheKey(roteiros) + (userLocStr ? `:user:${userLocStr}` : "");
-
-        const cached = getPolylineFromCache(cacheKey);
-        if (cached) {
-          console.log("[useRotaService] Polyline encontrada no cache");
-          return { polyline: cached.polyline, summary: cached.summary };
-        }
-
-        const vehicle = createVirtualVehicle(roteiros, location);
-        if (!vehicle || tasks.length < minTasks) {
-          return null;
-        }
-
-        const request: VrpRouteRequest = {
-          timezone: "America/Sao_Paulo",
-          maxDaysWorking: 1,
-          vehicles: [vehicle],
-          tasks,
-        };
-
-        console.log("[useRotaService] Chamando API VRP:", request);
-
-        const response = await $fetch<VrpRouteResponse>(VRP_API_URL, {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-            Accept: "application/json",
-            "x-api-key": VRP_API_KEY,
-          },
-          body: request,
-        });
-
-        console.log("[useRotaService] Resposta API VRP:", response);
-
-        // Extrai polyline da resposta (pode estar em response.response ou diretamente em response)
+      const parseVrpResponse = (response: VrpRouteResponse) => {
         type VrpApiResponseShape = {
           response?: unknown;
           unassignedTasks?: unknown;
@@ -361,40 +332,79 @@ export const useRotaService = () => {
         const responseData = response as unknown as VrpApiResponseShape;
         const vrpData = (responseData.response as VrpApiResponseShape | undefined) ?? responseData;
 
-        const unassignedTasks: unknown = vrpData.unassignedTasks;
-        const unassignedCount = Array.isArray(unassignedTasks) ? unassignedTasks.length : 0;
-
+        const unassignedTasks = Array.isArray(vrpData.unassignedTasks)
+          ? vrpData.unassignedTasks
+          : [];
         const plan = vrpData.workDays?.[0]?.plans?.[0];
         const polyline = plan?.route?.polyline;
         const summaryData = plan?.summary || vrpData.summary;
+        const summary = isVrpSummary(summaryData) ? summaryData : DEFAULT_VRP_SUMMARY;
 
-        if (!polyline || typeof polyline !== "string") {
+        return {
+          polyline,
+          summary,
+          unassignedTasks,
+          unassignedCount: unassignedTasks.length,
+        };
+      };
+
+      const callVrp = async (location?: { latitude: number; longitude: number } | null) => {
+        const minTasks = location ? VRP_MIN_TASKS_WITH_USER : VRP_MIN_TASKS_WITHOUT_USER;
+        if (tasks.length < minTasks) return null;
+
+        // Cache por combinacao de pontos + localizacao (se houver)
+        const userLocStr = location
+          ? `${location.latitude.toFixed(VRP_LOCATION_PRECISION)},${location.longitude.toFixed(VRP_LOCATION_PRECISION)}`
+          : "";
+        const cacheKey = generateCacheKey(roteiros) + (userLocStr ? `:user:${userLocStr}` : "");
+
+        const cached = getPolylineFromCache(cacheKey);
+        if (cached) {
+          logDebug("Polyline encontrada no cache");
+          return { polyline: cached.polyline, summary: cached.summary };
+        }
+
+        const vehicle = createVirtualVehicle(roteiros, location);
+        if (!vehicle || tasks.length < minTasks) {
           return null;
         }
 
-        const defaultSummary: VrpSummary = {
-          distance: { meters: 0 },
-          time: { duration: 0, traveling: 0 },
+        const request: VrpRouteRequest = {
+          timezone: VRP_TIMEZONE,
+          maxDaysWorking: VRP_MAX_DAYS_WORKING,
+          vehicles: [vehicle],
+          tasks,
         };
 
-        const summary: VrpSummary =
-          summaryData &&
-          typeof summaryData === "object" &&
-          "distance" in summaryData &&
-          "time" in summaryData
-            ? (summaryData as VrpSummary)
-            : defaultSummary;
+        logDebug("Chamando API VRP:", request);
 
-        const result = { polyline, summary };
+        const response = await $fetch(VRP_API_URL + "/route", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            Accept: "application/json",
+            "x-api-key": VRP_API_KEY,
+          },
+          body: request,
+        });
+
+        logDebug("Resposta API VRP:", response);
+
+        const parsed = parseVrpResponse(response);
+        if (!parsed.polyline || typeof parsed.polyline !== "string") {
+          return null;
+        }
+
+        const result = { polyline: parsed.polyline, summary: parsed.summary };
 
         // Salva no cache
         savePolylineToCache(cacheKey, result.polyline, result.summary);
 
-        // Se houve tarefas não atribuídas, tenta recalcular sem localização do usuário (quando aplicável)
-        if (unassignedCount > 0 && location) {
-          console.warn(
-            "[useRotaService] VRP retornou tarefas não atribuídas ao usar localização do usuário; usando fallback sem localização.",
-            unassignedTasks,
+        // Se houve tarefas nao atribuidas, tenta recalcular sem localizacao do usuario (quando aplicavel)
+        if (parsed.unassignedCount > 0 && location) {
+          logWarn(
+            "VRP retornou tarefas nao atribuidas ao usar localizacao do usuario; usando fallback sem localizacao.",
+            parsed.unassignedTasks,
           );
         }
 
@@ -404,10 +414,9 @@ export const useRotaService = () => {
       // 1) Tenta com a localização do usuário (se houver)
       const resultWithUser = await callVrp(userLocation);
 
-      // Se VRP não retornou polyline (ex.: tarefas ficaram unassigned por distância/tempo), faz fallback sem userLocation.
-      if (!resultWithUser && userLocation && tasks.length >= 2) {
-        console.warn(
-          "[useRotaService] VRP não conseguiu gerar polyline com localização do usuário; tentando sem localização.",
+      if (!resultWithUser && userLocation && tasks.length >= VRP_MIN_TASKS_WITHOUT_USER) {
+        logWarn(
+          "VRP nao conseguiu gerar polyline com localizacao do usuario; tentando sem localizacao.",
         );
         const fallback = await callVrp(null);
         if (fallback) return fallback;
@@ -419,7 +428,7 @@ export const useRotaService = () => {
       return null;
     } catch (err) {
       error.value = err instanceof Error ? err.message : "Erro ao calcular polyline";
-      console.error("[useRotaService] calcularPolyline error:", err);
+      logError("calcularPolyline error:", err);
       return null;
     } finally {
       isLoading.value = false;
@@ -444,58 +453,34 @@ export const useRotaService = () => {
     const rota = await fetchRotaById(idRota);
 
     // Busca roteiros
-    const roteirosResponse = await fetchRoteiros(idRota, { itens: 100 });
+    const roteirosResponse = await fetchRoteiros(idRota, { itens: DEFAULT_ROTEIROS_PAGE_SIZE });
     const roteiros = roteirosResponse?.data || [];
+    logDebug("fetchRotaComPolyline - Roteiros carregados:", roteiros.length);
+    logDebug("fetchRotaComPolyline - Localizacao do usuario:", userLocation);
 
-    console.log("[useRotaService] fetchRotaComPolyline - Roteiros carregados:", roteiros.length);
-    console.log("[useRotaService] fetchRotaComPolyline - Localização do usuário:", userLocation);
+    const roteirosWithCoords = getRoteirosWithCoords(roteiros);
+    const roteirosValidos = roteirosWithCoords.map((item) => item.roteiro);
 
-    // Filtra roteiros com coordenadas válidas para o cálculo
-    const roteirosValidos = roteiros.filter((r) => {
-      if (!r.endereco) return false;
-      const lat =
-        typeof r.endereco.latitude === "string"
-          ? parseFloat(r.endereco.latitude)
-          : r.endereco.latitude;
-      const lng =
-        typeof r.endereco.longitude === "string"
-          ? parseFloat(r.endereco.longitude)
-          : r.endereco.longitude;
-      return isValidCoordinate(lat, lng);
-    });
+    logDebug("fetchRotaComPolyline - Roteiros com coordenadas validas:", roteirosValidos.length);
 
-    console.log(
-      "[useRotaService] fetchRotaComPolyline - Roteiros com coordenadas válidas:",
-      roteirosValidos.length,
-    );
-
-    // Calcula polyline se houver roteiros válidos suficientes
-    // Com localização do usuário, precisamos de pelo menos 1 ponto
-    // Sem localização do usuário, precisamos de pelo menos 2 pontos
     let polyline: string | null = null;
     let summary: VrpSummary | null = null;
 
-    const minPontos = userLocation ? 1 : 2;
+    const minPontos = userLocation ? VRP_MIN_TASKS_WITH_USER : VRP_MIN_TASKS_WITHOUT_USER;
 
     if (roteirosValidos.length >= minPontos) {
-      console.log(
-        "[useRotaService] fetchRotaComPolyline - Calculando polyline com userLocation:",
-        !!userLocation,
-      );
+      logDebug("fetchRotaComPolyline - Calculando polyline com userLocation:", !!userLocation);
       const result = await calcularPolyline(roteirosValidos, userLocation);
       if (result) {
         polyline = result.polyline;
         summary = result.summary;
-        console.log(
-          "[useRotaService] fetchRotaComPolyline - Polyline calculada:",
-          polyline?.substring(0, 50) + "...",
-        );
+        logDebug("fetchRotaComPolyline - Polyline calculada:", polyline?.substring(0, 50) + "...");
       } else {
-        console.log("[useRotaService] fetchRotaComPolyline - Falha ao calcular polyline");
+        logDebug("fetchRotaComPolyline - Falha ao calcular polyline");
       }
     } else {
-      console.log(
-        "[useRotaService] fetchRotaComPolyline - Pontos insuficientes para calcular polyline (mínimo:",
+      logWarn(
+        "fetchRotaComPolyline - Pontos insuficientes para calcular polyline (minimo:",
         minPontos,
         ")",
       );
@@ -511,7 +496,7 @@ export const useRotaService = () => {
     const keysToRemove: string[] = [];
     for (let i = 0; i < localStorage.length; i++) {
       const key = localStorage.key(i);
-      if (key?.startsWith("polyline:")) {
+      if (key?.startsWith(CACHE_PREFIX)) {
         keysToRemove.push(key);
       }
     }
@@ -532,20 +517,20 @@ export const useRotaService = () => {
 
     try {
       const api = useMainApi(true);
-      const response = await api<{ data: Rota }>(ROTAS_CREATE_ENDPOINT, {
+      const response = await api<{ data: Rota }>(ROTAS_ENDPOINT, {
         method: "POST",
         body: {
-          tipo: data.tipo || "COMPRA",
+          tipo: data.tipo || DEFAULT_ROTA_TIPO,
           data_inicio: data.data_inicio,
           data_fim: data.data_fim,
           observacao: data.observacao || "",
         },
       });
 
-      return response?.data || null;
+      return response?.data ? (schemaRota.parse(response.data) as Rota) : null;
     } catch (err) {
       error.value = err instanceof Error ? err.message : "Erro ao criar rota";
-      console.error("[useRotaService] createRota error:", err);
+      logError("createRota error:", err);
       return null;
     } finally {
       isLoading.value = false;
@@ -566,14 +551,13 @@ export const useRotaService = () => {
         body: payload,
       });
 
-      // Limpa cache da polyline dessa rota pois os pontos mudaram
-      const cacheKey = `polyline:${payload.id_rota}`;
-      localStorage.removeItem(cacheKey);
+      // Limpa cache de polylines pois os pontos mudaram
+      clearPolylineCache();
 
-      return response?.data || null;
+      return response?.data ? schemaRoteiro.parse(response.data) : null;
     } catch (err) {
       error.value = err instanceof Error ? err.message : "Erro ao criar roteiro";
-      console.error("[useRotaService] createRoteiro error:", err);
+      logError("createRoteiro error:", err);
       return null;
     } finally {
       isLoading.value = false;
@@ -583,7 +567,7 @@ export const useRotaService = () => {
   /**
    * Deleta um roteiro
    */
-  const deleteRoteiro = async (id: number, idRota: number): Promise<boolean> => {
+  const deleteRoteiro = async (id: number): Promise<boolean> => {
     isLoading.value = true;
     error.value = null;
 
@@ -593,14 +577,13 @@ export const useRotaService = () => {
         method: "DELETE",
       });
 
-      // Limpa cache da polyline dessa rota
-      const cacheKey = `polyline:${idRota}`;
-      localStorage.removeItem(cacheKey);
+      // Limpa cache de polylines pois os pontos mudaram
+      clearPolylineCache();
 
       return true;
     } catch (err) {
       error.value = err instanceof Error ? err.message : "Erro ao deletar roteiro";
-      console.error("[useRotaService] deleteRoteiro error:", err);
+      logError("deleteRoteiro error:", err);
       return false;
     } finally {
       isLoading.value = false;
@@ -611,11 +594,7 @@ export const useRotaService = () => {
    * Atualiza a sequência de um roteiro
    * Usa PUT conforme a API NestJS (não PATCH)
    */
-  const updateRoteiroSequencia = async (
-    id: number,
-    sequencia: number,
-    idRota: number,
-  ): Promise<boolean> => {
+  const updateRoteiroSequencia = async (id: number, sequencia: number): Promise<boolean> => {
     error.value = null;
 
     try {
@@ -625,13 +604,13 @@ export const useRotaService = () => {
         body: { sequencia },
       });
 
-      // Limpa cache da polyline dessa rota
-      clearPolylineCacheForRota(idRota);
+      // Limpa cache de polylines
+      clearPolylineCache();
 
       return true;
     } catch (err) {
       error.value = err instanceof Error ? err.message : "Erro ao atualizar sequência";
-      console.error("[useRotaService] updateRoteiroSequencia error:", err);
+      logError("updateRoteiroSequencia error:", err);
       return false;
     }
   };
@@ -643,7 +622,6 @@ export const useRotaService = () => {
    */
   const reordenarRoteiros = async (
     roteiros: Array<{ id: number; sequencia: number }>,
-    idRota: number,
   ): Promise<boolean> => {
     isLoading.value = true;
     error.value = null;
@@ -660,7 +638,7 @@ export const useRotaService = () => {
         const roteiro = roteiros[i];
         await api(`${ROTEIRO_ENDPOINT}/${roteiro.id}`, {
           method: "PUT",
-          body: { sequencia: 10000 + i },
+          body: { sequencia: TEMP_SEQUENCE_BASE + i },
         });
       }
 
@@ -672,31 +650,17 @@ export const useRotaService = () => {
         });
       }
 
-      // Limpa cache da polyline dessa rota
-      clearPolylineCacheForRota(idRota);
+      // Limpa cache de polylines
+      clearPolylineCache();
 
       return true;
     } catch (err) {
       error.value = err instanceof Error ? err.message : "Erro ao reordenar roteiros";
-      console.error("[useRotaService] reordenarRoteiros error:", err);
+      logError("reordenarRoteiros error:", err);
       return false;
     } finally {
       isLoading.value = false;
     }
-  };
-
-  /**
-   * Limpa cache de polyline para uma rota específica
-   */
-  const clearPolylineCacheForRota = (idRota: number): void => {
-    const keysToRemove: string[] = [];
-    for (let i = 0; i < localStorage.length; i++) {
-      const key = localStorage.key(i);
-      if (key?.startsWith("polyline:")) {
-        keysToRemove.push(key);
-      }
-    }
-    keysToRemove.forEach((key) => localStorage.removeItem(key));
   };
 
   return {

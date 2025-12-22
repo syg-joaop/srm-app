@@ -1,58 +1,81 @@
-﻿<template>
-  <div class="flex flex-col">
+<template>
+  <div class="flex flex-col gap-2">
     <div
-      class="flex justify-between items-center pb-3 border-b border-[var(--color-border-subtle)] mb-2"
+      v-for="(produto, index) in produtos"
+      :key="`${produto.name}-${index}`"
+      class="group/item relative flex flex-col gap-2 p-2 rounded-xl border border-transparent hover:border-primary/30 dark:hover:border-primary/30 hover:bg-primary/5 dark:hover:bg-primary/10 transition-all duration-300 ease-out hover:shadow-sm cursor-pointer"
     >
-      <div class="flex items-center gap-1.5">
-        <span class="w-2 h-2 rounded-sm bg-[var(--color-primary)]"></span>
-        <span class="text-[11px] text-[var(--color-text-muted)]">Mês Atual</span>
-      </div>
-      <div class="flex items-center gap-1.5">
-        <span class="text-[11px] text-[var(--color-text-muted)]">Mês Anterior</span>
-        <span class="w-2 h-2 rounded-sm bg-[var(--color-text-muted)] opacity-50"></span>
-      </div>
-    </div>
-
-    <div class="flex flex-col gap-1">
       <div
-        v-for="(produto, index) in produtos"
-        :key="produto.name"
-        class="py-2 border-b border-[var(--color-border-subtle)] last:border-b-0"
-      >
-        <div class="flex items-center justify-between gap-2 mb-1.5">
-          <div class="flex items-center gap-2 min-w-0 flex-1">
-            <span class="text-xs font-semibold text-[var(--color-text-muted)] w-5 shrink-0"
-              >{{ index + 1 }}.</span
-            >
-            <span class="text-xs font-medium text-[var(--color-text)] truncate">{{
-              produto.name
-            }}</span>
+        class="absolute left-0 top-1/2 -translate-y-1/2 w-0.5 h-0 bg-primary rounded-r-full opacity-0 group-hover/item:h-6 group-hover/item:opacity-100 transition-all duration-300"
+      ></div>
+      <div class="hidden sm:grid grid-cols-[minmax(0,1fr)_120px_120px_90px] gap-8 items-center">
+        <div class="flex items-center gap-2 min-w-0">
+          <span
+            class="text-[10px] font-semibold text-[var(--color-text-muted)] rounded-md border px-1.5 py-0.5"
+            style="border-color: var(--color-border-subtle)"
+          >
+            {{ index + 1 }}
+          </span>
+          <span class="text-xs font-medium text-[var(--color-text)] truncate" :title="produto.name">
+            {{ produto.name }}
+          </span>
+        </div>
+
+        <span
+          class="text-xs font-semibold text-[var(--color-primary)] tabular-nums justify-self-start"
+        >
+          {{ formatValue(produto.current) }}
+        </span>
+
+        <span
+          class="text-xs text-[var(--color-text-muted)] font-medium tabular-nums justify-self-start"
+        >
+          {{ formatValue(produto.previous) }}
+        </span>
+
+        <div
+          class="flex items-center gap-1 rounded-full border px-2 py-0.5 text-[10px] font-semibold justify-self-start"
+          :style="getDeltaStyle(produto.current, produto.previous)"
+        >
+          <component :is="getDeltaIcon(produto.current, produto.previous)" class="w-3 h-3" />
+          <span>{{ getDeltaLabel(produto.current, produto.previous) }}</span>
+        </div>
+      </div>
+
+      <div class="sm:hidden flex flex-col gap-1.5">
+        <div class="flex items-center gap-2 min-w-0">
+          <span
+            class="text-[10px] font-semibold text-[var(--color-text-muted)] rounded-md border px-1.5 py-0.5"
+            style="border-color: var(--color-border-subtle)"
+          >
+            {{ index + 1 }}
+          </span>
+          <span class="text-xs font-medium text-[var(--color-text)] truncate" :title="produto.name">
+            {{ produto.name }}
+          </span>
+        </div>
+
+        <div class="grid grid-cols-2 gap-4 text-[11px]">
+          <div class="flex items-center gap-1.5">
+            <span class="w-1.5 h-1.5 rounded-full bg-[var(--color-primary)]"></span>
+            <span class="font-semibold text-[var(--color-primary)] tabular-nums">
+              {{ formatValue(produto.current) }}
+            </span>
           </div>
-          <div class="flex items-center gap-3 shrink-0">
-            <span class="text-[11px] font-semibold text-[var(--color-primary)]">{{
-              formatValue(produto.current)
-            }}</span>
-            <span class="text-[11px] text-[var(--color-text-muted)]">{{
-              formatValue(produto.previous)
-            }}</span>
+          <div class="flex items-center gap-1.5">
+            <span class="w-1.5 h-1.5 rounded-full bg-[var(--color-text-muted)] opacity-50"></span>
+            <span class="font-medium text-[var(--color-text-muted)] tabular-nums">
+              {{ formatValue(produto.previous) }}
+            </span>
           </div>
         </div>
 
-        <div class="flex gap-1 pl-7">
-          <div class="flex-1 h-1 bg-[var(--color-border-subtle)] rounded-sm overflow-hidden">
-            <div
-              class="h-full bg-[var(--color-primary)] rounded-sm transition-all duration-400"
-              :style="{ width: getPercentage(produto.current) + '%' }"
-            ></div>
-          </div>
-          <div
-            class="flex-1 h-1 bg-[var(--color-border-subtle)] rounded-sm overflow-hidden flex justify-end"
-          >
-            <div
-              class="h-full bg-[var(--color-text-muted)] opacity-50 rounded-sm transition-all duration-400"
-              :style="{ width: getPercentage(produto.previous) + '%' }"
-            ></div>
-          </div>
+        <div
+          class="flex items-center gap-1 rounded-full border px-2 py-0.5 text-[10px] font-semibold self-start"
+          :style="getDeltaStyle(produto.current, produto.previous)"
+        >
+          <component :is="getDeltaIcon(produto.current, produto.previous)" class="w-3 h-3" />
+          <span>{{ getDeltaLabel(produto.current, produto.previous) }}</span>
         </div>
       </div>
     </div>
@@ -60,6 +83,7 @@
 </template>
 
 <script setup lang="ts">
+import { Minus, TrendingDown, TrendingUp } from "lucide-vue-next";
 
 interface Props {
   data: {
@@ -82,14 +106,49 @@ const produtos = computed(() => {
   });
 });
 
-const maxValue = computed(() => {
-  if (!props.data) return 1;
-  const allValues = [...(props.data.current || []), ...(props.data.previous || [])];
-  return Math.max(...allValues, 1);
-});
+const getDeltaVariant = (current: number, previous: number) => {
+  if (current === previous) return "flat";
+  return current > previous ? "up" : "down";
+};
 
-const getPercentage = (value: number): number => {
-  return (value / maxValue.value) * 100;
+const getDeltaLabel = (current: number, previous: number): string => {
+  if (previous === 0) {
+    return current === 0 ? "0%" : "Novo";
+  }
+  const percent = ((current - previous) / previous) * 100;
+  const rounded = Math.round(Math.abs(percent));
+  const sign = percent > 0 ? "+" : "-";
+  return `${sign}${rounded}%`;
+};
+
+const getDeltaIcon = (current: number, previous: number) => {
+  const variant = getDeltaVariant(current, previous);
+  if (variant === "up") return TrendingUp;
+  if (variant === "down") return TrendingDown;
+  return Minus;
+};
+
+const getDeltaStyle = (current: number, previous: number) => {
+  const variant = getDeltaVariant(current, previous);
+  if (variant === "up") {
+    return {
+      color: "var(--color-success)",
+      backgroundColor: "var(--color-success-soft)",
+      borderColor: "var(--color-success)",
+    };
+  }
+  if (variant === "down") {
+    return {
+      color: "var(--color-danger)",
+      backgroundColor: "var(--color-danger-soft)",
+      borderColor: "var(--color-danger)",
+    };
+  }
+  return {
+    color: "var(--color-text-muted)",
+    backgroundColor: "var(--color-hover)",
+    borderColor: "var(--color-border-subtle)",
+  };
 };
 
 const formatValue = (value: number): string => {

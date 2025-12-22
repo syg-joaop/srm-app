@@ -255,6 +255,41 @@
             empty-title="Sem produtos"
             empty-description="Não há dados de produtos comprados"
           >
+            <template #subheader v-if="!isProdutosBarEmpty">
+              <div
+                class="sm:hidden grid grid-cols-[minmax(0,1fr)_1fr] gap-4 px-2 pt-2 pb-2 text-[10px] font-semibold uppercase tracking-wide text-[var(--color-text-muted)] border-b border-[var(--color-border-subtle)]"
+              >
+                <span>Produto</span>
+                <div class="grid grid-cols-2 gap-4">
+                  <div class="flex items-center gap-1.5">
+                    <span class="w-1.5 h-1.5 rounded-full bg-[var(--color-primary)]"></span>
+                    <span>Atual</span>
+                  </div>
+                  <div class="flex items-center gap-1.5">
+                    <span
+                      class="w-1.5 h-1.5 rounded-full bg-[var(--color-text-muted)] opacity-50"
+                    ></span>
+                    <span>Anterior</span>
+                  </div>
+                </div>
+              </div>
+              <div
+                class="hidden sm:grid grid-cols-[minmax(0,1fr)_120px_120px_90px] gap-8 px-2 pt-2 pb-2 text-[10px] font-semibold uppercase tracking-wide text-[var(--color-text-muted)] border-b border-[var(--color-border-subtle)]"
+              >
+                <span class="justify-self-start">Produto</span>
+                <div class="flex items-center gap-1.5 justify-self-start">
+                  <span class="w-1.5 h-1.5 rounded-full bg-[var(--color-primary)]"></span>
+                  <span>Atual</span>
+                </div>
+                <div class="flex items-center gap-1.5 justify-self-start">
+                  <span
+                    class="w-1.5 h-1.5 rounded-full bg-[var(--color-text-muted)] opacity-50"
+                  ></span>
+                  <span>Anterior</span>
+                </div>
+                <span class="justify-self-start">Variacao</span>
+              </div>
+            </template>
             <ProdutosRankingList :data="chartData.produtosBar" />
           </DashboardWidget>
 
@@ -387,7 +422,6 @@
 </template>
 
 <script setup lang="ts">
-import * as echarts from "echarts";
 import {
   AlertCircle,
   Cake,
@@ -403,12 +437,8 @@ import {
   Target,
   Users,
 } from "lucide-vue-next";
-import {
-  getPremiumTooltip,
-  premiumTooltipStyle,
-  type TooltipParam,
-} from "~/utils/formatters/chart";
 import type { AniversarianteItem, Atendente, AtendenteItem } from "../dashboard.types";
+import { useDashboardCharts } from "../composables/useDashboardCharts";
 import { useDashboardStore } from "../stores/dashboard";
 definePageMeta({
   layout: "default",
@@ -475,166 +505,18 @@ const handleOpenAtendenteModal = (atendente: AtendenteItem) => {
   showParceiroModal.value = true;
 };
 
-const comprasMetricsMes = computed(() => {
-  return comprasMes.value.slice(1).map((item) => ({
+const mapResumoMetrics = (items: { label: string; value: string | number }[]) =>
+  items.slice(1).map((item) => ({
     label: item.label,
     value: item.value,
   }));
-});
 
-const comprasMetricsMesAnterior = computed(() => {
-  return comprasMesAnterior.value.slice(1).map((item) => ({
-    label: item.label,
-    value: item.value,
-  }));
-});
+const comprasMetricsMes = computed(() => mapResumoMetrics(comprasMes.value));
+const comprasMetricsMesAnterior = computed(() => mapResumoMetrics(comprasMesAnterior.value));
 
-const lineChartRef = ref<HTMLElement | null>(null);
-const barChartRef = ref<HTMLElement | null>(null);
-const discountChartRef = ref<HTMLElement | null>(null);
-
-const clamp = (value: number, min: number, max: number) => Math.min(Math.max(value, min), max);
-
-const boundedTooltipPosition = (
-  point: number[],
-  _params: unknown,
-  _dom: HTMLElement,
-  _rect: unknown,
-  size: { viewSize?: number[]; contentSize?: number[] },
-) => {
-  if (!point || !size?.viewSize || !size?.contentSize) return point;
-
-  const [x, y] = point;
-  const [viewW, viewH] = size.viewSize;
-  const [contentW, contentH] = size.contentSize;
-  const margin = 8;
-
-  const maxLeft = Math.max(margin, viewW - contentW - margin);
-  const maxTop = Math.max(margin, viewH - contentH - margin);
-
-  const left = clamp(x - contentW / 2, margin, maxLeft);
-  const top = clamp(y - contentH - margin, margin, maxTop);
-
-  return [left, top];
-};
-
-const axisTooltip = (formatter: (params: TooltipParam | TooltipParam[]) => string) => ({
-  trigger: "axis",
-  ...premiumTooltipStyle,
-  appendToBody: false,
-  position: boundedTooltipPosition,
-  formatter,
-});
-
-const initCharts = () => {
-  const getStyle = (variable: string) =>
-    getComputedStyle(document.documentElement).getPropertyValue(variable).trim();
-
-  const commonOptions = {
-    grid: { left: "3%", right: "4%", bottom: "3%", containLabel: true },
-    xAxis: {
-      axisLine: { lineStyle: { color: getStyle("--color-border") } },
-      axisLabel: { color: getStyle("--color-text-muted") },
-    },
-    yAxis: {
-      splitLine: {
-        lineStyle: {
-          color: getStyle("--color-border"),
-          type: "dashed",
-          opacity: 0.3,
-        },
-      },
-      axisLabel: { color: getStyle("--color-text-muted") },
-    },
-  };
-
-  if (lineChartRef.value) {
-    const chart = echarts.getInstanceByDom(lineChartRef.value) || echarts.init(lineChartRef.value);
-    chart.setOption({
-      tooltip: axisTooltip((params) => getPremiumTooltip(params)),
-      grid: commonOptions.grid,
-      xAxis: {
-        type: "category",
-        boundaryGap: false,
-        data: chartData.value.ocorrenciasLine.months,
-        ...commonOptions.xAxis,
-      },
-      yAxis: {
-        type: "value",
-        ...commonOptions.yAxis,
-      },
-      series: [
-        {
-          name: "Ocorrências",
-          data: chartData.value.ocorrenciasLine.values,
-          type: "line",
-          smooth: true,
-          symbol: "circle",
-          symbolSize: 8,
-          itemStyle: { color: "#0099ff", borderColor: "#fff", borderWidth: 2 },
-          areaStyle: {
-            color: new echarts.graphic.LinearGradient(0, 0, 0, 1, [
-              { offset: 0, color: "rgba(0, 153, 255, 0.3)" },
-              { offset: 1, color: "rgba(0, 153, 255, 0)" },
-            ]),
-          },
-        },
-      ],
-    });
-  }
-
-  if (barChartRef.value) {
-    const chart = echarts.getInstanceByDom(barChartRef.value) || echarts.init(barChartRef.value);
-    chart.setOption({
-      tooltip: axisTooltip((params) => getPremiumTooltip(params, undefined, formatarKg)),
-      grid: commonOptions.grid,
-      xAxis: {
-        type: "category",
-        data: chartData.value.metaDiaria.days,
-        ...commonOptions.xAxis,
-      },
-      yAxis: {
-        type: "value",
-        ...commonOptions.yAxis,
-      },
-      series: [
-        {
-          name: "Meta Diária: ",
-          data: chartData.value.metaDiaria.values,
-          type: "bar",
-          itemStyle: { color: "#0099ff" },
-        },
-      ],
-    });
-  }
-
-  if (discountChartRef.value) {
-    const chart =
-      echarts.getInstanceByDom(discountChartRef.value) || echarts.init(discountChartRef.value);
-    chart.setOption({
-      tooltip: axisTooltip((params) => getPremiumTooltip(params, undefined, formatarMoeda)),
-      grid: commonOptions.grid,
-      xAxis: {
-        type: "category",
-        data: chartData.value.descontos.months,
-        ...commonOptions.xAxis,
-      },
-      yAxis: {
-        type: "value",
-        ...commonOptions.yAxis,
-      },
-      series: [
-        {
-          name: "Descontos",
-          data: chartData.value.descontos.values,
-          type: "bar",
-          barWidth: "20%",
-          itemStyle: { color: "#0099ff" },
-        },
-      ],
-    });
-  }
-};
+const { lineChartRef, barChartRef, discountChartRef, initCharts } = useDashboardCharts(
+  chartData,
+);
 
 watch(
   data,
@@ -649,40 +531,6 @@ watch(
   { immediate: true },
 );
 
-let themeObserver: MutationObserver | null = null;
-
-onMounted(() => {
-  nextTick(() => {
-    handleResize();
-  });
-  window.addEventListener("resize", handleResize);
-
-  themeObserver = new MutationObserver(() => {
-    initCharts();
-  });
-  themeObserver.observe(document.documentElement, {
-    attributes: true,
-    attributeFilter: ["data-theme"],
-  });
-});
-
-onUnmounted(() => {
-  themeObserver?.disconnect();
-  themeObserver = null;
-  window.removeEventListener("resize", handleResize);
-});
-
-const handleResize = () => {
-  if (lineChartRef.value) {
-    echarts.getInstanceByDom(lineChartRef.value)?.resize();
-  }
-  if (barChartRef.value) {
-    echarts.getInstanceByDom(barChartRef.value)?.resize();
-  }
-  if (discountChartRef.value) {
-    echarts.getInstanceByDom(discountChartRef.value)?.resize();
-  }
-};
 </script>
 
 <style scoped></style>

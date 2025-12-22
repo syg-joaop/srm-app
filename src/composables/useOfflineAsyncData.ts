@@ -1,4 +1,5 @@
-﻿import { useAuthStore } from "~/stores/auth";
+﻿import type { ZodTypeAny } from "zod";
+import { useAuthStore } from "~/stores/auth";
 
 export type OfflinePagedBodyBuilder<Filters> = (
   page: number,
@@ -12,6 +13,7 @@ export interface UseOfflineAsyncDataConfig<Filters> {
   buildBody: OfflinePagedBodyBuilder<Filters>;
   cacheTtl?: number;
   homol?: boolean;
+  schema?: ZodTypeAny;
 }
 
 const DEFAULT_CACHE_TTL = 5 * 60 * 1000;
@@ -43,6 +45,18 @@ export const useOfflineAsyncData = <Response, Filters>(config: UseOfflineAsyncDa
   const { isOnline } = useNetworkStatus();
 
   const cacheTtl = getOfflineCacheTtl(config.key, config.cacheTtl) ?? DEFAULT_CACHE_TTL;
+  const parseResponse = (data: Response, source: "network" | "cache"): Response => {
+    if (!config.schema) return data;
+    const parsed = config.schema.safeParse(data);
+    if (!parsed.success) {
+      console.error(
+        `[useOfflineAsyncData] Invalid ${source} response for ${config.key}`,
+        parsed.error,
+      );
+      throw parsed.error;
+    }
+    return parsed.data as Response;
+  };
 
   return (page: Ref<number>, size: Ref<number>, filters: Ref<Filters>) => {
     const isFromCache = ref(false);
@@ -59,11 +73,12 @@ export const useOfflineAsyncData = <Response, Filters>(config: UseOfflineAsyncDa
         try {
           const body = config.buildBody(page.value, size.value, filters.value) as BodyInit;
           const response = await api<Response>(config.endpoint, { method: "POST", body });
+          const parsedResponse = parseResponse(response, "network");
 
           isFromCache.value = false;
           isCacheStale.value = false;
-          await storage.setCache(cacheKey, response, cacheTtl);
-          return response;
+          await storage.setCache(cacheKey, parsedResponse, cacheTtl);
+          return parsedResponse;
         } catch (error) {
           const status = getHttpStatus(error);
           if (status === 401 || status === 403) throw error;
@@ -80,7 +95,14 @@ export const useOfflineAsyncData = <Response, Filters>(config: UseOfflineAsyncDa
 
       isFromCache.value = true;
       isCacheStale.value = cached.isExpired;
-      return cached.data;
+      if (!config.schema) return cached.data;
+
+      try {
+        return parseResponse(cached.data, "cache");
+      } catch (error) {
+        lastCacheError.value = toErrorMessage(error);
+        return null;
+      }
     };
 
     const asyncData = useAsyncData<Response | null>(config.key, execute, {

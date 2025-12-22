@@ -38,25 +38,56 @@
               </UiBadge>
             </div>
           </div>
-
+          <div class="flex flex-col gap-2.5 md:gap-3">
             <h3
               class="text-[10px] md:text-xs font-semibold text-[var(--color-text-muted)] uppercase tracking-wider"
             >
-              Informações
+              Informacoes
             </h3>
             <div class="grid grid-cols-2 gap-3">
-...
               <div
                 class="p-3 rounded-lg border border-[var(--color-border)] bg-[var(--color-surface)]"
               >
                 <p class="text-[10px] text-[var(--color-text-muted)] uppercase tracking-wide mb-1">
-                  Responsável
+                  Data Check-in
+                </p>
+                <p class="text-sm font-medium text-[var(--color-text)]">
+                  {{ formatarData(checkin?.dataCheckin) || "-" }}
+                </p>
+              </div>
+              <div
+                class="p-3 rounded-lg border border-[var(--color-border)] bg-[var(--color-surface)]"
+              >
+                <p class="text-[10px] text-[var(--color-text-muted)] uppercase tracking-wide mb-1">
+                  Cidade
+                </p>
+                <p class="text-sm font-medium text-[var(--color-text)]">
+                  {{ checkin?.cidade || "-" }}
+                </p>
+              </div>
+              <div
+                class="p-3 rounded-lg border border-[var(--color-border)] bg-[var(--color-surface)]"
+              >
+                <p class="text-[10px] text-[var(--color-text-muted)] uppercase tracking-wide mb-1">
+                  Estado
+                </p>
+                <p class="text-sm font-medium text-[var(--color-text)]">
+                  {{ checkin?.estado || "-" }}
+                </p>
+              </div>
+              <div
+                class="p-3 rounded-lg border border-[var(--color-border)] bg-[var(--color-surface)]"
+              >
+                <p class="text-[10px] text-[var(--color-text-muted)] uppercase tracking-wide mb-1">
+                  Responsavel
                 </p>
                 <p class="text-sm font-medium text-[var(--color-text)]">
                   {{ checkin?.responsavel || "-" }}
                 </p>
               </div>
-...
+            </div>
+          </div>
+
           <div v-if="checkin?.observacao" class="flex flex-col gap-2.5 md:gap-3">
             <h3
               class="text-[10px] md:text-xs font-semibold text-[var(--color-text-muted)] uppercase tracking-wider"
@@ -100,9 +131,10 @@
 </template>
 
 <script setup lang="ts">
-import UiModal from "~/components/ui/UiModal.vue";
-import UiButton from "~/components/ui/UiButton.vue";
+import type { Variant } from "~/components/ui/UiBadge.vue";
 import UiBadge from "~/components/ui/UiBadge.vue";
+import UiButton from "~/components/ui/UiButton.vue";
+import UiModal from "~/components/ui/UiModal.vue";
 import type { Checkin } from "../checkin.types";
 
 const props = defineProps<{
@@ -137,7 +169,7 @@ const getStatusBarColor = (status?: string): string => {
   return resolveStatusVariant(status, STATUS_BAR_CLASSES, "bg-[var(--color-primary)]");
 };
 
-const getStatusVariant = (status: string): string => {
-  return resolveStatusVariant(status, STATUS_VARIANTS);
+const getStatusVariant = (status: string): Variant => {
+  return resolveStatusVariant(status, STATUS_VARIANTS) as Variant;
 };
 </script>

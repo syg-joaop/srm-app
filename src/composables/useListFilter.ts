@@ -1,5 +1,4 @@
-﻿
-export interface FilterConfig<T> {
+﻿export interface FilterConfig<T> {
   searchFields?: (keyof T)[];
   customFilters?: (item: T) => boolean;
   sortCompare?: (a: T, b: T) => number;

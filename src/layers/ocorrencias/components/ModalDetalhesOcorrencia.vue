@@ -110,11 +110,6 @@
             <p class="text-xs md:text-sm font-medium">Nenhum histórico registrado</p>
             <p class="text-[10px] md:text-xs mt-1 opacity-70">As interações aparecerão aqui</p>
           </div>
-...
-  {
-    label: "Situação",
-    valor: getSituacaoLabel(props.ocorrencia?.situacao || ""),
-  },
         </Transition>
       </div>
     </div>

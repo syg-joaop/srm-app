@@ -57,9 +57,15 @@ export default defineNuxtConfig({
     apiV2Url: process.env.API_URL,
     apiV2UrlHomol: process.env.API_URL_HOMOL,
     public: {
+      apiBaseUrl: process.env.API_LOGIN ?? "",
+      apiSecret: process.env.NUXT_PUBLIC_API_SECRET ?? "",
+      apiV2Url: process.env.API_URL ?? "",
+      apiV2UrlHomol: process.env.API_URL_HOMOL ?? "",
       appName: process.env.NUXT_PUBLIC_APP_NAME ?? "SRM App",
-      appVersion: process.env.NUXT_PUBLIC_APP_VERSION ?? process.env.npm_package_version ?? "0.0.0",
+      appVersion: process.env.NUXT_PUBLIC_APP_VERSION ?? "0.0.0",
       supportChatUrl: process.env.NUXT_PUBLIC_SUPPORT_CHAT_URL ?? "",
+      vrpApiUrl: process.env.NUXT_PUBLIC_VRP_API_URL ?? "",
+      vrpApiKey: process.env.NUXT_PUBLIC_VRP_API_KEY ?? "",
     },
   },
 

@@ -40,21 +40,25 @@
       v-if="isLoading"
       class="flex flex-col items-center justify-center py-16 text-[var(--color-text-muted)]"
     >
-      <div class="animate-spin rounded-full h-8 w-8 border-b-2 border-primary-600 mb-3"></div>
-      <span class="text-sm">Carregando rotas...</span>
+      <UiSpinner size="large" text="Carregando rotas..." />
     </div>
 
     <!-- Error state -->
-    <div
+    <UiEmptyState
       v-else-if="error"
-      class="flex flex-col items-center justify-center py-16 text-[var(--color-text-muted)]"
+      class="py-16"
+      title="Erro ao carregar rotas"
+      :description="error"
     >
-      <Icon icon="heroicons:exclamation-triangle" class="w-12 h-12 text-red-500 mb-3" />
-      <span class="text-sm mb-3">{{ error }}</span>
-      <UiButton variant="primary" size="small" @click="recarregarRotas">
-        Tentar novamente
-      </UiButton>
-    </div>
+      <template #icon>
+        <Icon icon="heroicons:exclamation-triangle" class="w-12 h-12 text-red-500" />
+      </template>
+      <template #action>
+        <UiButton variant="primary" size="small" @click="recarregarRotas">
+          Tentar novamente
+        </UiButton>
+      </template>
+    </UiEmptyState>
 
     <!-- Content -->
     <template v-else>
@@ -119,6 +123,7 @@ import UiButton from "~/components/ui/UiButton.vue";
 import UiCalendario from "~/components/ui/UiCalendario.vue";
 import UiEmptyState from "~/components/ui/UiEmptyState.vue";
 import UiPaginacao from "~/components/ui/UiPaginacao.vue";
+import UiSpinner from "~/components/ui/UiSpinner.vue";
 import ModalDetalhesRota from "../components/ModalDetalhesRota.vue";
 import ModalNovaRota from "../components/ModalNovaRota.vue";
 import RotaCardItem from "../components/RotaCardItem.vue";

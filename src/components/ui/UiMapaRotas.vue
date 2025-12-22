@@ -16,7 +16,9 @@
         fill="currentColor"
         viewBox="0 0 24 24"
       >
-        <path d="M12 8c-2.21 0-4 1.79-4 4s1.79 4 4 4 4-1.79 4-4-1.79-4-4-4zm8.94 3A8.994 8.994 0 0013 3.06V1h-2v2.06A8.994 8.994 0 003.06 11H1v2h2.06A8.994 8.994 0 0011 20.94V23h2v-2.06A8.994 8.994 0 0020.94 13H23v-2h-2.06zM12 19c-3.87 0-7-3.13-7-7s3.13-7 7-7 7 3.13 7 7-3.13 7-7 7z"/>
+        <path
+          d="M12 8c-2.21 0-4 1.79-4 4s1.79 4 4 4 4-1.79 4-4-1.79-4-4-4zm8.94 3A8.994 8.994 0 0013 3.06V1h-2v2.06A8.994 8.994 0 003.06 11H1v2h2.06A8.994 8.994 0 0011 20.94V23h2v-2.06A8.994 8.994 0 0020.94 13H23v-2h-2.06zM12 19c-3.87 0-7-3.13-7-7s3.13-7 7-7 7 3.13 7 7-3.13 7-7 7z"
+        />
       </svg>
       <svg
         v-else
@@ -24,7 +26,9 @@
         fill="currentColor"
         viewBox="0 0 24 24"
       >
-        <path d="M12 8c-2.21 0-4 1.79-4 4s1.79 4 4 4 4-1.79 4-4-1.79-4-4-4zm8.94 3A8.994 8.994 0 0013 3.06V1h-2v2.06A8.994 8.994 0 003.06 11H1v2h2.06A8.994 8.994 0 0011 20.94V23h2v-2.06A8.994 8.994 0 0020.94 13H23v-2h-2.06zM12 19c-3.87 0-7-3.13-7-7s3.13-7 7-7 7 3.13 7 7-3.13 7-7 7z"/>
+        <path
+          d="M12 8c-2.21 0-4 1.79-4 4s1.79 4 4 4 4-1.79 4-4-1.79-4-4-4zm8.94 3A8.994 8.994 0 0013 3.06V1h-2v2.06A8.994 8.994 0 003.06 11H1v2h2.06A8.994 8.994 0 0011 20.94V23h2v-2.06A8.994 8.994 0 0020.94 13H23v-2h-2.06zM12 19c-3.87 0-7-3.13-7-7s3.13-7 7-7 7 3.13 7 7-3.13 7-7 7z"
+        />
       </svg>
     </button>
   </div>
@@ -104,14 +108,7 @@ const props = withDefaults(
 );
 
 // Geolocalização
-...
-  polylineCoords?: [number, number][]; // Ou coordenadas já decodificadas
-...
-  // Adiciona pontos ordenados por sequência
-...
-/**
- * Método exposto para forçar resize do mapa
- */
+
 const { position: geoPosition, getCurrentPosition } = useGeolocation({
   enableHighAccuracy: true,
   timeout: 10000,
@@ -120,7 +117,6 @@ const { position: geoPosition, getCurrentPosition } = useGeolocation({
 
 const isGettingLocation = ref(false);
 
-// Tiles do Google Maps (gratuito, sem API key)
 const getTileLayerConfig = (type: string) => {
   const configs = {
     roadmap: {
@@ -339,19 +335,15 @@ const renderPolyline = () => {
   if (props.polyline) {
     const normalized = props.polyline.trim().replace(/\s+/g, "");
     const encoded =
-      (normalized.startsWith("\"") && normalized.endsWith("\"")) ||
+      (normalized.startsWith('"') && normalized.endsWith('"')) ||
       (normalized.startsWith("'") && normalized.endsWith("'"))
         ? normalized.slice(1, -1)
         : normalized;
 
     if (!encoded) return;
 
-    const isValidLatLng = (lat: number, lng: number) => (
-      Number.isFinite(lat) &&
-      Number.isFinite(lng) &&
-      Math.abs(lat) <= 90 &&
-      Math.abs(lng) <= 180
-    );
+    const isValidLatLng = (lat: number, lng: number) =>
+      Number.isFinite(lat) && Number.isFinite(lng) && Math.abs(lat) <= 90 && Math.abs(lng) <= 180;
 
     const getBoundsCenter = (coords: [number, number][]): [number, number] | null => {
       if (coords.length === 0) return null;
@@ -389,7 +381,8 @@ const renderPolyline = () => {
     coordinates = decodePolyline(encoded).filter(([lat, lng]) => isValidLatLng(lat, lng));
 
     if (refCenter) {
-      const dist2 = (a: [number, number], b: [number, number]) => (a[0] - b[0]) ** 2 + (a[1] - b[1]) ** 2;
+      const dist2 = (a: [number, number], b: [number, number]) =>
+        (a[0] - b[0]) ** 2 + (a[1] - b[1]) ** 2;
 
       const center5 = getBoundsCenter(decoded5);
       const center6 = getBoundsCenter(decoded6);
@@ -408,9 +401,7 @@ const renderPolyline = () => {
   // Fallback: desenha uma linha reta conectando os pontos quando não há polyline (ou decode falha).
   if (coordinates.length < 2) {
     const fallbackCoords: [number, number][] = [];
-    const sortedPontos = [...props.pontos].sort(
-      (a, b) => (a.sequencia || 0) - (b.sequencia || 0),
-    );
+    const sortedPontos = [...props.pontos].sort((a, b) => (a.sequencia || 0) - (b.sequencia || 0));
 
     for (const ponto of sortedPontos) {
       const lat = toNumber(ponto.latitude);
@@ -434,7 +425,9 @@ const renderPolyline = () => {
     dashArray: "6 6",
   };
 
-  const finalConfig = isFallback ? { ...props.polylineConfig, ...fallbackConfig } : props.polylineConfig;
+  const finalConfig = isFallback
+    ? { ...props.polylineConfig, ...fallbackConfig }
+    : props.polylineConfig;
 
   polylineLayer = L.polyline(coordinates, {
     color: finalConfig.color,
@@ -461,9 +454,7 @@ const updateMap = () => {
   const validBounds: [number, number][] = [];
 
   // Adiciona pontos ordenados por sequÃªncia
-  const sortedPontos = [...props.pontos].sort(
-    (a, b) => (a.sequencia || 0) - (b.sequencia || 0),
-  );
+  const sortedPontos = [...props.pontos].sort((a, b) => (a.sequencia || 0) - (b.sequencia || 0));
 
   for (const ponto of sortedPontos) {
     const coords = addMarker(ponto);

@@ -252,7 +252,7 @@ const salvarOrdem = async () => {
       sequencia: index + 1,
     }));
 
-    const success = await rotaService.reordenarRoteiros(roteirosParaSalvar, props.rota.id);
+    const success = await rotaService.reordenarRoteiros(roteirosParaSalvar);
 
     if (success) {
       originalOrder.value = roteirosOrdenados.value.map((r) => r.id);
@@ -311,7 +311,7 @@ const handleRemoveRoteiro = async (roteiro: Roteiro) => {
   if (!props.rota || !confirm(`Deseja remover "${roteiro.nome || "este ponto"}" do roteiro?`))
     return;
 
-  const success = await rotaService.deleteRoteiro(roteiro.id, props.rota.id);
+  const success = await rotaService.deleteRoteiro(roteiro.id);
   if (success) {
     await carregarDados();
 

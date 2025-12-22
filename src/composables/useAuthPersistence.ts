@@ -1,10 +1,10 @@
 import type { SavedCredentials } from "~/types/auth";
 
 /**
- * Persistência do "lembrar-me" (só para preencher o formulário).
+ * Persistencia do "lembrar-me" (so para preencher o formulario).
  *
- * A sessão do app é gerenciada por cookie HttpOnly no servidor.
- * A senha fica apenas obfuscada em base64 (não é criptografia).
+ * A sessao do app e gerenciada no client com token salvo em storage.
+ * A senha fica apenas obfuscada em base64 (nao e criptografia).
  */
 export const useAuthPersistence = () => {
   const STORAGE_KEYS = {
