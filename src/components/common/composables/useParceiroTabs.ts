@@ -18,20 +18,20 @@ import {
  * Composable para gerenciar tabs do modal de detalhes do parceiro.
  */
 export function useParceiroTabs(
-  props: { modelValue: boolean; parceiro?: ParceiroData | null; variant?: ParceiroVariant },
+  propsRef: ComputedRef<{ modelValue: boolean; parceiro?: ParceiroData | null; variant?: ParceiroVariant }>,
 ) {
-  const activeTab = ref<TabId>(getInitialTab(props.variant));
+  const activeTab = ref<TabId>(getInitialTab(propsRef.value.variant));
   const tabButtonRefs = ref<HTMLElement[]>([]);
 
-  const tabs = computed(() => filterTabsByVariant(props.variant));
+  const tabs = computed(() => filterTabsByVariant(propsRef.value.variant));
 
-  const isInactive = computed(() => isParceiroInactive(props.parceiro));
+  const isInactive = computed(() => isParceiroInactive(propsRef.value.parceiro));
 
   /**
    * Constrói os itens de uma tab baseado no parceiro e tabId.
    */
   const getTabItems = (tabId: TabId): TabItem[] => {
-    const parceiro = props.parceiro as Record<string, unknown> | null;
+    const parceiro = propsRef.value.parceiro as Record<string, unknown> | null;
     if (!parceiro) {
       return [];
     }
@@ -109,7 +109,7 @@ export function useParceiroTabs(
 
   // Atualiza tab ativa quando variant muda
   watch(
-    () => props.variant,
+    () => propsRef.value.variant,
     (newVariant) => {
       activeTab.value = getInitialTab(newVariant);
     },

@@ -10,7 +10,7 @@
 <script setup lang="ts">
 import UiMapaPontos from "~/components/ui/UiMapaPontos.vue";
 import type { UiMapaPonto, UiMapaStatusConfig } from "~/components/ui/maps.types";
-import type { ProspectoMapItem } from "../prospecto.types";
+import type { ProspectoMapItem } from "../types/prospecto.types";
 
 const statusConfig: UiMapaStatusConfig = {
   ...COMMON_MAP_STATUS_CONFIG,

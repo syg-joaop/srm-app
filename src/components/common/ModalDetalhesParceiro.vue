@@ -80,7 +80,32 @@
       </div>
     </template>
 
-    <div class="mt-4 -mx-6">
+    <!-- Loading State -->
+    <div v-if="isLoadingDetalhes" class="flex items-center justify-center py-16">
+      <div class="flex flex-col items-center gap-3">
+        <div class="w-10 h-10 border-3 border-[var(--color-primary)] border-t-transparent rounded-full animate-spin"></div>
+        <p class="text-sm text-[var(--color-text-muted)]">Carregando detalhes...</p>
+      </div>
+    </div>
+
+    <!-- Error State -->
+    <div v-else-if="detalhesError" class="flex flex-col items-center justify-center py-16 px-6">
+      <div class="w-16 h-16 rounded-full bg-[var(--color-danger-soft)] flex items-center justify-center mb-4">
+        <AlertCircle class="w-8 h-8 text-[var(--color-danger)]" />
+      </div>
+      <h3 class="text-lg font-semibold text-[var(--color-text)] mb-2">Erro ao carregar dados</h3>
+      <p class="text-sm text-[var(--color-text-muted)] text-center mb-4">{{ detalhesError }}</p>
+      <UiButton variant="primary" @click="loadDetalhes">
+        <template #default>
+          <div class="flex items-center gap-2">
+            <RefreshCw class="w-4 h-4" />
+            <span>Tentar novamente</span>
+          </div>
+        </template>
+      </UiButton>
+    </div>
+
+    <div v-else class="mt-4 -mx-6">
       <div class="relative w-full">
         <div
           class="tabs-scroll-container flex items-center gap-5 px-6 border-b border-[var(--color-border)] mb-6 overflow-x-auto no-scrollbar scroll-smooth"
@@ -111,26 +136,26 @@
         </div>
       </div>
 
-      <div class="px-6 min-h-[280px] md:min-h-[400px]">
+      <div ref="modalContentRef" class="px-6 min-h-[280px] md:min-h-[400px] modal-content-scroll overflow-y-auto">
         <Transition name="fade" mode="out-in">
-          <div :key="activeTabMeta.id" class="space-y-4">
+          <div :key="activeTab" class="space-y-4">
             <!-- Tab de cadastro com layout em seções -->
             <div v-if="activeTab === 'cadastro' && activeTabMeta.items.length" class="space-y-3">
               <div v-for="item in activeTabMeta.items" :key="item.id">
                 <!-- Badge de status do fornecedor -->
                 <div v-if="item.status" class="mb-3">
-                  <span
-                    class="text-[10px] font-semibold px-2 py-1 rounded-full border"
-                    :class="getStatusClass(item.status)"
+                  <UiBadge
+                    :variant="getStatusBadgeVariant(item.status)"
+                    size="small"
                   >
                     {{ item.status }}
-                  </span>
+                  </UiBadge>
                 </div>
 
                 <!-- Seção 1: Identificação -->
                 <div
                   v-if="filterCadastroFields.getIdentification(item.details).length"
-                  class="rounded-lg border border-[var(--color-border-subtle)] bg-[var(--color-surface)] p-4 mb-3"
+                  class="rounded-lg border border-[var(--color-border-subtle)] bg-[var(--color-surface)] p-4 mb-3 shadow-sm"
                 >
                   <h3
                     class="text-[11px] font-semibold uppercase tracking-wide text-[var(--color-primary)] mb-3"
@@ -164,7 +189,7 @@
                 <!-- Seção 2: Localização -->
                 <div
                   v-if="filterCadastroFields.getLocation(item.details).length"
-                  class="rounded-lg border border-[var(--color-border-subtle)] bg-[var(--color-surface)] p-4 mb-3"
+                  class="rounded-lg border border-[var(--color-border-subtle)] bg-[var(--color-surface)] p-4 mb-3 shadow-sm"
                 >
                   <h3
                     class="text-[11px] font-semibold uppercase tracking-wide text-[var(--color-primary)] mb-3"
@@ -198,7 +223,7 @@
                 <!-- Seção 3: Informações Adicionais -->
                 <div
                   v-if="filterCadastroFields.getAdditional(item.details).length"
-                  class="rounded-lg border border-[var(--color-border-subtle)] bg-[var(--color-surface)] p-4"
+                  class="rounded-lg border border-[var(--color-border-subtle)] bg-[var(--color-surface)] p-4 shadow-sm"
                 >
                   <h3
                     class="text-[11px] font-semibold uppercase tracking-wide text-[var(--color-primary)] mb-3"
@@ -231,80 +256,141 @@
               </div>
             </div>
 
-            <!-- Tabs de listagem (exceto cadastro) -->
-            <div v-else-if="activeTabMeta.items.length" class="space-y-1.5">
-              <div
-                v-for="item in activeTabMeta.items"
-                :key="item.id"
-                class="group/item relative rounded-lg border border-[var(--color-border-subtle)] bg-[var(--color-surface)] px-3 py-2.5 transition-all duration-300 ease-out hover:border-[var(--color-primary-border)] hover:bg-[var(--color-primary-soft)]"
-              >
+            <!-- Tabs de listagem com paginação (exceto cadastro) -->
+            <div ref="listContainerRef" v-else-if="paginatedItems.length" class="space-y-4">
+              <!-- Contador de resultados -->
+              <div class="flex items-center justify-between px-1">
+                <p class="text-xs text-[var(--color-text-muted)]">
+                  {{ activeTabMeta.countLabel }}
+                </p>
+                <!-- Seletor de itens por página -->
                 <div
-                  class="absolute left-0 top-1/2 -translate-y-1/2 w-0.5 h-0 bg-[var(--color-primary)] rounded-r-full opacity-0 group-hover/item:h-4 group-hover/item:opacity-100 transition-all duration-300"
-                ></div>
-
-                <!-- Linha 1: Título + Status -->
-                <div class="flex items-center gap-2 min-w-0">
-                  <p
-                    class="text-sm font-semibold text-[var(--color-text)] truncate flex-1 min-w-0"
-                    :title="item.title"
-                  >
-                    {{ item.title }}
-                  </p>
-                  <span
-                    v-if="item.status"
-                    class="shrink-0 text-[10px] font-semibold px-2 py-0.5 rounded border"
-                    :class="getStatusClass(item.status)"
-                  >
-                    {{ item.status }}
-                  </span>
-                </div>
-
-                <!-- Linha 2: Detalhes inline -->
-                <div
-                  v-if="item.details.length"
-                  class="flex flex-wrap md:flex-nowrap items-center gap-1.5 md:truncate mt-1 min-w-0"
+                  v-if="activeTabMeta.items.length > ITEMS_PER_PAGE_OPTIONS[0]"
+                  class="flex items-center gap-2"
                 >
-                  <template v-for="(detail, idx) in item.details.slice(0, 4)" :key="detail.label">
-                    <span
-                      class="text-[10px] text-[var(--color-border-subtle)] shrink-0"
-                      v-if="idx > 0"
-                    >
-                      •
-                    </span>
-                    <span
-                      class="inline-flex items-center gap-0.5 truncate md:truncate"
-                      :title="`${detail.label}: ${detail.value}`"
-                    >
-                      <span
-                        class="text-xs text-[var(--color-text-muted)] uppercase tracking-wider shrink-0"
-                      >
-                        {{ detail.label }}:
-                      </span>
-                      <span
-                        class="text-xs font-medium truncate"
-                        :class="
-                          detail.value === '-'
-                            ? 'text-[var(--color-text-muted)]'
-                            : 'text-[var(--color-text)]'
-                        "
-                      >
-                        {{ detail.value }}
-                      </span>
-                    </span>
-                  </template>
-                  <span
-                    v-if="item.details.length > 4"
-                    class="text-[10px] text-[var(--color-text-muted)] shrink-0"
+                  <label class="text-xs text-[var(--color-text-muted)]">Itens por página:</label>
+                  <select
+                    v-model="itemsPerPage"
+                    class="text-xs bg-[var(--color-surface)] border border-[var(--color-border)] rounded-md px-2 py-1 text-[var(--color-text)] focus:outline-none focus:ring-2 focus:ring-[var(--color-primary)] focus:border-transparent"
                   >
-                    +{{ item.details.length - 4 }}
-                  </span>
+                    <option v-for="option in ITEMS_PER_PAGE_OPTIONS" :key="option" :value="option">
+                      {{ option }}
+                    </option>
+                  </select>
                 </div>
+              </div>
+
+              <!-- Lista de itens com estilo premium -->
+              <div class="space-y-2">
+                <div
+                  v-for="item in paginatedItems"
+                  :key="item.id"
+                  class="group/item relative rounded-lg border border-[var(--color-border-subtle)] bg-[var(--color-surface)] px-4 py-3 transition-all duration-300 ease-out hover:border-[var(--color-primary-border)] hover:shadow-md hover:bg-[var(--color-primary-soft)]"
+                >
+                  <!-- Indicador visual lateral -->
+                  <div
+                    class="absolute left-0 top-1/2 -translate-y-1/2 w-1 h-0 bg-[var(--color-primary)] rounded-r-full opacity-0 group-hover/item:h-8 group-hover/item:opacity-100 transition-all duration-300"
+                  ></div>
+
+                  <!-- Linha 1: Ícone + Título + Status -->
+                  <div class="flex items-start gap-3 min-w-0">
+                    <!-- Ícone específico por tipo de tab -->
+                    <div
+                      class="flex-shrink-0 w-8 h-8 rounded-lg flex items-center justify-center"
+                      :class="getTabIconContainerClass(activeTab)"
+                    >
+                      <component
+                        :is="getTabIcon(activeTab)"
+                        class="w-4 h-4"
+                        :class="getTabIconClass(activeTab)"
+                      />
+                    </div>
+
+                    <div class="flex-1 min-w-0">
+                      <div class="flex items-start justify-between gap-2">
+                        <div class="flex-1 min-w-0">
+                          <p
+                            class="text-sm font-semibold text-[var(--color-text)] truncate"
+                            :title="item.title"
+                          >
+                            {{ item.title }}
+                          </p>
+                          <p
+                            v-if="item.subtitle"
+                            class="text-xs text-[var(--color-text-muted)] mt-0.5 truncate"
+                            :title="item.subtitle"
+                          >
+                            {{ item.subtitle }}
+                          </p>
+                        </div>
+
+                        <UiBadge
+                          v-if="item.status"
+                          :variant="getStatusBadgeVariant(item.status)"
+                          size="small"
+                          class="shrink-0"
+                        >
+                          {{ item.status }}
+                        </UiBadge>
+                      </div>
+
+                      <!-- Linha 2: Detalhes em grid -->
+                      <div
+                        v-if="item.details.length"
+                        class="grid grid-cols-1 sm:grid-cols-2 gap-x-4 gap-y-1.5 mt-3"
+                      >
+                        <div
+                          v-for="detail in item.details.slice(0, 6)"
+                          :key="detail.label"
+                          class="flex items-start gap-2 min-w-0"
+                        >
+                          <span
+                            class="text-[10px] uppercase tracking-wide text-[var(--color-text-muted)] shrink-0 mt-0.5"
+                          >
+                            {{ detail.label }}:
+                          </span>
+                          <span
+                            class="text-xs font-medium truncate"
+                            :class="
+                              detail.value === '-'
+                                ? 'text-[var(--color-text-muted)]'
+                                : 'text-[var(--color-text)]'
+                            "
+                            :title="detail.value"
+                          >
+                            {{ detail.value }}
+                          </span>
+                        </div>
+                        <div
+                          v-if="item.details.length > 6"
+                          class="text-[10px] text-[var(--color-primary)] font-medium"
+                        >
+                          +{{ item.details.length - 6 }} informações
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Paginação -->
+              <div
+                v-if="totalPages > 1"
+                class="flex justify-center pt-4 border-t border-[var(--color-border)]"
+              >
+                <UiPaginacao
+                  :page="currentPage"
+                  :total-pages="totalPages"
+                  :total-items="activeTabMeta.items.length"
+                  @update:page="goToPage"
+                />
               </div>
             </div>
 
+            <!-- Empty State com ícone específico -->
             <UiEmptyState
               v-else
-              :icon="MessageSquare"
+              :icon="getEmptyStateIcon(activeTab)"
               :title="activeTabMeta.emptyTitle"
               :description="activeTabMeta.emptyDescription"
             />
@@ -316,12 +402,32 @@
 </template>
 
 <script setup lang="ts">
-import { Edit, MessageSquare, Presentation, UserPlus } from "lucide-vue-next";
+import {
+  AlertCircle,
+  Calendar,
+  CheckCircle,
+  Contact,
+  Edit,
+  FileText,
+  MessageSquare,
+  Package,
+  Presentation,
+  RefreshCw,
+  Tag,
+  Truck,
+  UserCheck,
+  UserPlus,
+} from "lucide-vue-next";
+import type { Variant } from "~/components/ui/UiBadge.vue";
+import UiBadge from "~/components/ui/UiBadge.vue";
 import UiButton from "~/components/ui/UiButton.vue";
 import UiEmptyState from "~/components/ui/UiEmptyState.vue";
 import UiModal from "~/components/ui/UiModal.vue";
+import UiPaginacao from "~/components/ui/UiPaginacao.vue";
 import type { ParceiroData, ParceiroVariant, TabId } from "~/types/parceiro";
+import { getStatusClass as getStatusClassUtil } from "~/utils/helpers/parceiro";
 import { useParceiroTabs, filterCadastroFields } from "./composables/useParceiroTabs";
+import { useParceiroDetalhesData } from "./composables/useParceiroDetalhesData";
 
 const props = withDefaults(
   defineProps<{
@@ -340,7 +446,46 @@ defineEmits<{
   close: [];
 }>();
 
-// Composable de tabs
+// Ref para o elemento de scroll do modal
+const modalContentRef = ref<HTMLElement | null>(null);
+// Ref para o container da lista de itens
+const listContainerRef = ref<HTMLElement | null>(null);
+
+// Constantes de paginação
+const ITEMS_PER_PAGE_OPTIONS = [5, 10, 20, 50] as const;
+const DEFAULT_ITEMS_PER_PAGE = 10;
+
+// Composable para carregar dados detalhados do parceiro
+const parceiroRef = computed(() => props.parceiro);
+
+const {
+  isLoading: isLoadingDetalhes,
+  error: detalhesError,
+  detalhesData,
+  loadDetalhes,
+  clearDetalhes,
+  enrichParceiroWithDetalhes,
+} = useParceiroDetalhesData(() => props.parceiro);
+
+// Computed que enriquece o parceiro com os detalhes carregados
+const enrichedParceiro = computed(() =>
+  enrichParceiroWithDetalhes(props.parceiro)
+);
+
+// Watch para carregar dados quando o modal abre ou o parceiro muda
+watch(
+  () => props.modelValue,
+  async (isOpen) => {
+    if (isOpen && props.parceiro) {
+      await loadDetalhes();
+    } else {
+      clearDetalhes();
+    }
+  },
+  { immediate: true }
+);
+
+// Composable de tabs - usa o parceiro enriquecido
 const {
   activeTab,
   tabButtonRefs,
@@ -348,7 +493,126 @@ const {
   activeTabMeta,
   isInactive,
   selectTab,
-} = useParceiroTabs(props);
+} = useParceiroTabs(
+  computed(() => ({
+    modelValue: props.modelValue,
+    parceiro: enrichedParceiro.value,
+    variant: props.variant,
+  }))
+);
+
+// Paginação
+const currentPage = ref(1);
+const itemsPerPage = ref(DEFAULT_ITEMS_PER_PAGE);
+
+// Resetar paginação quando mudar de tab
+watch(activeTab, () => {
+  currentPage.value = 1;
+});
+
+// Calcular itens paginados
+const totalPages = computed(() => {
+  const items = activeTabMeta.value.items;
+  if (!items.length || activeTab.value === 'cadastro') return 1;
+  return Math.ceil(items.length / itemsPerPage.value);
+});
+
+const paginatedItems = computed(() => {
+  const items = activeTabMeta.value.items;
+  if (activeTab.value === 'cadastro') return items;
+
+  const startIndex = (currentPage.value - 1) * itemsPerPage.value;
+  const endIndex = startIndex + itemsPerPage.value;
+
+  return items.slice(startIndex, endIndex);
+});
+
+const goToPage = (page: number) => {
+  currentPage.value = page;
+
+  // Scroll para o topo da listagem
+  nextTick(() => {
+    if (listContainerRef.value) {
+      listContainerRef.value.scrollIntoView({
+        behavior: 'smooth',
+        block: 'start'
+      });
+    }
+  });
+};
+
+// Funções auxiliares para UI
+const getStatusBadgeVariant = (status: string): Variant => {
+  const normalized = status.toLowerCase();
+
+  if (normalized.includes("ativo") || normalized.includes("concluido") || normalized.includes("final")) {
+    return "success";
+  }
+  if (normalized.includes("pendente") || normalized.includes("vencido") || normalized.includes("agendado")) {
+    return "warning";
+  }
+  if (normalized.includes("inativo") || normalized.includes("cancel")) {
+    return "danger";
+  }
+  if (normalized.includes("confirmado") || normalized.includes("em andamento")) {
+    return "info";
+  }
+
+  return "default";
+};
+
+const getStatusClass = (status: string): string => {
+  return getStatusClassUtil(status);
+};
+
+const getTabIcon = (tabId: TabId) => {
+  const icons: Record<TabId, any> = {
+    cadastro: FileText,
+    contatos: Contact,
+    cargas: Package,
+    agendamentos: Calendar,
+    atendimentos: MessageSquare,
+    coletas: Truck,
+    precos: Tag,
+    checkins: UserCheck,
+    favorecidos: UserPlus,
+  };
+  return icons[tabId] || FileText;
+};
+
+const getTabIconClass = (tabId: TabId) => {
+  const classes: Record<TabId, string> = {
+    cadastro: "text-blue-500",
+    contatos: "text-blue-500",
+    cargas: "text-blue-500",
+    agendamentos: "text-blue-500",
+    atendimentos: "text-blue-500",
+    coletas: "text-blue-500",
+    precos: "text-blue-500",
+    checkins: "text-blue-500",
+    favorecidos: "text-blue-500",
+  };
+  return classes[tabId] || "text-blue-500";
+};
+
+const getTabIconContainerClass = (tabId: TabId) => {
+  const classes: Record<TabId, string> = {
+    cadastro: "bg-blue-500/10",
+    contatos: "bg-blue-500/10",
+    cargas: "bg-blue-500/10",
+    agendamentos: "bg-blue-500/10",
+    atendimentos: "bg-blue-500/10",
+    coletas: "bg-blue-500/10",
+    precos: "bg-blue-500/10",
+    checkins: "bg-blue-500/10",
+    favorecidos: "bg-blue-500/10",
+  };
+  return classes[tabId] || "bg-blue-500/10";
+};
+
+const getEmptyStateIcon = (tabId: TabId) => {
+  return getTabIcon(tabId);
+};
 
 // Responsividade
 const isDesktop = ref(false);
