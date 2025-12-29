@@ -219,10 +219,10 @@ export interface StatusBadgeItem {
 
 export interface AtendenteItem {
   role: string;
-  s1: number; // Geral
-  s2: number; // Periodo
-  s3: number; // OK
-  s4: number; // Pendente
+  geral: number;
+  periodo: number;
+  concluidos: number;
+  pendentes: number;
   statuses: StatusBadgeItem[];
 }
 

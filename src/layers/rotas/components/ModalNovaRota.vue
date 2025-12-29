@@ -51,7 +51,7 @@ import UiMapaPontos from "~/components/ui/UiMapaPontos.vue";
 import type { UiMapaPonto } from "~/components/ui/maps.types";
 import FormularioRota from "./FormularioRota.vue";
 import ListaFornecedoresRota from "./ListaFornecedoresRota.vue";
-import type { FornecedorRotaSimples } from "../rotas.types";
+import type { FornecedorRotaSimples } from "../types/rotas.types";
 
 const props = defineProps<{
   modelValue: boolean;

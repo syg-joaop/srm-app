@@ -135,7 +135,7 @@ import type { Variant } from "~/components/ui/UiBadge.vue";
 import UiBadge from "~/components/ui/UiBadge.vue";
 import UiButton from "~/components/ui/UiButton.vue";
 import UiModal from "~/components/ui/UiModal.vue";
-import type { Checkin } from "../checkin.types";
+import type { Checkin } from "../types/checkin.types";
 
 const props = defineProps<{
   modelValue: boolean;

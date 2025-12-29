@@ -34,8 +34,9 @@ const pontos = computed<UiMapaPonto[]>(() => {
       latitude: p.latitude,
       longitude: p.longitude,
       linhas: [
+        { rotulo: "Nome", valor: p.prospecto },
         { rotulo: "Cidade", valor: p.cidade },
-        { rotulo: "Última interação", valor: p.ultima_interacao },
+        { rotulo: "Última interação", valor: p.ultima_interacao || "Nenhuma" },
       ],
     }));
 });

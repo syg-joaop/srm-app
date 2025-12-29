@@ -118,7 +118,7 @@ import {
   resolveStatusIconClass,
   resolveStatusVariant,
 } from "~/utils/status";
-import type { Fornecedor } from "../fornecedores.types";
+import type { Fornecedor } from "../types/fornecedores.types";
 
 defineProps<{
   fornecedores: Fornecedor[];

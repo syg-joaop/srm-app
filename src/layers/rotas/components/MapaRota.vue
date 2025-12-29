@@ -171,7 +171,7 @@ import {
 } from "lucide-vue-next";
 import type { RotaPonto } from "~/components/ui/UiMapaRotas.vue";
 import type { UiMapaStatusConfig } from "~/components/ui/maps.types";
-import type { Roteiro, VrpSummary } from "../rotas.types";
+import type { Roteiro, VrpSummary } from "../types/rotas.types";
 
 const props = defineProps<{
   roteiros?: Roteiro[];

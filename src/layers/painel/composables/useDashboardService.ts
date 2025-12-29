@@ -1,5 +1,6 @@
 ﻿import { useAuthStore } from "~/stores/auth";
-import type { DashboardApiResponse } from "../dashboard.types";
+import type { DashboardApiResponse } from "./types/dashboard.types";
+import { schemaDashboardApiResponse } from "../schemas/dashboard.schema";
 
 type ApiDataWrapper<T> = { data: T };
 
@@ -45,6 +46,24 @@ const unwrapApiData = <T>(response: T | ApiDataWrapper<T>): T => {
   return response as T;
 };
 
+/**
+ * Valida a resposta da API usando o schema Zod
+ * Lança um erro detalhado se a validação falhar
+ */
+const validateDashboardResponse = (response: unknown): DashboardApiResponse => {
+  const result = schemaDashboardApiResponse.safeParse(response);
+
+  if (!result.success) {
+    const errorMessage = result.error.errors
+      .map((err) => `${err.path.join(".")}: ${err.message}`)
+      .join(", ");
+    throw new Error(`Falha na validação da API de Dashboard: ${errorMessage}`);
+  }
+
+  // Type assertion: o schema Zod garante que os dados estão corretos
+  return result.data as DashboardApiResponse;
+};
+
 export const useDashboardService = () => {
   const api = useMainApi();
   const authStore = useAuthStore();
@@ -66,7 +85,9 @@ export const useDashboardService = () => {
           },
         );
 
-        return unwrapApiData<DashboardApiResponse>(response);
+        // Valida a resposta com o schema Zod
+        const unwrappedResponse = unwrapApiData<DashboardApiResponse>(response);
+        return validateDashboardResponse(unwrappedResponse);
       },
       {
         watch: [filtersRef],

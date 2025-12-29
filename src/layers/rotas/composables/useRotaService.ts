@@ -1,25 +1,23 @@
-﻿import {
+import { z } from "zod";
+import {
   schemaRota,
   schemaRotaResponse,
   schemaRoteiro,
   schemaRoteiroResponse,
 } from "~/server/schemas/rotas.schema";
-import { isValidCoordinate } from "~/utils/validators/geo";
 import type {
   CreateRoteiroPayload,
-  PolylineCache,
   Rota,
   RotaFilters,
   RotaResponse,
   Roteiro,
   RoteiroFilters,
   RoteiroResponse,
-  VrpRouteRequest,
-  VrpRouteResponse,
   VrpSummary,
-  VrpTask,
-  VrpVehicle,
-} from "../rotas.types";
+} from "../types/rotas.types";
+import { usePolylineCache } from "./usePolylineCache";
+import { useVrpService } from "./useVrpService";
+import { getRoteirosWithCoords, parseNumber } from "./roteirosHelpers";
 
 const LOG_PREFIX = "[useRotaService]";
 
@@ -27,90 +25,62 @@ const LOG_PREFIX = "[useRotaService]";
 const ROTAS_ENDPOINT = "/srm/rotas";
 const ROTEIRO_ENDPOINT = "/srm/roteiro";
 
-// Cache TTL (24 horas)
-const POLYLINE_CACHE_TTL_MS = 24 * 60 * 60 * 1000;
-const CACHE_PREFIX = "polyline:";
-
-// VRP constants
-const VRP_TIMEZONE = "America/Sao_Paulo";
-const VRP_TASK_DURATION = "00:10";
-const VRP_MIN_TASKS_WITH_USER = 1;
-const VRP_MIN_TASKS_WITHOUT_USER = 2;
-const VRP_MAX_DAYS_WORKING = 1;
-const VRP_LOCATION_PRECISION = 4;
-const VRP_VEHICLE_ID = 1;
-const VRP_VEHICLE_DESCRIPTION = "Veiculo Virtual";
-const VRP_VEHICLE_MAX_JOBS = 100;
-const VRP_VEHICLE_AVG_SPEED = 60;
-const VRP_WORK_START = "06:00";
-const VRP_WORK_END = "22:00";
-
 // Sequencing
-const TEMP_SEQUENCE_BASE = 10000;
 const DEFAULT_ROTA_TIPO = "COMPRA";
 const DEFAULT_ROTEIROS_PAGE_SIZE = 100;
+const TEMP_SEQUENCE_BASE = 10000;
+
+// VRP minimum tasks constants
+const VRP_MIN_TASKS_WITH_USER = 1;
+const VRP_MIN_TASKS_WITHOUT_USER = 2;
 
 const logDebug = (...args: unknown[]) => console.log(LOG_PREFIX, ...args);
 const logWarn = (...args: unknown[]) => console.warn(LOG_PREFIX, ...args);
 const logError = (...args: unknown[]) => console.error(LOG_PREFIX, ...args);
 
-const toNumber = (value: string | number | null | undefined): number | null => {
-  if (value === null || value === undefined) return null;
-  const parsed = typeof value === "string" ? Number.parseFloat(value) : value;
-  return Number.isFinite(parsed) ? parsed : null;
+/**
+ * Função helper para validar respostas com Zod e tratar erros
+ * Lança erro detalhado se a validação falhar
+ */
+const validateWithSchema = <T>(schema: z.ZodSchema<T>, data: unknown, context: string): T => {
+  const result = schema.safeParse(data);
+
+  if (!result.success) {
+    const errorMessage = result.error.errors
+      .map((err) => `${err.path.join(".")}: ${err.message}`)
+      .join(", ");
+    throw new Error(`Falha na validação da API (${context}): ${errorMessage}`);
+  }
+
+  // Type assertion: o schema Zod garante que os dados estão corretos
+  return result.data as T;
 };
 
-const getRoteiroCoordinates = (
-  roteiro: Roteiro,
-): { latitude: number; longitude: number } | null => {
-  if (!roteiro.endereco) return null;
-  const lat = toNumber(roteiro.endereco.latitude);
-  const lng = toNumber(roteiro.endereco.longitude);
-  if (lat === null || lng === null) return null;
-  return isValidCoordinate(lat, lng) ? { latitude: lat, longitude: lng } : null;
+// Schema para wrapper de resposta com { data: T }
+const createDataWrapperSchema = <T>(itemSchema: z.ZodSchema<T>) => {
+  return z.object({
+    data: itemSchema,
+  });
 };
 
-const sortBySequencia = (a: Roteiro, b: Roteiro) => (a.sequencia ?? 0) - (b.sequencia ?? 0);
-
-type RoteiroWithCoords = {
-  roteiro: Roteiro;
-  coords: { latitude: number; longitude: number };
-};
-
-const getRoteirosWithCoords = (roteiros: Roteiro[]): RoteiroWithCoords[] => {
-  return [...roteiros]
-    .sort(sortBySequencia)
-    .map((roteiro) => {
-      const coords = getRoteiroCoordinates(roteiro);
-      return coords ? { roteiro, coords } : null;
-    })
-    .filter((item): item is RoteiroWithCoords => Boolean(item));
-};
-
-const isVrpSummary = (value: unknown): value is VrpSummary => {
-  if (!value || typeof value !== "object") return false;
-  return "distance" in value && "time" in value;
-};
-
-const DEFAULT_VRP_SUMMARY: VrpSummary = {
-  distance: { meters: 0 },
-  time: { duration: 0, traveling: 0 },
-};
-
-const appendQueryParam = (params: URLSearchParams, key: string, value?: string | number | null) => {
+const appendQueryParam = (
+  params: URLSearchParams,
+  key: string,
+  value?: string | number | null,
+) => {
   if (value === undefined || value === null || value === "") return;
   params.append(key, String(value));
 };
 
+/**
+ * Serviço para gerenciar rotas e roteiros.
+ */
 export const useRotaService = () => {
-  const config = useRuntimeConfig();
+  const vrpService = useVrpService();
+  const polylineCache = usePolylineCache();
+
   const isLoading = ref(false);
   const error = ref<string | null>(null);
-
-  // Configuração da API VRP (Fallback para valores hardcoded se não houver config)
-  // TODO: Mover chaves definitivamente para variáveis de ambiente e remover fallback
-  const VRP_API_URL = (config.public?.vrpApiUrl as string) || "";
-  const VRP_API_KEY = (config.public?.vrpApiKey as string) || "";
 
   /**
    * Busca lista de rotas do comprador
@@ -135,7 +105,7 @@ export const useRotaService = () => {
         method: "GET",
       });
 
-      return schemaRotaResponse.parse(response) as RotaResponse;
+      return validateWithSchema(schemaRotaResponse, response, "fetchRotas");
     } catch (err) {
       error.value = err instanceof Error ? err.message : "Erro ao buscar rotas";
       logError("fetchRotas error:", err);
@@ -168,7 +138,7 @@ export const useRotaService = () => {
         method: "GET",
       });
 
-      return schemaRoteiroResponse.parse(response) as RoteiroResponse;
+      return validateWithSchema(schemaRoteiroResponse, response, "fetchRoteiros");
     } catch (err) {
       error.value = err instanceof Error ? err.message : "Erro ao buscar roteiros";
       logError("fetchRoteiros error:", err);
@@ -188,251 +158,13 @@ export const useRotaService = () => {
   };
 
   /**
-   * Gera chave de cache baseada nos IDs dos roteiros
-   */
-  const generateCacheKey = (roteiros: Roteiro[]): string => {
-    const ids = [...roteiros]
-      .sort(sortBySequencia)
-      .map((r) => `${r.id}:${r.sequencia ?? 0}`)
-      .join("-");
-    return `${CACHE_PREFIX}${ids}`;
-  };
-
-  /**
-   * Busca polyline do cache localStorage
-   */
-  const getPolylineFromCache = (cacheKey: string): PolylineCache | null => {
-    try {
-      const cached = localStorage.getItem(cacheKey);
-      if (!cached) return null;
-
-      const data: PolylineCache = JSON.parse(cached);
-      const now = Date.now();
-
-      // Verifica se o cache expirou
-      if (now - data.timestamp > data.ttl) {
-        localStorage.removeItem(cacheKey);
-        return null;
-      }
-
-      return data;
-    } catch {
-      return null;
-    }
-  };
-
-  /**
-   * Salva polyline no cache localStorage
-   */
-  const savePolylineToCache = (cacheKey: string, polyline: string, summary: VrpSummary): void => {
-    try {
-      const data: PolylineCache = {
-        polyline,
-        summary,
-        timestamp: Date.now(),
-        ttl: POLYLINE_CACHE_TTL_MS,
-      };
-      localStorage.setItem(cacheKey, JSON.stringify(data));
-    } catch (err) {
-      logWarn("Erro ao salvar cache:", err);
-    }
-  };
-
-  /**
-   * Converte roteiros para tasks da API VRP (filtra coordenadas inválidas)
-   */
-  const roteirosToVrpTasks = (roteiros: Roteiro[]): VrpTask[] => {
-    const roteirosWithCoords = getRoteirosWithCoords(roteiros);
-    return roteirosWithCoords.map(({ roteiro, coords }) => ({
-      id: roteiro.id,
-      type: "catch-only" as const,
-      description: roteiro.nome || `Ponto ${roteiro.sequencia}`,
-      duration: VRP_TASK_DURATION,
-      location: coords,
-    }));
-  };
-
-  /**
-   * Cria veículo virtual para calcular polyline
-   * Se userLocation for fornecido, usa como ponto de partida
-   */
-  const createVirtualVehicle = (
-    roteiros: Roteiro[],
-    userLocation?: { latitude: number; longitude: number } | null,
-  ): VrpVehicle | null => {
-    const roteirosWithCoords = getRoteirosWithCoords(roteiros);
-    if (roteirosWithCoords.length === 0) return null;
-
-    const primeiro = roteirosWithCoords[0];
-    const ultimo = roteirosWithCoords[roteirosWithCoords.length - 1];
-
-    const hasValidUserLocation =
-      !!userLocation && isValidCoordinate(userLocation.latitude, userLocation.longitude);
-    const start = hasValidUserLocation
-      ? { latitude: userLocation!.latitude, longitude: userLocation!.longitude }
-      : primeiro.coords;
-
-    if (hasValidUserLocation && userLocation) {
-      logDebug("Usando localizacao do usuario como ponto de partida:", start);
-    }
-
-    return {
-      id: VRP_VEHICLE_ID,
-      description: VRP_VEHICLE_DESCRIPTION,
-      maxJobs: VRP_VEHICLE_MAX_JOBS,
-      avgSpeed: VRP_VEHICLE_AVG_SPEED,
-      location: {
-        start,
-        end: ultimo.coords,
-      },
-      work: {
-        start: VRP_WORK_START,
-        end: VRP_WORK_END,
-      },
-    };
-  };
-
-  /**
-   * Calcula polyline chamando a API VRP
-   * @param roteiros - Lista de roteiros
-   * @param userLocation - Localização atual do usuário (GPS) para usar como ponto de partida
+   * Calcula polyline usando o serviço VRP
    */
   const calcularPolyline = async (
     roteiros: Roteiro[],
     userLocation?: { latitude: number; longitude: number } | null,
   ): Promise<{ polyline: string; summary: VrpSummary } | null> => {
-    isLoading.value = true;
-    error.value = null;
-
-    if (!VRP_API_URL || !VRP_API_KEY) {
-      error.value = "VRP API nao configurada";
-      logWarn("VRP API config ausente.");
-      isLoading.value = false;
-      return null;
-    }
-
-    try {
-      const tasks = roteirosToVrpTasks(roteiros);
-
-      if (tasks.length === 0) {
-        error.value = "Nenhum ponto com coordenadas válidas para calcular a rota";
-        return null;
-      }
-
-      const parseVrpResponse = (response: VrpRouteResponse) => {
-        type VrpApiResponseShape = {
-          response?: unknown;
-          unassignedTasks?: unknown;
-          workDays?: Array<{
-            plans?: Array<{ route?: { polyline?: unknown }; summary?: unknown }>;
-          }>;
-          summary?: unknown;
-        };
-
-        const responseData = response as unknown as VrpApiResponseShape;
-        const vrpData = (responseData.response as VrpApiResponseShape | undefined) ?? responseData;
-
-        const unassignedTasks = Array.isArray(vrpData.unassignedTasks)
-          ? vrpData.unassignedTasks
-          : [];
-        const plan = vrpData.workDays?.[0]?.plans?.[0];
-        const polyline = plan?.route?.polyline;
-        const summaryData = plan?.summary || vrpData.summary;
-        const summary = isVrpSummary(summaryData) ? summaryData : DEFAULT_VRP_SUMMARY;
-
-        return {
-          polyline,
-          summary,
-          unassignedTasks,
-          unassignedCount: unassignedTasks.length,
-        };
-      };
-
-      const callVrp = async (location?: { latitude: number; longitude: number } | null) => {
-        const minTasks = location ? VRP_MIN_TASKS_WITH_USER : VRP_MIN_TASKS_WITHOUT_USER;
-        if (tasks.length < minTasks) return null;
-
-        // Cache por combinacao de pontos + localizacao (se houver)
-        const userLocStr = location
-          ? `${location.latitude.toFixed(VRP_LOCATION_PRECISION)},${location.longitude.toFixed(VRP_LOCATION_PRECISION)}`
-          : "";
-        const cacheKey = generateCacheKey(roteiros) + (userLocStr ? `:user:${userLocStr}` : "");
-
-        const cached = getPolylineFromCache(cacheKey);
-        if (cached) {
-          logDebug("Polyline encontrada no cache");
-          return { polyline: cached.polyline, summary: cached.summary };
-        }
-
-        const vehicle = createVirtualVehicle(roteiros, location);
-        if (!vehicle || tasks.length < minTasks) {
-          return null;
-        }
-
-        const request: VrpRouteRequest = {
-          timezone: VRP_TIMEZONE,
-          maxDaysWorking: VRP_MAX_DAYS_WORKING,
-          vehicles: [vehicle],
-          tasks,
-        };
-
-        logDebug("Chamando API VRP:", request);
-
-        const response = await $fetch(VRP_API_URL + "/route", {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-            Accept: "application/json",
-            "x-api-key": VRP_API_KEY,
-          },
-          body: request,
-        });
-
-        logDebug("Resposta API VRP:", response);
-
-        const parsed = parseVrpResponse(response);
-        if (!parsed.polyline || typeof parsed.polyline !== "string") {
-          return null;
-        }
-
-        const result = { polyline: parsed.polyline, summary: parsed.summary };
-
-        // Salva no cache
-        savePolylineToCache(cacheKey, result.polyline, result.summary);
-
-        // Se houve tarefas nao atribuidas, tenta recalcular sem localizacao do usuario (quando aplicavel)
-        if (parsed.unassignedCount > 0 && location) {
-          logWarn(
-            "VRP retornou tarefas nao atribuidas ao usar localizacao do usuario; usando fallback sem localizacao.",
-            parsed.unassignedTasks,
-          );
-        }
-
-        return result;
-      };
-
-      // 1) Tenta com a localização do usuário (se houver)
-      const resultWithUser = await callVrp(userLocation);
-
-      if (!resultWithUser && userLocation && tasks.length >= VRP_MIN_TASKS_WITHOUT_USER) {
-        logWarn(
-          "VRP nao conseguiu gerar polyline com localizacao do usuario; tentando sem localizacao.",
-        );
-        const fallback = await callVrp(null);
-        if (fallback) return fallback;
-      }
-
-      if (resultWithUser) return resultWithUser;
-
-      error.value = "API VRP não retornou polyline";
-      return null;
-    } catch (err) {
-      error.value = err instanceof Error ? err.message : "Erro ao calcular polyline";
-      logError("calcularPolyline error:", err);
-      return null;
-    } finally {
-      isLoading.value = false;
-    }
+    return vrpService.calcularPolyline(roteiros, userLocation);
   };
 
   /**
@@ -493,14 +225,7 @@ export const useRotaService = () => {
    * Limpa cache de polylines
    */
   const clearPolylineCache = (): void => {
-    const keysToRemove: string[] = [];
-    for (let i = 0; i < localStorage.length; i++) {
-      const key = localStorage.key(i);
-      if (key?.startsWith(CACHE_PREFIX)) {
-        keysToRemove.push(key);
-      }
-    }
-    keysToRemove.forEach((key) => localStorage.removeItem(key));
+    polylineCache.clearPolylineCache();
   };
 
   /**
@@ -527,7 +252,11 @@ export const useRotaService = () => {
         },
       });
 
-      return response?.data ? (schemaRota.parse(response.data) as Rota) : null;
+      if (!response?.data) return null;
+
+      const wrapperSchema = createDataWrapperSchema(schemaRota);
+      const validated = validateWithSchema(wrapperSchema, response, "createRota");
+      return validated.data;
     } catch (err) {
       error.value = err instanceof Error ? err.message : "Erro ao criar rota";
       logError("createRota error:", err);
@@ -554,7 +283,11 @@ export const useRotaService = () => {
       // Limpa cache de polylines pois os pontos mudaram
       clearPolylineCache();
 
-      return response?.data ? schemaRoteiro.parse(response.data) : null;
+      if (!response?.data) return null;
+
+      const wrapperSchema = createDataWrapperSchema(schemaRoteiro);
+      const validated = validateWithSchema(wrapperSchema, response, "createRoteiro");
+      return validated.data;
     } catch (err) {
       error.value = err instanceof Error ? err.message : "Erro ao criar roteiro";
       logError("createRoteiro error:", err);
@@ -686,7 +419,7 @@ export const useRotaService = () => {
     clearPolylineCache,
 
     // Utilitários
-    isValidCoordinate,
+    toNumber,
   };
 };
 

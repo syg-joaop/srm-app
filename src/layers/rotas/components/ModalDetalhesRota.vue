@@ -141,7 +141,13 @@
 <script setup lang="ts">
 import { Calendar, Info, List, Map as MapIcon, User } from "lucide-vue-next";
 import UiSegmentedControl from "~/components/ui/UiSegmentedControl.vue";
-import type { Rota, Roteiro, VrpSummary } from "../rotas.types";
+import type { Rota, Roteiro, VrpSummary } from "../types/rotas.types";
+import {
+  getRotaStatusColor,
+  getRotaStatusVariant,
+  getRotaStatusLabel,
+} from "~/utils/helpers/status-rota";
+import { formatarIntervaloDatas } from "~/utils/utils";
 import ModalAdicionarRoteiro from "./ModalAdicionarRoteiro.vue";
 import RotaAbaDados from "./detalhes/RotaAbaDados.vue";
 import RotaAbaMapa from "./detalhes/RotaAbaMapa.vue";

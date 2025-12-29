@@ -116,7 +116,7 @@
 <script setup lang="ts">
 import { MapPin } from "lucide-vue-next";
 import UiBadge from "~/components/ui/UiBadge.vue";
-import type { Checkin } from "../checkin.types";
+import type { Checkin } from "../types/checkin.types";
 
 defineProps<{
   checkins: Checkin[];

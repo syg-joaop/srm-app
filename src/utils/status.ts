@@ -1,17 +1,21 @@
-export const normalizeStatus = (status?: string | null): string =>
+/**
+ * Normaliza um valor de status para uso em comparações.
+ * Converte para string minúscula e remove espaços.
+ */
+export const normalizeGenericStatus = (status?: string | null): string =>
   (status ?? "").toString().toLowerCase().trim();
 
 export const resolveStatusVariant = (
   status: string | undefined | null,
   map: Record<string, string>,
   fallback = "default",
-): string => map[normalizeStatus(status)] || fallback;
+): string => map[normalizeGenericStatus(status)] || fallback;
 
 export const resolveStatusIconClass = (
   status: string | undefined | null,
   map: Record<string, string>,
   fallback = "bg-[var(--color-primary)]/10 text-[var(--color-primary)]",
-): string => map[normalizeStatus(status)] || fallback;
+): string => map[normalizeGenericStatus(status)] || fallback;
 
 export const COMMON_STATUS_VARIANTS = {
   ativo: "success",

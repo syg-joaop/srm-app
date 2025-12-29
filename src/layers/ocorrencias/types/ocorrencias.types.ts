@@ -1,4 +1,4 @@
-export type OcorrenciaStatus = "pendente" | "acompanhamento" | "concluida";
+import type { OcorrenciaStatus, Ocorrencia } from "~/types/ocorrencias";
 
 export interface OcorrenciaFilters {
   search?: string;
@@ -7,20 +7,6 @@ export interface OcorrenciaFilters {
   formaAtendimento?: string;
   status?: string;
   ordenarPor?: string;
-}
-
-export interface Ocorrencia {
-  id: number;
-  titulo?: string;
-  fornecedor: string;
-  dataCadastro?: string;
-  atendente: string;
-  status: OcorrenciaStatus;
-  proximoAtendimento?: string;
-  encaminhadoPara?: string;
-  diagnosticadoPor?: string;
-  formaAtendimento?: string;
-  situacao?: string;
 }
 
 export interface PaginatedOcorrenciaResponse {

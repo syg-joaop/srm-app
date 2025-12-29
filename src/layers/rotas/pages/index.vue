@@ -127,7 +127,7 @@ import UiSpinner from "~/components/ui/UiSpinner.vue";
 import ModalDetalhesRota from "../components/ModalDetalhesRota.vue";
 import ModalNovaRota from "../components/ModalNovaRota.vue";
 import RotaCardItem from "../components/RotaCardItem.vue";
-import type { Rota, RotaFilters } from "../rotas.types";
+import type { Rota, RotaFilters } from "../types/rotas.types";
 
 definePageMeta({
   layout: "default",

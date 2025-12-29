@@ -271,7 +271,9 @@ import UiPaginacao from "~/components/ui/UiPaginacao.vue";
 import UiSelect from "~/components/ui/UiSelect.vue";
 import UiSpinner from "~/components/ui/UiSpinner.vue";
 import ModalDetalhesOcorrencia from "../components/ModalDetalhesOcorrencia.vue";
-import type { Ocorrencia, OcorrenciaFilters, OcorrenciaStatus } from "../ocorrencias.types";
+import type { Ocorrencia, OcorrenciaFilters } from "~/types/ocorrencias";
+import { normalizeOcorrencias, getStatusConfig } from "~/utils/ocorrencias";
+import { formatarData } from "~/utils/utils";
 
 definePageMeta({
   layout: "default",
@@ -319,72 +321,10 @@ const { data: ocorrenciasResponse, status } = fetchOcorrencias(
 
 const isLoading = computed(() => status.value === "pending");
 
-const mapStatus = (statusValue: string): OcorrenciaStatus => {
-  const normalized = (statusValue ?? "").toString().toLowerCase();
-
-  if (["acompanhamento", "em acompanhamento", "andamento"].includes(normalized)) {
-    return "acompanhamento";
-  }
-
-  if (["concluida", "concluído", "ok", "finalizada", "concluido"].includes(normalized)) {
-    return "concluida";
-  }
-
-  return "pendente";
-};
-
-const normalizeOcorrencia = (raw: Record<string, unknown>): Ocorrencia => {
-  const statusValue =
-    toStringValue(raw.status) ??
-    toStringValue(raw.situacao) ??
-    toStringValue(raw.status_ocorrencia) ??
-    "pendente";
-
-  return {
-    id:
-      toNumber(raw.id) ??
-      toNumber(raw.sr_recno) ??
-      toNumber(raw.codigo) ??
-      toNumber(raw.cod_ocorrencia) ??
-      Date.now(),
-    titulo:
-      toStringValue(raw.titulo) ??
-      toStringValue(raw.titulo_ocorrencia) ??
-      toStringValue(raw.assunto) ??
-      toStringValue(raw.descricao),
-    fornecedor:
-      toStringValue(raw.fornecedor) ??
-      toStringValue(raw.empresa) ??
-      toStringValue(raw.apelido) ??
-      toStringValue(raw.nome_fornecedor) ??
-      "—",
-    dataCadastro:
-      toStringValue(raw.dataCadastro) ??
-      toStringValue(raw.data_cadastro) ??
-      toStringValue(raw.data) ??
-      toStringValue(raw.data_oco),
-    atendente:
-      toStringValue(raw.atendente) ??
-      toStringValue(raw.usuario) ??
-      toStringValue(raw.atendente_nome) ??
-      toStringValue(raw.atendenteResponsavel) ??
-      toStringValue(raw.responsavel) ??
-      "—",
-    status: mapStatus(statusValue),
-    proximoAtendimento:
-      toStringValue(raw.proximoAtendimento) ??
-      toStringValue(raw.data_prox_atend) ??
-      toStringValue(raw.proximo_atendimento),
-    encaminhadoPara: toStringValue(raw.encaminhadoPara) ?? toStringValue(raw.encaminhado_para),
-    diagnosticadoPor: toStringValue(raw.diagnosticadoPor) ?? toStringValue(raw.diagnosticado_por),
-    formaAtendimento: toStringValue(raw.formaAtendimento) ?? toStringValue(raw.forma_atendimento),
-    situacao: toStringValue(raw.situacao) ?? toStringValue(raw.status),
-  };
-};
-
-const ocorrencias = computed(() =>
-  (ocorrenciasResponse.value?.data?.items ?? []).map(normalizeOcorrencia),
-);
+const ocorrencias = computed(() => {
+  const rawItems = ocorrenciasResponse.value?.data?.items ?? [];
+  return normalizeOcorrencias(rawItems);
+});
 
 const fallbackTotalItems = computed(
   () => ocorrenciasResponse.value?.data?.totalItems ?? ocorrencias.value.length,
@@ -459,13 +399,14 @@ const clearFilters = () => {
   };
 };
 
-const getStatusIconClass = (status: OcorrenciaStatus): string => {
-  const map: Record<OcorrenciaStatus, string> = {
-    pendente: "bg-[var(--color-danger-soft)] text-[var(--color-danger)]",
-    acompanhamento: "bg-[var(--color-warning-soft)] text-[var(--color-warning)]",
-    concluida: "bg-[var(--color-success-soft)] text-[var(--color-success)]",
+const getStatusIconClass = (status: string): string => {
+  const config = getStatusConfig(status);
+  const colorMap: Record<string, string> = {
+    "#f59e0b": "bg-[var(--color-danger-soft)] text-[var(--color-danger)]",
+    "#3b82f6": "bg-[var(--color-warning-soft)] text-[var(--color-warning)]",
+    "#10b981": "bg-[var(--color-success-soft)] text-[var(--color-success)]",
   };
-  return map[status];
+  return colorMap[config.color] || colorMap["#f59e0b"];
 };
 
 const abrirDetalhes = (ocorrencia: Ocorrencia) => {
@@ -473,7 +414,7 @@ const abrirDetalhes = (ocorrencia: Ocorrencia) => {
   showModal.value = true;
 };
 
-const handleStatusChange = (status: OcorrenciaStatus) => {
+const handleStatusChange = (status: string) => {
   if (!ocorrenciaSelecionada.value) return;
 
   ocorrenciaSelecionada.value = {

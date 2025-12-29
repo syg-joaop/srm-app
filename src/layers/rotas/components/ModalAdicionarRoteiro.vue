@@ -153,8 +153,8 @@ import { Plus, Search, MapPin, MapPinOff, Building2, Check } from "lucide-vue-ne
 import UiModal from "~/components/ui/UiModal.vue";
 import UiButton from "~/components/ui/UiButton.vue";
 import UiInput from "~/components/ui/UiInput.vue";
-import type { Rota, FornecedorParaRoteiro } from "../rotas.types";
-import type { Fornecedor } from "~/layers/fornecedores/fornecedores.types";
+import type { Rota, FornecedorParaRoteiro } from "../types/rotas.types";
+import type { Fornecedor } from "../../fornecedores/types/fornecedores.types";
 
 const props = defineProps<{
   modelValue: boolean;

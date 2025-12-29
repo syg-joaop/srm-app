@@ -58,7 +58,7 @@ import UiListToolbar from "~/components/ui/UiListToolbar.vue";
 import UiPaginacao from "~/components/ui/UiPaginacao.vue";
 import UiSpinner from "~/components/ui/UiSpinner.vue";
 import ListaConcorrentes from "../components/ListaConcorrentes.vue";
-import type { Concorrente, ConcorrenteFilters } from "../concorrentes.types";
+import type { Concorrente, ConcorrenteFilters } from "../types/concorrentes.types";
 
 definePageMeta({ layout: "default" });
 

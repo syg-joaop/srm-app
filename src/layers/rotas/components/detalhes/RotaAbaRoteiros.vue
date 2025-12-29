@@ -132,6 +132,11 @@ import UiButton from "~/components/ui/UiButton.vue";
 import UiBadge from "~/components/ui/UiBadge.vue";
 import UiEmptyState from "~/components/ui/UiEmptyState.vue";
 import type { Roteiro } from "../../rotas.types";
+import {
+  getRotaStatusColor,
+  getRotaStatusVariant,
+  getRotaStatusLabel,
+} from "~/utils/helpers/status-rota";
 
 const props = defineProps<{
   roteiros: Roteiro[];

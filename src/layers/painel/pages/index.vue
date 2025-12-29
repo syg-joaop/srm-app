@@ -437,7 +437,7 @@ import {
   Target,
   Users,
 } from "lucide-vue-next";
-import type { AniversarianteItem, Atendente, AtendenteItem } from "../dashboard.types";
+import type { AniversarianteItem, Atendente, AtendenteItem } from "./types/dashboard.types";
 import { useDashboardCharts } from "../composables/useDashboardCharts";
 import { useDashboardStore } from "../stores/dashboard";
 definePageMeta({

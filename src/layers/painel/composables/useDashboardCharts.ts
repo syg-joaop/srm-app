@@ -4,7 +4,7 @@ import {
   premiumTooltipStyle,
   type TooltipParam,
 } from "~/utils/formatters/chart";
-import type { ChartData } from "../dashboard.types";
+import type { ChartData } from "./types/dashboard.types";
 import { formatarKg, formatarMoeda } from "~/utils/formatters/formatadores";
 
 const clamp = (value: number, min: number, max: number) => Math.min(Math.max(value, min), max);

@@ -171,26 +171,237 @@ const createPopupHtml = (ponto: UiMapaPonto) => {
   const { color, label } = getStatusConfig(ponto.status);
 
   const subtitleHtml = ponto.subtitulo
-    ? `<p style="color: #666; margin-bottom: 4px;">${ponto.subtitulo}</p>`
+    ? `<div style="color: var(--color-text-muted); margin: 0; font-size: 13px; font-weight: 500; display: flex; align-items: center; gap: 6px; padding-right: 40px;">
+        <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round">
+          <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/>
+          <circle cx="12" cy="7" r="4"/>
+        </svg>
+        ${ponto.subtitulo}
+       </div>`
     : "";
 
   const linesHtml = (ponto.linhas ?? [])
     .map(
-      (line) => `<p style="margin-bottom: 4px;"><strong>${line.rotulo}:</strong> ${line.valor}</p>`,
+      (line, index) => `
+        <div style="
+          display: flex;
+          align-items: center;
+          gap: 10px;
+          padding: 8px 12px;
+          background: var(--color-surface);
+          border-left: 2px solid var(--color-border);
+          border-radius: 6px;
+          transition: all 0.2s ease;
+          margin-bottom: ${index === (ponto.linhas?.length || 0) - 1 ? '0' : '6px'};
+        ">
+          <div style="
+            width: 28px;
+            height: 28px;
+            min-width: 28px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: var(--color-background);
+            border-radius: 6px;
+            border: 1px solid var(--color-border-subtle);
+          ">
+            <svg style="width: 14px; height: 14px; color: var(--color-primary);" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2">
+              ${line.rotulo.toLowerCase().includes('cidade')
+                ? '<path stroke-linecap="round" stroke-linejoin="round" d="M15 10.5a3 3 0 11-6 0 3 3 0 016 0z" /><path stroke-linecap="round" stroke-linejoin="round" d="M19.5 10.5c0 7.142-7.5 11.25-7.5 11.25S4.5 17.642 4.5 10.5a7.5 7.5 0 1115 0z" />'
+                : '<path stroke-linecap="round" stroke-linejoin="round" d="M12 6v6h4.5m4.5 0a9 9 0 11-18 0 9 9 0 0118 0z" />'}
+            </svg>
+          </div>
+          <div style="flex: 1; min-width: 0;">
+            <div style="
+              color: var(--color-text-muted);
+              font-size: 10px;
+              font-weight: 600;
+              text-transform: uppercase;
+              letter-spacing: 0.5px;
+              margin-bottom: 2px;
+            ">
+              ${line.rotulo}
+            </div>
+            <div style="
+              color: var(--color-text);
+              font-size: 13px;
+              font-weight: 600;
+              word-break: break-word;
+            ">
+              ${line.valor}
+            </div>
+          </div>
+        </div>
+      `,
     )
     .join("");
 
   return `
-    <div style="min-width: 200px;">
-      <h3 style="font-weight: bold; margin-bottom: 8px; font-size: 16px;">
-        ${ponto.titulo}
-      </h3>
-      ${subtitleHtml}
-      ${linesHtml}
-      <p style="margin-bottom: 0;">
-        <strong>Status:</strong>
-        <span style="color: ${color}; font-weight: bold;">${label}</span>
-      </p>
+    <div style="
+      min-width: 240px;
+      font-family: var(--font-family);
+      -webkit-font-smoothing: antialiased;
+    ">
+      <!-- Container Principal com Sombra -->
+      <div style="
+        background: var(--color-background);
+        border-radius: 12px;
+        overflow: hidden;
+        box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+      ">
+        <!-- Header com Gradiente -->
+        <div style="
+          position: relative;
+          padding: 16px 48px 14px 16px;
+          background: linear-gradient(135deg, ${color}08 0%, ${color}15 100%);
+          border-bottom: 1px solid var(--color-border-subtle);
+        ">
+          <!-- Barra Lateral -->
+          <div style="
+            position: absolute;
+            left: 0;
+            top: 0;
+            bottom: 0;
+            width: 4px;
+            background: linear-gradient(180deg, ${color} 0%, ${color}cc 100%);
+          "></div>
+
+          <!-- Botão de Fechar Customizado -->
+          <button
+            onclick="this.closest('.leaflet-popup').remove()"
+            style="
+              position: absolute;
+              top: 8px;
+              right: 8px;
+              width: 40px;
+              height: 40px;
+              min-width: 40px;
+              min-height: 40px;
+              display: flex;
+              align-items: center;
+              justify-content: center;
+              background: var(--color-background);
+              border: 1px solid var(--color-border);
+              border-radius: 8px;
+              cursor: pointer;
+              padding: 0;
+              transition: all 0.2s ease;
+              box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            "
+            onmouseover="this.style.background='var(--color-hover)'; this.style.borderColor='var(--color-border)';"
+            onmouseout="this.style.background='var(--color-background)';"
+            aria-label="Fechar"
+          >
+            <svg
+              width="20"
+              height="20"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="2.5"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              style="color: var(--color-text);"
+            >
+              <line x1="18" y1="6" x2="6" y2="18"></line>
+              <line x1="6" y1="6" x2="18" y2="18"></line>
+            </svg>
+          </button>
+
+          <!-- Título -->
+          <h3 style="
+            font-weight: 700;
+            margin: 0 0 6px 0;
+            font-size: 15px;
+            color: var(--color-text);
+            line-height: 1.3;
+            letter-spacing: -0.01em;
+          ">
+            ${ponto.titulo}
+          </h3>
+
+          <!-- Subtítulo -->
+          ${subtitleHtml}
+        </div>
+
+        <!-- Badge de Status -->
+        <div style="
+          padding: 12px 16px 8px 16px;
+        ">
+          <div style="
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            padding: 5px 12px;
+            background: ${color}12;
+            border: 1px solid ${color}30;
+            border-radius: 20px;
+            box-shadow: 0 2px 4px ${color}15;
+          ">
+            <div style="
+              width: 7px;
+              height: 7px;
+              background: ${color};
+              border-radius: 50%;
+              box-shadow: 0 0 8px ${color}60;
+              animation: pulse 2s ease-in-out infinite;
+            "></div>
+            <span style="
+              font-size: 11px;
+              font-weight: 700;
+              color: ${color};
+              text-transform: uppercase;
+              letter-spacing: 0.6px;
+            ">
+              ${label}
+            </span>
+          </div>
+        </div>
+
+        <!-- Linhas de Informação -->
+        <div style="
+          padding: 0 16px 16px 16px;
+        ">
+          <div style="
+            display: flex;
+            flex-direction: column;
+          ">
+            ${linesHtml}
+          </div>
+        </div>
+      </div>
+
+      <style>
+        .leaflet-popup-content-wrapper {
+          background: transparent !important;
+          box-shadow: none !important;
+          padding: 8px !important;
+        }
+
+        .leaflet-popup-content {
+          margin: 0 !important;
+          min-width: 240px !important;
+        }
+
+        .leaflet-popup-tip {
+          display: none;
+        }
+
+        .leaflet-popup-close-button {
+          display: none !important;
+        }
+
+        @keyframes pulse {
+          0%, 100% {
+            opacity: 1;
+            transform: scale(1);
+          }
+          50% {
+            opacity: 0.7;
+            transform: scale(1.1);
+          }
+        }
+      </style>
     </div>
   `;
 };

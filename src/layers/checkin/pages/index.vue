@@ -61,7 +61,7 @@ import UiPaginacao from "~/components/ui/UiPaginacao.vue";
 import UiSpinner from "~/components/ui/UiSpinner.vue";
 import ListaCheckins from "../components/ListaCheckins.vue";
 import ModalDetalhesCheckin from "../components/ModalDetalhesCheckin.vue";
-import type { Checkin, CheckinFilters } from "../checkin.types";
+import type { Checkin, CheckinFilters } from "../types/checkin.types";
 
 definePageMeta({ layout: "default" });
 

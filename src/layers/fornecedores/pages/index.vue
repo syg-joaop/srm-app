@@ -69,8 +69,8 @@ import UiSpinner from "~/components/ui/UiSpinner.vue";
 import ListaFornecedores from "../components/ListaFornecedores.vue";
 import MapaFornecedores from "../components/MapaFornecedores.vue";
 import ModalAdicionarARota from "../components/ModalAdicionarARota.vue";
-import type { Fornecedor } from "../fornecedores.types";
-import type { Rota } from "~/layers/rotas/rotas.types";
+import type { Fornecedor } from "../types/fornecedores.types";
+import type { Rota } from "../../rotas/types/rotas.types";
 
 const viewMode = ref<"list" | "map">("list");
 const currentPage = ref(1);

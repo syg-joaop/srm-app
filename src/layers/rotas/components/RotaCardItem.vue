@@ -83,7 +83,12 @@
 import { Eye, Plus, Route as RouteIcon } from "lucide-vue-next";
 import UiBadge from "~/components/ui/UiBadge.vue";
 import UiButton from "~/components/ui/UiButton.vue";
-import type { Rota } from "../rotas.types";
+import type { Rota } from "../types/rotas.types";
+import {
+  getRotaStatusVariant,
+  getRotaStatusLabel,
+} from "~/utils/helpers/status-rota";
+import { formatarIntervaloDatas } from "~/utils/utils";
 
 defineProps<{
   rota: Rota;

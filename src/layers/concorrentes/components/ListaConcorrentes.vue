@@ -128,7 +128,7 @@ import {
   resolveStatusIconClass,
   resolveStatusVariant,
 } from "~/utils/status";
-import type { Concorrente } from "../concorrentes.types";
+import type { Concorrente } from "../types/concorrentes.types";
 
 defineProps<{
   concorrentes: Concorrente[];

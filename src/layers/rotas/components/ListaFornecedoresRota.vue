@@ -69,7 +69,7 @@
 <script setup lang="ts">
 import { Building2, MapPin, Trash2, Plus } from "lucide-vue-next";
 import UiInput from "~/components/ui/UiInput.vue";
-import type { FornecedorRotaSimples } from "../rotas.types";
+import type { FornecedorRotaSimples } from "../types/rotas.types";
 
 defineProps<{
   modelValue: FornecedorRotaSimples[];

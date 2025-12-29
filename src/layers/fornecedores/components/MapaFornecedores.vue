@@ -10,7 +10,7 @@
 <script setup lang="ts">
 import UiMapaPontos from "~/components/ui/UiMapaPontos.vue";
 import type { UiMapaPonto, UiMapaStatusConfig } from "~/components/ui/maps.types";
-import type { FornecedorMapItem } from "../fornecedores.types";
+import type { FornecedorMapItem } from "../types/fornecedores.types";
 
 const statusConfig: UiMapaStatusConfig = { ...COMMON_MAP_STATUS_CONFIG };
 

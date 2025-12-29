@@ -20,7 +20,7 @@ import type {
   StatItem,
   SummaryItem,
   TableItem,
-} from "../dashboard.types";
+} from "./types/dashboard.types";
 
 export const useDashboardStore = defineStore("dashboard", () => {
   const rawData = ref<DashboardApiResponse | null>(null);
@@ -102,10 +102,10 @@ export const useDashboardStore = defineStore("dashboard", () => {
     const data = rawData.value?.atendentes?.data ?? [];
     return data.map((a) => ({
       role: a.setor || "Geral",
-      s1: Number(a.atendimento_geral),
-      s2: Number(a.atendimento_periodo),
-      s3: Number(a.atendimento_ok),
-      s4: Number(a.atendimento_pendente),
+      geral: Number(a.atendimento_geral),
+      periodo: Number(a.atendimento_periodo),
+      concluidos: Number(a.atendimento_ok),
+      pendentes: Number(a.atendimento_pendente),
       statuses: [
         {
           value: Number(a.atendimento_periodo),

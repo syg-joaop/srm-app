@@ -131,7 +131,7 @@ import {
   resolveStatusIconClass,
   resolveStatusVariant,
 } from "~/utils/status";
-import type { Prospecto } from "../prospecto.types";
+import type { Prospecto } from "../types/prospecto.types";
 
 defineProps<{
   prospectos: Prospecto[];

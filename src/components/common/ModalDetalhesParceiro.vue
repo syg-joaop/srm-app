@@ -1,8 +1,8 @@
-﻿<template>
+<template>
   <UiModal
     :model-value="modelValue"
     size="large"
-    :show-close="true"
+    :show-close="isDesktop"
     @update:model-value="$emit('update:modelValue', $event)"
     @close="$emit('close')"
   >
@@ -11,22 +11,43 @@
         <div class="flex items-center gap-3 w-full md:w-auto min-w-0 flex-1">
           <div
             class="h-6 w-1 md:h-8 rounded-full shrink-0"
-            :class="isInactive ? 'bg-red-600' : 'bg-primary'"
+            :class="isInactive ? 'bg-[var(--color-danger)]' : 'bg-[var(--color-primary)]'"
           ></div>
           <h2
-            class="text-lg md:text-2xl font-bold dark:text-gray-100 text-gray-900 truncate flex-1 min-w-0"
+            class="text-lg md:text-2xl font-bold text-[var(--color-text)] truncate flex-1 min-w-0"
           >
             {{ parceiro?.name || "Detalhes do Parceiro" }}
           </h2>
+          <!-- Botão de fechar customizado apenas para mobile -->
+          <button
+            class="md:hidden p-2 hover:bg-[var(--color-hover)] rounded-lg text-[var(--color-text-muted)] hover:text-[var(--color-text)] transition-colors shrink-0"
+            @click="
+              $emit('update:modelValue', false);
+              $emit('close');
+            "
+            aria-label="Fechar"
+          >
+            <svg
+              width="24"
+              height="24"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="2"
+            >
+              <line x1="18" y1="6" x2="6" y2="18"></line>
+              <line x1="6" y1="6" x2="18" y2="18"></line>
+            </svg>
+          </button>
         </div>
 
         <div
-          v-if="variant != 'time'"
-          class="flex items-center justify-start md:justify-end gap-2 w-full md:w-auto md:ml-auto md:mr-8 border-t md:border-t-0 border-gray-100 dark:border-gray-800 pt-3 md:pt-0 pl-1 md:pl-0"
+          v-if="variant !== 'time'"
+          class="flex items-center gap-2 w-full md:w-auto md:ml-auto md:mr-8 border-t md:border-t-0 border-[var(--color-border)] pt-3 md:pt-0"
         >
           <UiButton
             variant="ghost"
-            class="!px-2 !py-1 text-primary hover:bg-gray-100 dark:hover:bg-gray-800 shrink-0"
+            class="!px-2 !py-1 !text-[var(--color-primary)] hover:bg-[var(--color-hover)] shrink-0"
           >
             <template #default>
               <div class="flex items-center gap-2">
@@ -36,21 +57,21 @@
             </template>
           </UiButton>
 
-          <div class="h-6 w-px bg-gray-200 dark:bg-gray-700 mx-1"></div>
+          <div class="h-6 w-px bg-[var(--color-border)] mx-1"></div>
 
           <div class="flex items-center gap-1">
             <button
-              class="p-2 hover:bg-gray-100 dark:hover:bg-gray-800 rounded-lg text-gray-500 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white transition-colors"
+              class="p-2 hover:bg-[var(--color-hover)] rounded-lg text-[var(--color-text-muted)] hover:text-[var(--color-text)] transition-colors"
             >
               <Presentation class="w-5 h-5" />
             </button>
             <button
-              class="p-2 hover:bg-gray-100 dark:hover:bg-gray-800 rounded-lg text-gray-500 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white transition-colors"
+              class="p-2 hover:bg-[var(--color-hover)] rounded-lg text-[var(--color-text-muted)] hover:text-[var(--color-text)] transition-colors"
             >
               <UserPlus class="w-5 h-5" />
             </button>
             <button
-              class="p-2 hover:bg-gray-100 dark:hover:bg-gray-800 rounded-lg text-gray-500 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white transition-colors"
+              class="p-2 hover:bg-[var(--color-hover)] rounded-lg text-[var(--color-text-muted)] hover:text-[var(--color-text)] transition-colors"
             >
               <Edit class="w-5 h-5" />
             </button>
@@ -62,7 +83,7 @@
     <div class="mt-4 -mx-6">
       <div class="relative w-full">
         <div
-          class="tabs-scroll-container flex items-center gap-5 px-6 border-b border-gray-200 dark:border-gray-700 mb-6 overflow-x-auto no-scrollbar scroll-smooth"
+          class="tabs-scroll-container flex items-center gap-5 px-6 border-b border-[var(--color-border)] mb-6 overflow-x-auto no-scrollbar scroll-smooth"
         >
           <button
             v-for="(tab, index) in tabs"
@@ -72,49 +93,221 @@
                 if (el) tabButtonRefs[index] = el as HTMLElement;
               }
             "
-            class="pb-3 text-sm font-medium transition-colors relative whitespace-nowrap shrink-0"
+            class="pb-3 text-xs md:text-sm font-medium transition-colors relative whitespace-nowrap shrink-0"
             :class="[
               activeTab === tab.id
-                ? 'text-primary'
-                : 'text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-300',
+                ? 'text-[var(--color-primary)]'
+                : 'text-[var(--color-text-muted)] hover:text-[var(--color-text)]',
             ]"
             @click="selectTab(tab.id, index)"
           >
             {{ tab.label }}
             <div
               v-if="activeTab === tab.id"
-              class="absolute bottom-0 left-0 w-full h-0.5 bg-primary rounded-t-full"
+              class="absolute bottom-0 left-0 w-full h-0.5 bg-[var(--color-primary)] rounded-t-full"
             ></div>
           </button>
           <div class="w-6 shrink-0 h-1"></div>
         </div>
       </div>
 
-      <div class="px-6 min-h-[400px]">
+      <div class="px-6 min-h-[280px] md:min-h-[400px]">
         <Transition name="fade" mode="out-in">
-          <div v-if="activeTab === 'atendimentos'" class="space-y-4">
-            <div
-              class="bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-900/50 rounded-lg p-3 w-fit mb-4"
-            >
+          <div :key="activeTabMeta.id" class="space-y-4">
+            <!-- Tab de cadastro com layout em seções -->
+            <div v-if="activeTab === 'cadastro' && activeTabMeta.items.length" class="space-y-3">
+              <div v-for="item in activeTabMeta.items" :key="item.id">
+                <!-- Badge de status do fornecedor -->
+                <div v-if="item.status" class="mb-3">
+                  <span
+                    class="text-[10px] font-semibold px-2 py-1 rounded-full border"
+                    :class="getStatusClass(item.status)"
+                  >
+                    {{ item.status }}
+                  </span>
+                </div>
+
+                <!-- Seção 1: Identificação -->
+                <div
+                  v-if="filterCadastroFields.getIdentification(item.details).length"
+                  class="rounded-lg border border-[var(--color-border-subtle)] bg-[var(--color-surface)] p-4 mb-3"
+                >
+                  <h3
+                    class="text-[11px] font-semibold uppercase tracking-wide text-[var(--color-primary)] mb-3"
+                  >
+                    Identificação
+                  </h3>
+                  <div class="grid grid-cols-1 sm:grid-cols-3 gap-x-4 gap-y-3">
+                    <div
+                      v-for="detail in filterCadastroFields.getIdentification(item.details)"
+                      :key="detail.label"
+                      class="min-w-0"
+                    >
+                      <p class="text-[10px] uppercase tracking-wide text-[var(--color-text-muted)]">
+                        {{ detail.label }}
+                      </p>
+                      <p
+                        class="text-xs font-semibold truncate"
+                        :class="
+                          detail.value === '-'
+                            ? 'text-[var(--color-text-muted)]'
+                            : 'text-[var(--color-text)]'
+                        "
+                        :title="detail.value"
+                      >
+                        {{ detail.value }}
+                      </p>
+                    </div>
+                  </div>
+                </div>
+
+                <!-- Seção 2: Localização -->
+                <div
+                  v-if="filterCadastroFields.getLocation(item.details).length"
+                  class="rounded-lg border border-[var(--color-border-subtle)] bg-[var(--color-surface)] p-4 mb-3"
+                >
+                  <h3
+                    class="text-[11px] font-semibold uppercase tracking-wide text-[var(--color-primary)] mb-3"
+                  >
+                    Localização
+                  </h3>
+                  <div class="grid grid-cols-1 sm:grid-cols-3 gap-x-4 gap-y-3">
+                    <div
+                      v-for="detail in filterCadastroFields.getLocation(item.details)"
+                      :key="detail.label"
+                      class="min-w-0"
+                    >
+                      <p class="text-[10px] uppercase tracking-wide text-[var(--color-text-muted)]">
+                        {{ detail.label }}
+                      </p>
+                      <p
+                        class="text-xs font-semibold truncate"
+                        :class="
+                          detail.value === '-'
+                            ? 'text-[var(--color-text-muted)]'
+                            : 'text-[var(--color-text)]'
+                        "
+                        :title="detail.value"
+                      >
+                        {{ detail.value }}
+                      </p>
+                    </div>
+                  </div>
+                </div>
+
+                <!-- Seção 3: Informações Adicionais -->
+                <div
+                  v-if="filterCadastroFields.getAdditional(item.details).length"
+                  class="rounded-lg border border-[var(--color-border-subtle)] bg-[var(--color-surface)] p-4"
+                >
+                  <h3
+                    class="text-[11px] font-semibold uppercase tracking-wide text-[var(--color-primary)] mb-3"
+                  >
+                    Informações Adicionais
+                  </h3>
+                  <div class="grid grid-cols-1 sm:grid-cols-3 gap-x-4 gap-y-3">
+                    <div
+                      v-for="detail in filterCadastroFields.getAdditional(item.details)"
+                      :key="detail.label"
+                      class="min-w-0"
+                    >
+                      <p class="text-[10px] uppercase tracking-wide text-[var(--color-text-muted)]">
+                        {{ detail.label }}
+                      </p>
+                      <p
+                        class="text-xs font-semibold truncate"
+                        :class="
+                          detail.value === '-'
+                            ? 'text-[var(--color-text-muted)]'
+                            : 'text-[var(--color-text)]'
+                        "
+                        :title="detail.value"
+                      >
+                        {{ detail.value }}
+                      </p>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <!-- Tabs de listagem (exceto cadastro) -->
+            <div v-else-if="activeTabMeta.items.length" class="space-y-1.5">
               <div
-                class="flex items-center gap-2 text-primary dark:text-blue-400 text-sm font-semibold"
+                v-for="item in activeTabMeta.items"
+                :key="item.id"
+                class="group/item relative rounded-lg border border-[var(--color-border-subtle)] bg-[var(--color-surface)] px-3 py-2.5 transition-all duration-300 ease-out hover:border-[var(--color-primary-border)] hover:bg-[var(--color-primary-soft)]"
               >
-                <MessageSquare class="w-4 h-4" />
-                0 resultados
+                <div
+                  class="absolute left-0 top-1/2 -translate-y-1/2 w-0.5 h-0 bg-[var(--color-primary)] rounded-r-full opacity-0 group-hover/item:h-4 group-hover/item:opacity-100 transition-all duration-300"
+                ></div>
+
+                <!-- Linha 1: Título + Status -->
+                <div class="flex items-center gap-2 min-w-0">
+                  <p
+                    class="text-sm font-semibold text-[var(--color-text)] truncate flex-1 min-w-0"
+                    :title="item.title"
+                  >
+                    {{ item.title }}
+                  </p>
+                  <span
+                    v-if="item.status"
+                    class="shrink-0 text-[10px] font-semibold px-2 py-0.5 rounded border"
+                    :class="getStatusClass(item.status)"
+                  >
+                    {{ item.status }}
+                  </span>
+                </div>
+
+                <!-- Linha 2: Detalhes inline -->
+                <div
+                  v-if="item.details.length"
+                  class="flex flex-wrap md:flex-nowrap items-center gap-1.5 md:truncate mt-1 min-w-0"
+                >
+                  <template v-for="(detail, idx) in item.details.slice(0, 4)" :key="detail.label">
+                    <span
+                      class="text-[10px] text-[var(--color-border-subtle)] shrink-0"
+                      v-if="idx > 0"
+                    >
+                      •
+                    </span>
+                    <span
+                      class="inline-flex items-center gap-0.5 truncate md:truncate"
+                      :title="`${detail.label}: ${detail.value}`"
+                    >
+                      <span
+                        class="text-xs text-[var(--color-text-muted)] uppercase tracking-wider shrink-0"
+                      >
+                        {{ detail.label }}:
+                      </span>
+                      <span
+                        class="text-xs font-medium truncate"
+                        :class="
+                          detail.value === '-'
+                            ? 'text-[var(--color-text-muted)]'
+                            : 'text-[var(--color-text)]'
+                        "
+                      >
+                        {{ detail.value }}
+                      </span>
+                    </span>
+                  </template>
+                  <span
+                    v-if="item.details.length > 4"
+                    class="text-[10px] text-[var(--color-text-muted)] shrink-0"
+                  >
+                    +{{ item.details.length - 4 }}
+                  </span>
+                </div>
               </div>
             </div>
 
             <UiEmptyState
-              v-if="!mockAtendimentos.length"
+              v-else
               :icon="MessageSquare"
-              title="Nenhum atendimento"
-              description="Não há atendimentos registrados para este parceiro."
+              :title="activeTabMeta.emptyTitle"
+              :description="activeTabMeta.emptyDescription"
             />
-          </div>
-
-          <div v-else class="flex items-center justify-center h-64 text-gray-500">
-            Conteúdo da aba
-            {{ tabs.find((t) => t.id === activeTab)?.label }} (Em construção)
           </div>
         </Transition>
       </div>
@@ -123,25 +316,18 @@
 </template>
 
 <script setup lang="ts">
-import { MessageSquare, Presentation, UserPlus, Edit } from "lucide-vue-next";
-import UiModal from "~/components/ui/UiModal.vue";
+import { Edit, MessageSquare, Presentation, UserPlus } from "lucide-vue-next";
 import UiButton from "~/components/ui/UiButton.vue";
 import UiEmptyState from "~/components/ui/UiEmptyState.vue";
-
-interface ParceiroData {
-  name?: string;
-  status?: string;
-  location?: string;
-  date?: string;
-  role?: string;
-  [key: string]: unknown;
-}
+import UiModal from "~/components/ui/UiModal.vue";
+import type { ParceiroData, ParceiroVariant, TabId } from "~/types/parceiro";
+import { useParceiroTabs, filterCadastroFields } from "./composables/useParceiroTabs";
 
 const props = withDefaults(
   defineProps<{
     modelValue: boolean;
     parceiro?: ParceiroData | null;
-    variant?: "parceiro" | "atendente" | "time";
+    variant?: ParceiroVariant;
   }>(),
   {
     parceiro: null,
@@ -149,60 +335,36 @@ const props = withDefaults(
   },
 );
 
-defineEmits(["update:modelValue", "close"]);
+defineEmits<{
+  "update:modelValue": [value: boolean];
+  close: [];
+}>();
 
-const activeTab = ref(
-  ["atendente", "time"].includes(props.variant) ? "agendamentos" : "atendimentos",
-);
-const tabButtonRefs = ref<HTMLElement[]>([]);
+// Composable de tabs
+const {
+  activeTab,
+  tabButtonRefs,
+  tabs,
+  activeTabMeta,
+  isInactive,
+  selectTab,
+} = useParceiroTabs(props);
 
-const allTabs = [
-  { id: "cadastro", label: "Dados de Cadastro" },
-  { id: "contatos", label: "Contatos" },
-  { id: "cargas", label: "Cargas" },
-  { id: "agendamentos", label: "Agendamentos" },
-  { id: "atendimentos", label: "Atendimentos" },
-  { id: "coletas", label: "Coletas" },
-  { id: "precos", label: "Preços" },
-  { id: "checkins", label: "Check-in's" },
-  { id: "favorecidos", label: "Favorecidos" },
-];
+// Responsividade
+const isDesktop = ref(false);
 
-const tabs = computed(() => {
-  if (["atendente", "time"].includes(props.variant)) {
-    return allTabs.filter((t) => ["agendamentos", "atendimentos", "checkins"].includes(t.id));
-  }
-  return allTabs.filter((t) => t.id !== "agendamentos");
-});
-
-watch(
-  () => props.variant,
-  (newVariant) => {
-    if (["atendente", "time"].includes(newVariant)) {
-      activeTab.value = "agendamentos";
-    } else {
-      activeTab.value = "atendimentos";
-    }
-  },
-);
-
-const mockAtendimentos = ref([]);
-
-const isInactive = computed(() => {
-  return (props.parceiro?.status || "").toLowerCase().trim() === "inativo";
-});
-
-const selectTab = (tabId: string, index: number) => {
-  activeTab.value = tabId;
-  const tabEl = tabButtonRefs.value[index];
-  if (tabEl) {
-    tabEl.scrollIntoView({
-      behavior: "smooth",
-      block: "nearest",
-      inline: "center",
-    });
-  }
+const checkIfDesktop = () => {
+  isDesktop.value = window.innerWidth >= 768;
 };
+
+onMounted(() => {
+  checkIfDesktop();
+  window.addEventListener("resize", checkIfDesktop);
+});
+
+onBeforeUnmount(() => {
+  window.removeEventListener("resize", checkIfDesktop);
+});
 </script>
 
 <style scoped>

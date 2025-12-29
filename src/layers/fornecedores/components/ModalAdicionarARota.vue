@@ -150,8 +150,8 @@
 import { Route, Building2, Plus, Check } from "lucide-vue-next";
 import UiModal from "~/components/ui/UiModal.vue";
 import UiButton from "~/components/ui/UiButton.vue";
-import type { Fornecedor } from "../fornecedores.types";
-import type { Rota } from "~/layers/rotas/rotas.types";
+import type { Fornecedor } from "../types/fornecedores.types";
+import type { Rota } from "../../rotas/types/rotas.types";
 
 const props = defineProps<{
   modelValue: boolean;
