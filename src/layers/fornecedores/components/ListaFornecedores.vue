@@ -56,7 +56,7 @@
           <div class="col-span-2 flex justify-center">
             <UiBadge
               v-if="fornecedor.status"
-              :variant="getStatusVariant(fornecedor.status)"
+              :variant="getVariant(fornecedor.status)"
               :dot="true"
               size="small"
             >
@@ -129,7 +129,7 @@ defineEmits<{
   (e: "add-route", fornecedor: Fornecedor): void;
 }>();
 
-const getStatusVariant = (status: string): Variant =>
+const getVariant = (status: string): Variant =>
   resolveStatusVariant(status, COMMON_STATUS_VARIANTS) as Variant;
 
 const getIconClass = (status: string): string =>

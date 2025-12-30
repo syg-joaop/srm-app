@@ -61,6 +61,7 @@
 
 <script setup lang="ts">
 import { List, Map } from "lucide-vue-next";
+import { logger } from "~/utils/logger";
 import ModalDetalhesParceiro from "~/components/common/ModalDetalhesParceiro.vue";
 import UiListToolbar from "~/components/ui/UiListToolbar.vue";
 import UiPaginacao from "~/components/ui/UiPaginacao.vue";
@@ -189,7 +190,7 @@ const handleAddToRoute = (fornecedor: Fornecedor) => {
 };
 
 const handleRouteAdded = (rota: Rota) => {
-  console.log("Fornecedor adicionado à rota:", rota.id);
+  logger.info("Fornecedor adicionado à rota:", rota.id);
   // Pode redirecionar para a rota ou mostrar mensagem de sucesso
 };
 </script>

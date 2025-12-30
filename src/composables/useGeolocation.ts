@@ -1,4 +1,6 @@
-﻿
+
+import { logger } from "~/utils/logger";
+
 export interface GeolocationPosition {
   latitude: number;
   longitude: number;
@@ -47,7 +49,7 @@ export const useGeolocation = (options: UseGeolocationOptions = {}) => {
     error.value = null;
     isLoading.value = false;
 
-    console.log("[useGeolocation] Posição obtida:", position.value);
+    logger.info("[useGeolocation] Posição obtida:", position.value);
   };
 
   /**

@@ -65,7 +65,7 @@
           <div class="col-span-2 flex justify-center">
             <UiBadge
               v-if="concorrente.status"
-              :variant="getStatusVariant(concorrente.status) as Variant"
+              :variant="getVariant(concorrente.status) as Variant"
               :dot="true"
               size="small"
             >
@@ -97,7 +97,7 @@
             <div class="flex flex-col items-end gap-1 flex-shrink-0">
               <UiBadge
                 v-if="concorrente.status"
-                :variant="getStatusVariant(concorrente.status) as Variant"
+                :variant="getVariant(concorrente.status) as Variant"
                 size="small"
               >
                 {{ concorrente.status }}
@@ -138,7 +138,7 @@ defineEmits<{
   (e: "select", concorrente: Concorrente): void;
 }>();
 
-const getStatusVariant = (status: string): string =>
+const getVariant = (status: string): string =>
   resolveStatusVariant(status, COMMON_STATUS_VARIANTS);
 
 const getIconClass = (status?: string): string =>

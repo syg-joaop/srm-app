@@ -72,7 +72,6 @@ module.exports = {
     "vue/multi-word-component-names": "off",
     "no-console": ["warn", { allow: ["warn", "error"] }],
     "no-debugger": "error",
-
     "import/no-restricted-paths": [
       "error",
       {
@@ -136,6 +135,13 @@ module.exports = {
       files: ["**/*.{ts,vue}"],
       rules: {
         "no-undef": "off",
+      },
+    },
+    {
+      files: ["src/utils/logger.ts"],
+      rules: {
+        "no-console": "off",
+        "no-debugger": "off",
       },
     },
     {

@@ -1,4 +1,5 @@
 import { z } from "zod";
+import { logger } from "~/utils/logger";
 import {
   schemaRota,
   schemaRotaResponse,
@@ -34,9 +35,9 @@ const TEMP_SEQUENCE_BASE = 10000;
 const VRP_MIN_TASKS_WITH_USER = 1;
 const VRP_MIN_TASKS_WITHOUT_USER = 2;
 
-const logDebug = (...args: unknown[]) => console.log(LOG_PREFIX, ...args);
-const logWarn = (...args: unknown[]) => console.warn(LOG_PREFIX, ...args);
-const logError = (...args: unknown[]) => console.error(LOG_PREFIX, ...args);
+const logDebug = (...args: unknown[]) => logger.debug(LOG_PREFIX, ...args);
+const logWarn = (...args: unknown[]) => logger.warn(LOG_PREFIX, ...args);
+const logError = (...args: unknown[]) => logger.error(LOG_PREFIX, ...args);
 
 /**
  * Função helper para validar respostas com Zod e tratar erros

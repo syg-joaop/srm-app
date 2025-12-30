@@ -1,58 +1,43 @@
 /**
  * Service para buscar dados detalhados de fornecedores via chameleon-mode
  *
- * Este service consome as rotas especializadas que retornam informações
- * específicas de um fornecedor como: preços, contatos, cargas, atendimentos, etc.
+ * Este é um wrapper layer-specific que usa o service compartilhado de parceiros.
+ * Mantém a nomenclatura específica de fornecedores (codfor) enquanto usa
+ * a implementação compartilhada.
  */
 
 import type {
-  FornecedorPrecoResponse,
-  FornecedorContatoResponse,
-  FornecedorCargaResponse,
-  FornecedorAtendimentoResponse,
-  FornecedorColetaResponse,
-  FornecedorCheckinResponse,
-  FornecedorDetalheFilters,
-} from "../types/fornecedores.detalhes.types";
+  ParceiroPrecoResponse as FornecedorPrecoResponse,
+  ParceiroContatoResponse as FornecedorContatoResponse,
+  ParceiroCargaResponse as FornecedorCargaResponse,
+  ParceiroAtendimentoResponse as FornecedorAtendimentoResponse,
+  ParceiroColetaResponse as FornecedorColetaResponse,
+  ParceiroCheckinResponse as FornecedorCheckinResponse,
+} from "~/types/parceiro-detalhes.types";
+import { useParceiroDetalhesService } from "~/composables/useParceiroDetalhesService";
+
+// Re-export types com nomes específicos para fornecedores (backward compatibility)
+export type {
+  ParceiroPrecoResponse,
+  ParceiroContatoResponse,
+  ParceiroCargaResponse,
+  ParceiroAtendimentoResponse,
+  ParceiroColetaResponse,
+  ParceiroCheckinResponse,
+} from "~/types/parceiro-detalhes.types";
 
 // ============================================================================
-// ENDPOINTS
-// ============================================================================
-
-const ENDPOINTS = {
-  PRECO: "/sygecom/chameleon-mode/SRM_GET_FORNECEDORES_PRECO",
-  CONTATO: "/sygecom/chameleon-mode/SRM_GET_FORNECEDORES_CONTATO",
-  CARGA: "/sygecom/chameleon-mode/SRM_GET_FORNECEDORES_CARGA",
-  ATENDIMENTO: "/sygecom/chameleon-mode/SRM_GET_FORNECEDORES_ATENDIMENTO",
-  COLETA: "/sygecom/chameleon-mode/SRM_GET_FORNECEDORES_COLETA",
-  CHECKIN: "/sygecom/chameleon-mode/SRM_GET_FORNECEDORES_CHECKIN",
-} as const;
-
-// ============================================================================
-// BODY BUILDERS
+// SERVICE COMPOSABLE (WRAPPER)
 // ============================================================================
 
 /**
- * Constrói o corpo da requisição para endpoints detalhados de fornecedor.
- * Todos esses endpoints exigem obrigatoriamente o parâmetro codfor.
+ * Wrapper específico para fornecedores que usa o service compartilhado.
+ *
+ * NOTA: Este composable mantém a assinatura original (codfor) para
+ * backward compatibility, mas internamente usa o service genérico.
  */
-const buildDetalheBody = (
-  codfor: string,
-  page: number = 1,
-  size: number = 50,
-): Record<string, string | number> => ({
-  codfor,
-  page,
-  size,
-  offset: (page - 1) * size,
-});
-
-// ============================================================================
-// SERVICE COMPOSABLE
-// ============================================================================
-
 export const useFornecedorDetalhesService = () => {
-  const api = useMainApi(true); // homol = true
+  const parceiroService = useParceiroDetalhesService();
 
   /**
    * Busca preços de um fornecedor específico.
@@ -66,11 +51,7 @@ export const useFornecedorDetalhesService = () => {
     page: number = 1,
     size: number = 50,
   ): Promise<FornecedorPrecoResponse> => {
-    const body = buildDetalheBody(codfor, page, size);
-    return api<FornecedorPrecoResponse>(ENDPOINTS.PRECO, {
-      method: "POST",
-      body,
-    });
+    return parceiroService.fetchPrecos(codfor, page, size);
   };
 
   /**
@@ -85,11 +66,7 @@ export const useFornecedorDetalhesService = () => {
     page: number = 1,
     size: number = 50,
   ): Promise<FornecedorContatoResponse> => {
-    const body = buildDetalheBody(codfor, page, size);
-    return api<FornecedorContatoResponse>(ENDPOINTS.CONTATO, {
-      method: "POST",
-      body,
-    });
+    return parceiroService.fetchContatos(codfor, page, size);
   };
 
   /**
@@ -104,11 +81,7 @@ export const useFornecedorDetalhesService = () => {
     page: number = 1,
     size: number = 50,
   ): Promise<FornecedorCargaResponse> => {
-    const body = buildDetalheBody(codfor, page, size);
-    return api<FornecedorCargaResponse>(ENDPOINTS.CARGA, {
-      method: "POST",
-      body,
-    });
+    return parceiroService.fetchCargas(codfor, page, size);
   };
 
   /**
@@ -123,11 +96,7 @@ export const useFornecedorDetalhesService = () => {
     page: number = 1,
     size: number = 50,
   ): Promise<FornecedorAtendimentoResponse> => {
-    const body = buildDetalheBody(codfor, page, size);
-    return api<FornecedorAtendimentoResponse>(ENDPOINTS.ATENDIMENTO, {
-      method: "POST",
-      body,
-    });
+    return parceiroService.fetchAtendimentos(codfor, page, size);
   };
 
   /**
@@ -142,11 +111,7 @@ export const useFornecedorDetalhesService = () => {
     page: number = 1,
     size: number = 50,
   ): Promise<FornecedorColetaResponse> => {
-    const body = buildDetalheBody(codfor, page, size);
-    return api<FornecedorColetaResponse>(ENDPOINTS.COLETA, {
-      method: "POST",
-      body,
-    });
+    return parceiroService.fetchColetas(codfor, page, size);
   };
 
   /**
@@ -161,11 +126,7 @@ export const useFornecedorDetalhesService = () => {
     page: number = 1,
     size: number = 50,
   ): Promise<FornecedorCheckinResponse> => {
-    const body = buildDetalheBody(codfor, page, size);
-    return api<FornecedorCheckinResponse>(ENDPOINTS.CHECKIN, {
-      method: "POST",
-      body,
-    });
+    return parceiroService.fetchCheckins(codfor, page, size);
   };
 
   /**
@@ -176,25 +137,7 @@ export const useFornecedorDetalhesService = () => {
    * @returns Objeto com todos os dados detalhados
    */
   const fetchAllDetalhes = async (codfor: string) => {
-    const [precos, contatos, cargas, atendimentos, coletas, checkins] =
-      await Promise.allSettled([
-        fetchPrecos(codfor),
-        fetchContatos(codfor),
-        fetchCargas(codfor),
-        fetchAtendimentos(codfor),
-        fetchColetas(codfor),
-        fetchCheckins(codfor),
-      ]);
-
-    return {
-      precos: precos.status === "fulfilled" ? precos.value : null,
-      contatos: contatos.status === "fulfilled" ? contatos.value : null,
-      cargas: cargas.status === "fulfilled" ? cargas.value : null,
-      atendimentos:
-        atendimentos.status === "fulfilled" ? atendimentos.value : null,
-      coletas: coletas.status === "fulfilled" ? coletas.value : null,
-      checkins: checkins.status === "fulfilled" ? checkins.value : null,
-    };
+    return parceiroService.fetchAllDetalhes(codfor);
   };
 
   return {

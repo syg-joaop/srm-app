@@ -227,6 +227,7 @@ import {
   User,
   Trash2,
 } from "lucide-vue-next";
+import { logger } from "~/utils/logger";
 import UiModal from "~/components/ui/UiModal.vue";
 import UiButton from "~/components/ui/UiButton.vue";
 import ModalNovoComentario from "~/components/common/ModalNovoComentario.vue";
@@ -264,7 +265,7 @@ const handleOpenNovoComentario = () => {
 };
 
 const handleConfirmNovoComentario = () => {
-  console.log("Novo comentário:", {
+  logger.info("Novo comentário:", {
     descricao: novoComentarioDescricao.value,
     isProblema: novoComentarioIsProblema.value,
   });

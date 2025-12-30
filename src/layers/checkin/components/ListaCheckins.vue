@@ -62,7 +62,7 @@
           <div class="col-span-2 flex justify-center">
             <UiBadge
               v-if="checkin.status"
-              :variant="getStatusVariant(checkin.status)"
+              :variant="getVariant(checkin.status)"
               :dot="true"
               size="small"
             >
@@ -94,7 +94,7 @@
             <div class="flex flex-col items-end gap-1 flex-shrink-0">
               <UiBadge
                 v-if="checkin.status"
-                :variant="getStatusVariant(checkin.status)"
+                :variant="getVariant(checkin.status)"
                 size="small"
               >
                 {{ checkin.status }}
@@ -140,7 +140,7 @@ const STATUS_ICON_CLASSES: Record<string, string> = {
   inativo: "bg-red-500/10 text-red-500",
 };
 
-const getStatusVariant = (status: string): string => resolveStatusVariant(status, STATUS_VARIANTS);
+const getVariant = (status: string): string => resolveStatusVariant(status, STATUS_VARIANTS);
 
 const getIconClass = (status?: string): string =>
   resolveStatusIconClass(status, STATUS_ICON_CLASSES);

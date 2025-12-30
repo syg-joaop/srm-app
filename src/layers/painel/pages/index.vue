@@ -440,6 +440,8 @@ import {
 import type { AniversarianteItem, Atendente, AtendenteItem } from "./types/dashboard.types";
 import { useDashboardCharts } from "../composables/useDashboardCharts";
 import { useDashboardStore } from "../stores/dashboard";
+import { dataAtualPrimeiroDiaMes, dataAtualUltimoDiaMes } from "~/utils/utils";
+
 definePageMeta({
   layout: "default",
 });
@@ -456,7 +458,7 @@ const filters = ref({
   mes_grafico: "atual",
 });
 
-const { data, status } = await fetchDashboard(filters);
+const { data, status } = fetchDashboard(filters);
 const isLoading = computed(() => status.value === "pending");
 
 const dashboardStore = useDashboardStore();

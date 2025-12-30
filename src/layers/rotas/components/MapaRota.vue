@@ -42,11 +42,11 @@
     <!-- Mapa (Leaflet/OpenStreetMap) -->
     <UiMapaRotas
       ref="mapaRef"
-      :pontos="pontos"
+      :points="pontos"
       :polyline="polyline ?? undefined"
       :user-location="userLocation"
-      :include-user-in-fit-bounds="true"
-      :show-user-to-route-line="true"
+      :include-user-in-bounds="true"
+      :show-user-route-line="true"
       :show-sequence="true"
       :status-config="statusConfig"
       @marker-click="handleMarkerClick"
@@ -169,6 +169,7 @@ import {
   Navigation,
   TrendingUp,
 } from "lucide-vue-next";
+import { logger } from "~/utils/logger";
 import type { RotaPonto } from "~/components/ui/UiMapaRotas.vue";
 import type { UiMapaStatusConfig } from "~/components/ui/maps.types";
 import type { Roteiro, VrpSummary } from "../types/rotas.types";
@@ -334,7 +335,7 @@ const calcularPolylineParaMapa = async (
     emit("loaded", { polyline: polyline.value, summary: summary.value });
   } catch (err) {
     error.value = err instanceof Error ? err.message : "Erro ao calcular rota";
-    console.error("[MapaRota] calcularPolylineParaMapa error:", err);
+    logger.error("[MapaRota] calcularPolylineParaMapa error:", err);
   } finally {
     isLoading.value = false;
     loadingMessage.value = "Carregando rota...";
@@ -371,7 +372,7 @@ const recalcularApartirDeMim = async () => {
     emit("loaded", { polyline: polyline.value, summary: summary.value });
   } catch (err) {
     error.value = err instanceof Error ? err.message : "Erro ao calcular rota";
-    console.error("[MapaRota] recalcularApartirDeMim error:", err);
+    logger.error("[MapaRota] recalcularApartirDeMim error:", err);
   } finally {
     isLoading.value = false;
     loadingMessage.value = "Carregando rota...";
@@ -395,13 +396,13 @@ const carregarRota = async () => {
 
     emit("loaded", { polyline: result.polyline, summary: result.summary });
 
-    console.log("[MapaRota] Rota carregada:", {
+    logger.info("[MapaRota] Rota carregada:", {
       roteiros: result.roteiros.length,
       polyline: result.polyline ? "sim" : "não",
     });
   } catch (err) {
     error.value = err instanceof Error ? err.message : "Erro ao carregar rota";
-    console.error("[MapaRota] carregarRota error:", err);
+    logger.error("[MapaRota] carregarRota error:", err);
   } finally {
     isLoading.value = false;
     loadingMessage.value = "Carregando rota...";

@@ -119,6 +119,7 @@
 
 <script setup lang="ts">
 import { Icon, Plus, Route as RouteIcon, X } from "lucide-vue-next";
+import { logger } from "~/utils/logger";
 import UiButton from "~/components/ui/UiButton.vue";
 import UiCalendario from "~/components/ui/UiCalendario.vue";
 import UiEmptyState from "~/components/ui/UiEmptyState.vue";
@@ -194,7 +195,7 @@ const carregarRotas = async () => {
     }
   } catch (err) {
     error.value = err instanceof Error ? err.message : "Erro ao carregar rotas";
-    console.error("[RotasPage] Erro ao carregar rotas:", err);
+    logger.error("[RotasPage] Erro ao carregar rotas:", err);
   } finally {
     isLoading.value = false;
   }
@@ -219,7 +220,7 @@ const abrirDetalhes = (rota: Rota) => {
  * Ação de adição rápida
  */
 const adicionarRapido = (rota: Rota) => {
-  console.log("Adição rápida para rota:", rota.id);
+  logger.info("Adição rápida para rota:", rota.id);
   // TODO: Implementar adição rápida de roteiros
 };
 
@@ -245,7 +246,7 @@ const limparFiltros = () => {
  * Handler de rota criada
  */
 const handleRouteCreated = () => {
-  console.log("Rota criada com sucesso!");
+  logger.info("Rota criada com sucesso!");
   carregarRotas();
 };
 

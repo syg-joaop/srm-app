@@ -1,4 +1,5 @@
 import { isValidCoordinate } from "~/utils/validators/geo";
+import { logger } from "~/utils/logger";
 import type { Roteiro, VrpTask, VrpVehicle } from "../types/rotas.types";
 
 const VRP_TASK_DURATION = "00:10";
@@ -94,7 +95,7 @@ export const createVirtualVehicle = (
     : primeiro.coords;
 
   if (hasValidUserLocation && userLocation) {
-    console.log("[createVirtualVehicle] Usando localizacao do usuario como ponto de partida:", start);
+    logger.info("[createVirtualVehicle] Usando localizacao do usuario como ponto de partida:", start);
   }
 
   return {

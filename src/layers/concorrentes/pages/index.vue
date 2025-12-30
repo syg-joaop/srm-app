@@ -53,6 +53,7 @@
 
 <script setup lang="ts">
 import { Users } from "lucide-vue-next";
+import { logger } from "~/utils/logger";
 import UiEmptyState from "~/components/ui/UiEmptyState.vue";
 import UiListToolbar from "~/components/ui/UiListToolbar.vue";
 import UiPaginacao from "~/components/ui/UiPaginacao.vue";
@@ -181,6 +182,6 @@ const paginatedConcorrentes = computed(() => {
 });
 
 const handleSelectConcorrente = (concorrente: Concorrente) => {
-  console.log("Selected concorrente:", concorrente);
+  logger.info("Selected concorrente:", concorrente);
 };
 </script>

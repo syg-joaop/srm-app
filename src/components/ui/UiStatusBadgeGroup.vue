@@ -38,6 +38,7 @@
 </template>
 
 <script setup lang="ts">
+import type { Component } from 'vue';
 import { Calendar, CheckCircle, Clock, XCircle, Circle } from "lucide-vue-next";
 
 interface StatusBadgeItem {
@@ -72,7 +73,7 @@ const hideTooltip = () => {
 };
 
 const getIcon = (iconName?: string) => {
-  const icons: Record<string, any> = {
+  const icons: Record<string, Component> = {
     calendar: Calendar,
     check: CheckCircle,
     clock: Clock,

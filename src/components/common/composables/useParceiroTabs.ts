@@ -1,13 +1,13 @@
 import type { DetailPair, ParceiroData, ParceiroVariant, TabId, TabItem } from "~/types/parceiro";
-import { MOCK_TAB_DATA } from "~/mocks/parceiro.mock";
 import {
   ALL_TABS,
   EMPTY_STATE_COPY,
-  buildCadastroItems,
-  buildCargaFallbackItems,
-  buildContatoItems,
-  buildGenericItems,
-  filterTabsByVariant,
+  buildCadastro,
+  buildCargaFallback,
+  buildCargas,
+  buildContato,
+  build,
+  filterTabs,
   getCountLabel,
   getInitialTab,
   getTabLabel,
@@ -20,67 +20,64 @@ import {
 export function useParceiroTabs(
   propsRef: ComputedRef<{ modelValue: boolean; parceiro?: ParceiroData | null; variant?: ParceiroVariant }>,
 ) {
-  const activeTab = ref<TabId>(getInitialTab(propsRef.value.variant));
+  const activeTab = ref<TabId>(getInitialTab(propsRef.value.variant ?? 'parceiro'));
   const tabButtonRefs = ref<HTMLElement[]>([]);
 
-  const tabs = computed(() => filterTabsByVariant(propsRef.value.variant));
+  const tabs = computed(() => filterTabs(propsRef.value.variant ?? 'parceiro'));
 
-  const isInactive = computed(() => isParceiroInactive(propsRef.value.parceiro));
+  const isInactive = computed(() => isParceiroInactive(propsRef.value.parceiro ?? null));
 
-  /**
-   * Constrói os itens de uma tab baseado no parceiro e tabId.
-   */
-  const getTabItems = (tabId: TabId): TabItem[] => {
+  const getItems = (tabId: TabId): TabItem[] => {
     const parceiro = propsRef.value.parceiro as Record<string, unknown> | null;
     if (!parceiro) {
       return [];
     }
 
     if (tabId === "cadastro") {
-      const items = buildCadastroItems(parceiro);
+      const items = buildCadastro(parceiro);
       return items.length ? items : [];
     }
 
     if (tabId === "contatos") {
       const contatos = parceiro.contatos;
       if (Array.isArray(contatos)) {
-        const items = buildGenericItems(contatos, tabId);
+        const items = build(contatos, tabId);
         return items.length ? items : [];
       }
-      const items = buildContatoItems(parceiro);
+      const items = buildContato(parceiro);
       return items.length ? items : [];
     }
 
     if (tabId === "cargas") {
       const cargas = parceiro.cargas;
       if (Array.isArray(cargas)) {
-        const items = buildGenericItems(cargas, tabId);
+        const items = buildCargas(cargas);
         return items.length ? items : [];
       }
-      const items = buildCargaFallbackItems(parceiro);
+      const items = buildCargaFallback(parceiro);
       return items.length ? items : [];
     }
 
     const listData = parceiro[tabId];
     if (Array.isArray(listData)) {
-      const items = buildGenericItems(listData, tabId);
+      const items = build(listData, tabId);
       return items.length ? items : [];
     }
 
     return [];
   };
 
-  const tabItemsMap = computed(() => {
+  const itemsMap = computed(() => {
     const result = {} as Record<TabId, TabItem[]>;
     ALL_TABS.forEach((tab) => {
-      result[tab.id] = getTabItems(tab.id);
+      result[tab.id] = getItems(tab.id);
     });
     return result;
   });
 
-  const activeTabMeta = computed(() => {
+  const activeMeta = computed(() => {
     const tabId = activeTab.value;
-    const items = tabItemsMap.value[tabId] ?? [];
+    const items = itemsMap.value[tabId] ?? [];
     const emptyCopy = EMPTY_STATE_COPY[tabId];
     return {
       id: tabId,
@@ -92,12 +89,9 @@ export function useParceiroTabs(
     };
   });
 
-  /**
-   * Seleciona uma tab e faz scroll para o botão.
-   */
-  const selectTab = (tabId: TabId, index: number) => {
+  const selectTab = (tabId: TabId, idx: number) => {
     activeTab.value = tabId;
-    const tabEl = tabButtonRefs.value[index];
+    const tabEl = tabButtonRefs.value[idx];
     if (tabEl) {
       tabEl.scrollIntoView({
         behavior: "smooth",
@@ -107,11 +101,10 @@ export function useParceiroTabs(
     }
   };
 
-  // Atualiza tab ativa quando variant muda
   watch(
     () => propsRef.value.variant,
     (newVariant) => {
-      activeTab.value = getInitialTab(newVariant);
+      activeTab.value = getInitialTab(newVariant ?? 'parceiro');
     },
   );
 
@@ -119,8 +112,8 @@ export function useParceiroTabs(
     activeTab,
     tabButtonRefs,
     tabs,
-    tabItemsMap,
-    activeTabMeta,
+    itemsMap,
+    activeMeta,
     isInactive,
     selectTab,
   };
@@ -140,11 +133,11 @@ export const CADASTRO_FIELD_CATEGORIES = {
  */
 export const filterCadastroFields = {
   getIdentification: (details: DetailPair[]) =>
-    details.filter((d) => CADASTRO_FIELD_CATEGORIES.IDENTIFICATION.includes(d.label)),
+    details.filter((d) => (CADASTRO_FIELD_CATEGORIES.IDENTIFICATION as readonly string[]).includes(d.label)),
 
   getLocation: (details: DetailPair[]) =>
-    details.filter((d) => CADASTRO_FIELD_CATEGORIES.LOCATION.includes(d.label)),
+    details.filter((d) => (CADASTRO_FIELD_CATEGORIES.LOCATION as readonly string[]).includes(d.label)),
 
   getAdditional: (details: DetailPair[]) =>
-    details.filter((d) => CADASTRO_FIELD_CATEGORIES.ADDITIONAL.includes(d.label)),
+    details.filter((d) => (CADASTRO_FIELD_CATEGORIES.ADDITIONAL as readonly string[]).includes(d.label)),
 };

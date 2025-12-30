@@ -154,7 +154,7 @@
 import { Filter, X } from "lucide-vue-next";
 import UiSegmentedControl from "~/components/ui/UiSegmentedControl.vue";
 import UiSelect from "~/components/ui/UiSelect.vue";
-import { getActiveFiltersCount, type FilterConfig } from "~/utils/filterPanel";
+import { getActiveCount, type FilterConfig } from "~/utils/filterPanel";
 
 interface Props {
   modelValue: Record<string, string>;
@@ -209,7 +209,7 @@ const inputGridColsClass = computed(() => {
 
 const panelSpacingClass = computed(() => (props.showButton ? "mt-4" : ""));
 
-const activeFiltersCount = computed(() => getActiveFiltersCount(props.filters, props.modelValue));
+const activeFiltersCount = computed(() => getActiveCount(props.filters, props.modelValue));
 
 const updateFilter = (key: string, value: string) => {
   emit("update:modelValue", {

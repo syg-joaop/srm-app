@@ -46,7 +46,7 @@ const atendenteSchema = z.object({
   user_diagnostico: z.string(),
   latitude: z.string(),
   longitude: z.string(),
-  problema: z.string(),
+  problema: z.string().nullable().optional(),
 });
 
 // Schema para AtendenteResponse
@@ -76,27 +76,27 @@ const occurrenceHistorySchema = z.object({
 // Schema para SupplierBirthday
 const supplierBirthdaySchema = z.object({
   fornecedor: z.string(),
-  fanta: z.string(),
-  oco2: z.string(),
-  celular: z.string(),
-  tel3: z.string(),
-  data: z.string(),
-  fone: z.string(),
-  email: z.string(),
-  status: z.string(),
-  ende: z.string(),
+  fanta: z.string().optional(),
+  oco2: z.string().optional(),
+  celular: z.string().optional(),
+  tel3: z.string().optional(),
+  data: z.string().optional(),
+  fone: z.string().optional(),
+  email: z.string().optional(),
+  status: z.string().optional(),
+  ende: z.string().optional(),
   cidade: z.string(),
   uf: z.string().optional(),
-  categoria: z.string(),
-  tf: z.string(),
-  dat_nasc: z.string(),
+  categoria: z.string().optional(),
+  tf: z.string().optional(),
+  dat_nasc: z.string().optional(),
   codfor: z.string(),
-  dia_nasc: z.coerce.number(),
-  dia_atual: z.coerce.number(),
-  ultima_carga: z.string(),
-  latitude: z.string(),
-  longitude: z.string(),
-  latlong: z.boolean(),
+  dia_nasc: z.union([z.coerce.number(), z.nan()]).optional(),
+  dia_atual: z.union([z.coerce.number(), z.nan()]).optional(),
+  ultima_carga: z.string().optional(),
+  latitude: z.string().optional(),
+  longitude: z.string().optional(),
+  latlong: z.boolean().optional(),
 });
 
 // Schema para StaffPerformance
@@ -198,7 +198,7 @@ export const schemaDashboardApiResponse = z
     }),
     comprasMesAnterior: dashboardApiResponseSchemaBase.extend({
       data: z.array(purchasingStatsSchema),
-    }),
+    }).optional().nullable(),
     comprasComprador: dashboardApiResponseSchemaBase.extend({
       data: z.array(buyerPerformanceSchema),
     }),

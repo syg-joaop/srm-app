@@ -66,7 +66,7 @@ export const useDashboardStore = defineStore("dashboard", () => {
   });
 
   const comprasMesAnterior = computed<SummaryItem[]>(() => {
-    const data = rawData.value?.comprasMes?.data?.[0];
+    const data = rawData.value?.comprasMesAnterior?.data?.[0];
     return formatarResumoCompras(data);
   });
 

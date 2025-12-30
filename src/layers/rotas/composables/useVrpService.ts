@@ -1,3 +1,4 @@
+import { logger } from "~/utils/logger";
 import type { Roteiro, VrpRouteRequest, VrpRouteResponse, VrpSummary } from "../types/rotas.types";
 import { usePolylineCache } from "./usePolylineCache";
 import { roteirosToVrpTasks, createVirtualVehicle, getRoteirosWithCoords } from "./roteirosHelpers";
@@ -12,9 +13,9 @@ const VRP_MIN_TASKS_WITHOUT_USER = 2;
 const VRP_MAX_DAYS_WORKING = 1;
 const VRP_LOCATION_PRECISION = 4;
 
-const logDebug = (...args: unknown[]) => console.log(LOG_PREFIX, ...args);
-const logWarn = (...args: unknown[]) => console.warn(LOG_PREFIX, ...args);
-const logError = (...args: unknown[]) => console.error(LOG_PREFIX, ...args);
+const logDebug = (...args: unknown[]) => logger.debug(LOG_PREFIX, ...args);
+const logWarn = (...args: unknown[]) => logger.warn(LOG_PREFIX, ...args);
+const logError = (...args: unknown[]) => logger.error(LOG_PREFIX, ...args);
 
 /**
  * Verifica se um valor é VrpSummary.

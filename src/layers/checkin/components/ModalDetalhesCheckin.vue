@@ -33,7 +33,7 @@
               Status
             </h3>
             <div>
-              <UiBadge :variant="getStatusVariant(checkin.status)" :dot="true" size="medium">
+              <UiBadge :variant="getVariant(checkin.status)" :dot="true" size="medium">
                 {{ checkin.status }}
               </UiBadge>
             </div>
@@ -169,7 +169,7 @@ const getStatusBarColor = (status?: string): string => {
   return resolveStatusVariant(status, STATUS_BAR_CLASSES, "bg-[var(--color-primary)]");
 };
 
-const getStatusVariant = (status: string): Variant => {
+const getVariant = (status: string): Variant => {
   return resolveStatusVariant(status, STATUS_VARIANTS) as Variant;
 };
 </script>

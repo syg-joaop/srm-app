@@ -21,9 +21,13 @@ export interface FilterConfig {
   segmentedFullWidth?: boolean;
 }
 
-export const getActiveFiltersCount = (
+export interface FilterValues {
+  [key: string]: string | number | boolean | string[] | undefined;
+}
+
+export const getActiveCount = (
   filters: FilterConfig[] | undefined,
-  modelValue: Record<string, any> | undefined,
+  modelValue: FilterValues | undefined,
 ): number => {
   if (!filters || filters.length === 0) return 0;
 

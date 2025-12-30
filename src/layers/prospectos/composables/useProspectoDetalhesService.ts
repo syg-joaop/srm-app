@@ -1,37 +1,51 @@
 /**
  * Service para buscar dados detalhados de prospectos via chameleon-mode
  *
- * NOTA IMPORTANTE: As rotas chameleon-mode foram desenhadas para fornecedores
- * e usam o parâmetro "codfor". Prospectos e fornecedores compartilham a mesma
- * tabela (cag_for) e estrutura, então usamos o mesmo código (codfor/codpros).
+ * Este é um wrapper layer-specific que usa o service compartilhado de parceiros.
+ * Mantém a nomenclatura específica de prospectos (codpros) enquanto usa
+ * a implementação compartilhada.
  *
- * Este service é um adaptador que usa as rotas de fornecedor para prospectos.
+ * NOTA: Prospectos e fornecedores compartilham a mesma tabela (cag_for)
+ * e estrutura de API, por isso usam o mesmo service compartilhado.
  */
 
 import type {
-  ProspectoPrecoResponse,
-  ProspectoContatoResponse,
-  ProspectoCargaResponse,
-  ProspectoAtendimentoResponse,
-  ProspectoColetaResponse,
-  ProspectoCheckinResponse,
-} from "../types/prospectos.detalhes.types";
+  ParceiroPrecoResponse as ProspectoPrecoResponse,
+  ParceiroContatoResponse as ProspectoContatoResponse,
+  ParceiroCargaResponse as ProspectoCargaResponse,
+  ParceiroAtendimentoResponse as ProspectoAtendimentoResponse,
+  ParceiroColetaResponse as ProspectoColetaResponse,
+  ParceiroCheckinResponse as ProspectoCheckinResponse,
+} from "~/types/parceiro-detalhes.types";
+import { useParceiroDetalhesService } from "~/composables/useParceiroDetalhesService";
 
-import {
-  useFornecedorDetalhesService as useFornecedorService,
-} from "~/layers/fornecedores/composables/useFornecedorDetalhesService";
+// Re-export types com nomes específicos para prospectos (backward compatibility)
+export type {
+  ParceiroPrecoResponse,
+  ParceiroContatoResponse,
+  ParceiroCargaResponse,
+  ParceiroAtendimentoResponse,
+  ParceiroColetaResponse,
+  ParceiroCheckinResponse,
+} from "~/types/parceiro-detalhes.types";
 
 // ============================================================================
-// SERVICE COMPOSABLE
+// SERVICE COMPOSABLE (WRAPPER)
 // ============================================================================
 
+/**
+ * Wrapper específico para prospectos que usa o service compartilhado.
+ *
+ * NOTA: Este composable mantém a assinatura original (codpros) para
+ * backward compatibility, mas internamente usa o service genérico.
+ */
 export const useProspectoDetalhesService = () => {
-  const fornecedorService = useFornecedorService();
+  const parceiroService = useParceiroDetalhesService();
 
   /**
    * Busca preços de um prospecto específico.
    *
-   * @param codpros - Código do prospecto (mesmo que codfor)
+   * @param codpros - Código do prospecto
    * @param page - Página atual (default: 1)
    * @param size - Itens por página (default: 50)
    */
@@ -40,13 +54,13 @@ export const useProspectoDetalhesService = () => {
     page: number = 1,
     size: number = 50,
   ): Promise<ProspectoPrecoResponse> => {
-    return fornecedorService.fetchPrecos(codpros, page, size);
+    return parceiroService.fetchPrecos(codpros, page, size);
   };
 
   /**
    * Busca contatos de um prospecto específico.
    *
-   * @param codpros - Código do prospecto (mesmo que codfor)
+   * @param codpros - Código do prospecto
    * @param page - Página atual (default: 1)
    * @param size - Itens por página (default: 50)
    */
@@ -55,7 +69,7 @@ export const useProspectoDetalhesService = () => {
     page: number = 1,
     size: number = 50,
   ): Promise<ProspectoContatoResponse> => {
-    return fornecedorService.fetchContatos(codpros, page, size);
+    return parceiroService.fetchContatos(codpros, page, size);
   };
 
   /**
@@ -64,7 +78,7 @@ export const useProspectoDetalhesService = () => {
    * NOTA: Prospectos normalmente não têm cargas, mas a rota existe
    * para quando um prospecto se torna fornecedor.
    *
-   * @param codpros - Código do prospecto (mesmo que codfor)
+   * @param codpros - Código do prospecto
    * @param page - Página atual (default: 1)
    * @param size - Itens por página (default: 50)
    */
@@ -73,13 +87,13 @@ export const useProspectoDetalhesService = () => {
     page: number = 1,
     size: number = 50,
   ): Promise<ProspectoCargaResponse> => {
-    return fornecedorService.fetchCargas(codpros, page, size);
+    return parceiroService.fetchCargas(codpros, page, size);
   };
 
   /**
    * Busca atendimentos/ocorrências de um prospecto específico.
    *
-   * @param codpros - Código do prospecto (mesmo que codfor)
+   * @param codpros - Código do prospecto
    * @param page - Página atual (default: 1)
    * @param size - Itens por página (default: 50)
    */
@@ -88,7 +102,7 @@ export const useProspectoDetalhesService = () => {
     page: number = 1,
     size: number = 50,
   ): Promise<ProspectoAtendimentoResponse> => {
-    return fornecedorService.fetchAtendimentos(codpros, page, size);
+    return parceiroService.fetchAtendimentos(codpros, page, size);
   };
 
   /**
@@ -97,7 +111,7 @@ export const useProspectoDetalhesService = () => {
    * NOTA: Prospectos normalmente não têm coletas, mas a rota existe
    * para quando um prospecto se torna fornecedor.
    *
-   * @param codpros - Código do prospecto (mesmo que codfor)
+   * @param codpros - Código do prospecto
    * @param page - Página atual (default: 1)
    * @param size - Itens por página (default: 50)
    */
@@ -106,13 +120,13 @@ export const useProspectoDetalhesService = () => {
     page: number = 1,
     size: number = 50,
   ): Promise<ProspectoColetaResponse> => {
-    return fornecedorService.fetchColetas(codpros, page, size);
+    return parceiroService.fetchColetas(codpros, page, size);
   };
 
   /**
    * Busca check-ins de um prospecto específico.
    *
-   * @param codpros - Código do prospecto (mesmo que codfor)
+   * @param codpros - Código do prospecto
    * @param page - Página atual (default: 1)
    * @param size - Itens por página (default: 50)
    */
@@ -121,7 +135,7 @@ export const useProspectoDetalhesService = () => {
     page: number = 1,
     size: number = 50,
   ): Promise<ProspectoCheckinResponse> => {
-    return fornecedorService.fetchCheckins(codpros, page, size);
+    return parceiroService.fetchCheckins(codpros, page, size);
   };
 
   /**
@@ -132,25 +146,7 @@ export const useProspectoDetalhesService = () => {
    * @returns Objeto com todos os dados detalhados
    */
   const fetchAllDetalhes = async (codpros: string) => {
-    const [precos, contatos, cargas, atendimentos, coletas, checkins] =
-      await Promise.allSettled([
-        fetchPrecos(codpros),
-        fetchContatos(codpros),
-        fetchCargas(codpros),
-        fetchAtendimentos(codpros),
-        fetchColetas(codpros),
-        fetchCheckins(codpros),
-      ]);
-
-    return {
-      precos: precos.status === "fulfilled" ? precos.value : null,
-      contatos: contatos.status === "fulfilled" ? contatos.value : null,
-      cargas: cargas.status === "fulfilled" ? cargas.value : null,
-      atendimentos:
-        atendimentos.status === "fulfilled" ? atendimentos.value : null,
-      coletas: coletas.status === "fulfilled" ? coletas.value : null,
-      checkins: checkins.status === "fulfilled" ? checkins.value : null,
-    };
+    return parceiroService.fetchAllDetalhes(codpros);
   };
 
   return {

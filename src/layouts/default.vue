@@ -110,8 +110,6 @@ import Profile from "~/layouts/profile.vue";
 
 const { theme, toggleTheme } = useTheme();
 const { userName, userRole } = useAuth();
-const { isOnline } = useNetworkStatus();
-const { pendingCount } = useSyncManager();
 
 const isSidebarExpanded = ref(false);
 const mobileMenuOpen = ref(false);
@@ -135,16 +133,12 @@ onUnmounted(() => {
   window.removeEventListener("resize", updateWidth);
 });
 
-const isDesktop = computed(() => windowWidth.value >= 1024);
-
 const sidebarWidth = computed(() => {
   if (windowWidth.value < 1024) {
     return "0px";
   }
   return isSidebarExpanded.value ? "var(--sidebar-width)" : "var(--sidebar-width-collapsed)";
 });
-
-const showStatusBar = computed(() => !isOnline.value || pendingCount.value > 0);
 
 const handleMobileMenuOpen = () => {
   if (windowWidth.value < 1024) {

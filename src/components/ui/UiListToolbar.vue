@@ -70,12 +70,16 @@
 <script setup lang="ts">
 import { Filter, Search } from "lucide-vue-next";
 import UiFilterPanel from "~/components/ui/UiFilterPanel.vue";
-import { getActiveFiltersCount, type FilterConfig } from "~/utils/filterPanel";
+import { getActiveCount, type FilterConfig } from "~/utils/filterPanel";
+
+interface FilterValues {
+  [key: string]: string | number | boolean | string[] | undefined;
+}
 
 interface Props {
   search: string;
   searchPlaceholder?: string;
-  filters: Record<string, any>;
+  filters: FilterValues;
   filterItems: FilterConfig[];
   filterColumns?: number;
   inputColumns?: number;
@@ -89,7 +93,7 @@ const props = withDefaults(defineProps<Props>(), {
 
 const emit = defineEmits<{
   "update:search": [value: string];
-  "update:filters": [value: Record<string, any>];
+  "update:filters": [value: FilterValues];
 }>();
 
 const filtersOpen = ref(false);
@@ -101,12 +105,12 @@ const searchProxy = computed({
 
 const filtersProxy = computed({
   get: () => props.filters,
-  set: (value: Record<string, any>) => emit("update:filters", value),
+  set: (value: FilterValues) => emit("update:filters", value),
 });
 
 const hasFilters = computed(() => props.filterItems.length > 0);
 
 const activeFiltersCount = computed(() =>
-  getActiveFiltersCount(props.filterItems, props.filters),
+  getActiveCount(props.filterItems, props.filters),
 );
 </script>

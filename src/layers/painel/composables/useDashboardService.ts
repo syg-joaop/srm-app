@@ -74,6 +74,11 @@ export const useDashboardService = () => {
     return useAsyncData<DashboardApiResponse>(
       "dashboard-main-data",
       async () => {
+        // Só faz a requisição se estiver autenticado
+        if (!authStore.isAuthenticated) {
+          return null as unknown as DashboardApiResponse;
+        }
+
         const response = await api<ApiDataWrapper<DashboardApiResponse> | DashboardApiResponse>(
           DASHBOARD_INDICATORS_ENDPOINT,
           {
@@ -90,9 +95,8 @@ export const useDashboardService = () => {
         return validateDashboardResponse(unwrappedResponse);
       },
       {
-        watch: [filtersRef],
-        lazy: true,
-        immediate: authStore.isAuthenticated,
+        watch: [filtersRef, computed(() => authStore.isAuthenticated)],
+        immediate: true,
       },
     );
   };

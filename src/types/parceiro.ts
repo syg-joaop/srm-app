@@ -56,7 +56,9 @@ export interface TabItem {
   title: string;
   subtitle?: string;
   status?: string;
-  details: DetailPair[];
+  details: EnhancedDetail[];
+  rightLabel?: string;
+  detailsLayout?: 'grid' | 'list';
 }
 
 export interface TabOption {
@@ -72,4 +74,58 @@ export interface EmptyStateCopy {
 export interface FieldMapping {
   key: string;
   label: string;
+}
+
+/**
+ * Enhanced Detail Types
+ * Types para detalhes com metadata especial (separadores, totais, produtos)
+ * Permitem type safety completo sem usar casts 'as any'
+ */
+
+/** Detalhe separador visual (usado em listas) */
+export interface SeparatorDetail extends DetailPair {
+  __type: 'separator';
+}
+
+/** Detalhe de total (destacado visualmente) */
+export interface TotalDetail extends DetailPair {
+  __type: 'total';
+}
+
+/** Detalhe de produto em uma lista de produtos */
+export interface ProductDetail extends DetailPair {
+  __type: 'product';
+  produtoIndex?: number;
+}
+
+/** Union type de todos os tipos de detalhes */
+export type EnhancedDetail = DetailPair | SeparatorDetail | TotalDetail | ProductDetail;
+
+/**
+ * Type Guards
+ * Funções para verificar o tipo de um Detail em runtime
+ * Substituem de forma type-safe os casts 'as any'
+ */
+export const isSeparatorDetail = (detail: EnhancedDetail): detail is SeparatorDetail => {
+  return '__type' in detail && detail.__type === 'separator';
+};
+
+export const isTotalDetail = (detail: EnhancedDetail): detail is TotalDetail => {
+  return '__type' in detail && detail.__type === 'total';
+};
+
+export const isProductDetail = (detail: EnhancedDetail): detail is ProductDetail => {
+  return '__type' in detail && detail.__type === 'product';
+};
+
+/**
+ * Tipos específicos para domínios
+ */
+
+/** Registro de carga com campos específicos */
+export interface CargaRecord {
+  count?: string | number;
+  data_peso?: string | null;
+  data_entrega?: string | null;
+  [key: string]: unknown;
 }

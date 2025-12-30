@@ -17,7 +17,7 @@
           <button
             class="mt-2 text-xs font-medium text-yellow-900 dark:text-yellow-100 underline"
             type="button"
-            @click="goToMyLocation"
+            @click="locateUser"
           >
             Tentar novamente
           </button>
@@ -38,15 +38,15 @@
 
     <!-- Botão de localização -->
     <button
-      v-if="showMyLocationButton"
+      v-if="showLocationButton"
       class="absolute bottom-4 right-4 z-10 p-3 bg-white dark:bg-gray-800 rounded-full shadow-lg hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors"
-      :class="{ 'animate-pulse': isGettingLocation }"
+      :class="{ 'animate-pulse': isLocating }"
       title="Minha localização"
-      @click="goToMyLocation"
+      @click="locateUser"
     >
       <Navigation
         class="w-5 h-5"
-        :class="isGettingLocation ? 'text-blue-500' : 'text-gray-600 dark:text-gray-400'"
+        :class="isLocating ? 'text-blue-500' : 'text-gray-600 dark:text-gray-400'"
       />
     </button>
 
@@ -85,24 +85,24 @@ export interface GoogleMapPonto {
 
 const props = withDefaults(
   defineProps<{
-    pontos?: GoogleMapPonto[];
+    points?: GoogleMapPonto[];
     polyline?: string;
     userLocation?: { latitude: number; longitude: number } | null;
-    centro?: [number, number];
-    zoomInicial?: number;
+    center?: [number, number];
+    initialZoom?: number;
     autoFitBounds?: boolean;
     showSequence?: boolean;
-    showMyLocationButton?: boolean;
+    showLocationButton?: boolean;
     statusConfig?: UiMapaStatusConfig;
     apiKey: string;
   }>(),
   {
-    pontos: () => [],
-    centro: () => [-15.7801, -47.9292] as [number, number],
-    zoomInicial: 4,
+    points: () => [],
+    center: () => [-15.7801, -47.9292] as [number, number],
+    initialZoom: 4,
     autoFitBounds: true,
     showSequence: true,
-    showMyLocationButton: true,
+    showLocationButton: true,
     statusConfig: () => ({
       aguardando: { color: "#6b7280", label: "Aguardando" },
       pendente: { color: "#f59e0b", label: "Pendente" },
@@ -121,7 +121,7 @@ const emit = defineEmits<{
 const mapContainer = ref<HTMLElement | null>(null);
 const isLoadingMap = ref(true);
 const mapError = ref<string | null>(null);
-const isGettingLocation = ref(false);
+const isLocating = ref(false);
 
 let map: google.maps.Map | null = null;
 let markers: google.maps.Marker[] = [];
@@ -325,7 +325,7 @@ const renderPolyline = () => {
   };
 
   const referenceCoords: [number, number][] = [];
-  for (const ponto of props.pontos) {
+  for (const ponto of props.points) {
     const lat = toNumber(ponto.latitude);
     const lng = toNumber(ponto.longitude);
     if (lat === null || lng === null) continue;
@@ -399,9 +399,9 @@ const updateMap = () => {
   let hasValidBounds = false;
 
   // Adiciona pontos
-  const sortedPontos = [...props.pontos].sort((a, b) => (a.sequencia || 0) - (b.sequencia || 0));
+  const sortedPoints = [...props.points].sort((a, b) => (a.sequencia || 0) - (b.sequencia || 0));
 
-  for (const ponto of sortedPontos) {
+  for (const ponto of sortedPoints) {
     const position = addMarker(ponto);
     if (position) {
       bounds.extend(position);
@@ -439,16 +439,16 @@ const updateMap = () => {
   if (props.autoFitBounds && hasValidBounds) {
     map.fitBounds(bounds, { top: 50, right: 50, bottom: 50, left: 50 });
   } else {
-    map.setCenter(new google.maps.LatLng(props.centro[0], props.centro[1]));
-    map.setZoom(props.zoomInicial);
+    map.setCenter(new google.maps.LatLng(props.center[0], props.center[1]));
+    map.setZoom(props.initialZoom);
   }
 };
 
 /**
  * Vai para localizaÃ§Ã£o do usuÃ¡rio
  */
-const goToMyLocation = async () => {
-  isGettingLocation.value = true;
+const locateUser = async () => {
+  isLocating.value = true;
 
   const pos = await getCurrentPosition();
 
@@ -458,7 +458,7 @@ const goToMyLocation = async () => {
     map.setZoom(15);
   }
 
-  isGettingLocation.value = false;
+  isLocating.value = false;
 };
 
 /**
@@ -515,8 +515,8 @@ const initMap = async () => {
     }
 
     map = new google.maps.Map(mapContainer.value, {
-      center: { lat: props.centro[0], lng: props.centro[1] },
-      zoom: props.zoomInicial,
+      center: { lat: props.center[0], lng: props.center[1] },
+      zoom: props.initialZoom,
       mapTypeControl: false,
       streetViewControl: false,
       fullscreenControl: false,
@@ -553,7 +553,7 @@ const invalidateSize = () => {
 };
 
 // Watchers
-watch(() => props.pontos, updateMap, { deep: true });
+watch(() => props.points, updateMap, { deep: true });
 watch(() => props.polyline, updateMap);
 watch(
   () => props.userLocation,

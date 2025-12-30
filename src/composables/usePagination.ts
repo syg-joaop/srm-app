@@ -3,25 +3,37 @@
  * Fornece lógica de paginação reativa com controle de itens por página.
  */
 
-export function usePagination(initialItemsPerPage: number = 10) {
+export function usePagination<T>(items: MaybeRefOrGetter<T[]>, initialItemsPerPage: number = 10) {
   const currentPage = ref(1);
   const itemsPerPage = ref(initialItemsPerPage);
+
+  const itemsArray = computed(() => toValue(items));
 
   /**
    * Calcula o total de páginas baseado na quantidade de itens.
    */
-  const totalPages = computed(() => Math.ceil(itemsPerPage.value / itemsPerPage.value));
+  const totalPages = computed(() => {
+    if (!itemsArray.value.length) return 1;
+    return Math.ceil(itemsArray.value.length / itemsPerPage.value);
+  });
 
   /**
-   * Retorna os itens da página atual.
+   * Retorna os itens da página atual como computed.
    */
-  const getPaginatedItems = <T>(items: T[]): T[] => {
-    if (!items.length) return [];
+  const paginatedItems = computed(() => {
+    if (!itemsArray.value.length) return [];
 
     const startIndex = (currentPage.value - 1) * itemsPerPage.value;
     const endIndex = startIndex + itemsPerPage.value;
 
-    return items.slice(startIndex, endIndex);
+    return itemsArray.value.slice(startIndex, endIndex);
+  });
+
+  /**
+   * Retorna os itens da página atual (método para backward compatibility).
+   */
+  const getPaginatedItems = (): T[] => {
+    return paginatedItems.value;
   };
 
   /**
@@ -68,6 +80,7 @@ export function usePagination(initialItemsPerPage: number = 10) {
     currentPage,
     itemsPerPage,
     totalPages,
+    paginatedItems,
     getPaginatedItems,
     goToPage,
     nextPage,

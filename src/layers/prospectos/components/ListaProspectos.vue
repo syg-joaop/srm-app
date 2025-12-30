@@ -56,7 +56,7 @@
           <div class="col-span-2 flex justify-center">
             <UiBadge
               v-if="prospecto.status"
-              :variant="getStatusVariant(prospecto.status) as Variant"
+              :variant="getVariant(prospecto.status) as Variant"
               :dot="true"
               size="small"
             >
@@ -99,7 +99,7 @@
             <div class="flex flex-col items-end gap-1 flex-shrink-0">
               <UiBadge
                 v-if="prospecto.status"
-                :variant="getStatusVariant(prospecto.status) as Variant"
+                :variant="getVariant(prospecto.status) as Variant"
                 size="small"
               >
                 {{ prospecto.status }}
@@ -152,7 +152,7 @@ const STATUS_ICON_CLASSES: Record<string, string> = {
   novo: "bg-blue-500/10 text-blue-500",
 };
 
-const getStatusVariant = (status: string): Variant =>
+const getVariant = (status: string): Variant =>
   resolveStatusVariant(status, STATUS_VARIANTS) as Variant;
 
 const getIconClass = (status: string): string =>

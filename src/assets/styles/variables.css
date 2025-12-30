@@ -33,6 +33,20 @@
   /* Interactive */
   --color-primary-soft: rgba(0, 153, 255, 0.1);
   --color-primary-border: rgba(0, 153, 255, 0.3);
+
+  /* Text Colors - Labels for WCAG AA compliance (4.5:1 contrast) */
+  --color-text-label: #cbd5e1;
+
+  /* Premium Effects */
+  --color-card-shadow: rgba(0, 153, 255, 0.2);
+  --color-icon-glow: rgba(0, 153, 255, 0.3);
+  --color-icon-bg-start: rgba(0, 153, 255, 0.15);
+  --color-icon-bg-end: rgba(0, 153, 255, 0.05);
+  --color-icon-border: rgba(0, 153, 255, 0.2);
+
+  /* Gradients */
+  --gradient-hover-start: var(--color-surface);
+  --gradient-hover-end: rgba(0, 153, 255, 0.03);
 }
 
 [data-theme="light"] {
@@ -56,6 +70,20 @@
   /* Interactive - Light */
   --color-primary-soft: rgba(0, 153, 255, 0.05);
   --color-primary-border: rgba(0, 153, 255, 0.3);
+
+  /* Text Colors - Labels for better contrast (Light) */
+  --color-text-label: #64748b;
+
+  /* Premium Effects - Light */
+  --color-card-shadow: rgba(0, 153, 255, 0.15);
+  --color-icon-glow: rgba(0, 153, 255, 0.25);
+  --color-icon-bg-start: rgba(0, 153, 255, 0.1);
+  --color-icon-bg-end: rgba(0, 153, 255, 0.03);
+  --color-icon-border: rgba(0, 153, 255, 0.15);
+
+  /* Gradients - Light */
+  --gradient-hover-start: var(--color-surface);
+  --gradient-hover-end: rgba(0, 153, 255, 0.02);
 }
 
 html,
