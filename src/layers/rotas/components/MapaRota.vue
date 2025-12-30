@@ -92,13 +92,13 @@
     <!-- Botão de localização -->
     <button
       class="absolute bottom-2 right-4 z-[2000] p-3 bg-white dark:bg-gray-800 rounded-full shadow-lg hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors"
-      :class="{ 'animate-pulse': isGettingLocation }"
+      :class="{ 'animate-pulse': isLocating }"
       title="Minha localização"
       @click="recalcularApartirDeMim"
     >
       <Navigation
         class="w-5 h-5"
-        :class="isGettingLocation ? 'text-blue-500' : 'text-gray-600 dark:text-gray-400'"
+        :class="isLocating ? 'text-blue-500' : 'text-gray-600 dark:text-gray-400'"
       />
     </button>
 
@@ -196,7 +196,7 @@ const {
   position: geoPosition,
   getCurrentPosition,
   error: geoError,
-  isLoading: isGettingLocation,
+  isLoading: isLocating,
 } = useGeolocation({
   enableHighAccuracy: false,
   timeout: 8000,

@@ -4,14 +4,14 @@
 
     <!-- Botão de geolocalização estilo Google Maps -->
     <button
-      v-if="showMyLocationButton"
+      v-if="showLocationButton"
       class="absolute bottom-24 right-3 z-[1000] bg-white rounded-sm shadow-md hover:shadow-lg transition-shadow w-10 h-10 flex items-center justify-center border border-gray-300"
-      :class="{ 'bg-blue-50': isGettingLocation }"
+      :class="{ 'bg-blue-50': isLocating }"
       title="Minha localização"
-      @click="goToMyLocation"
+      @click="locateUser"
     >
       <svg
-        v-if="!isGettingLocation"
+        v-if="!isLocating"
         class="w-5 h-5 text-gray-700"
         fill="currentColor"
         viewBox="0 0 24 24"
@@ -41,7 +41,7 @@
           <p class="text-gray-800">{{ geoError }}</p>
           <button
             class="mt-2 text-xs font-medium text-blue-600 hover:underline"
-            @click="goToMyLocation"
+            @click="locateUser"
           >
             Tentar novamente
           </button>
@@ -64,7 +64,7 @@ const props = withDefaults(
     fitBoundsPadding?: [number, number];
     autoFitBounds?: boolean;
     statusConfig?: UiMapaStatusConfig;
-    showMyLocationButton?: boolean;
+    showLocationButton?: boolean;
     mapType?: "roadmap" | "satellite" | "hybrid" | "terrain";
   }>(),
   {
@@ -73,7 +73,7 @@ const props = withDefaults(
     zoomInicial: 4,
     fitBoundsPadding: () => [50, 50],
     autoFitBounds: true,
-    showMyLocationButton: true,
+    showLocationButton: true,
     mapType: "roadmap",
     statusConfig: () => ({
       ativo: { color: "#10b981", label: "Ativo" },
@@ -83,7 +83,7 @@ const props = withDefaults(
   },
 );
 
-const resolvedStatusConfig = computed<UiMapaStatusConfig>(() => ({
+const statusConfig = computed<UiMapaStatusConfig>(() => ({
   ativo: { color: "#10b981", label: "Ativo" },
   alerta: { color: "#f59e0b", label: "Alerta" },
   inativo: { color: "#ef4444", label: "Inativo" },
@@ -91,7 +91,7 @@ const resolvedStatusConfig = computed<UiMapaStatusConfig>(() => ({
 }));
 
 const mapContainer = ref<HTMLElement | null>(null);
-const isGettingLocation = ref(false);
+const isLocating = ref(false);
 const geoError = ref<string | null>(null);
 
 let map: L.Map | null = null;
@@ -114,13 +114,13 @@ watch(error, (newError) => {
 
 const normalizeStatus = (status?: string) => (status ?? "").toLowerCase().trim();
 
-const getStatusConfig = (status?: string) => {
+const getStatus = (status?: string) => {
   const normalized = normalizeStatus(status);
-  return resolvedStatusConfig.value[normalized] || resolvedStatusConfig.value.inativo;
+  return statusConfig.value[normalized] || statusConfig.value.inativo;
 };
 
 // Tiles do Google Maps (gratuito, sem API key)
-const getTileLayerConfig = (type: string) => {
+const getTileConfig = (type: string) => {
   const configs = {
     roadmap: {
       url: "https://mt1.google.com/vt/lyrs=m&x={x}&y={y}&z={z}",
@@ -143,8 +143,8 @@ const getTileLayerConfig = (type: string) => {
   return configs[type as keyof typeof configs] || configs.roadmap;
 };
 
-const createCustomIcon = (status?: string) => {
-  const { color } = getStatusConfig(status);
+const createIcon = (status?: string) => {
+  const { color } = getStatus(status);
   const html = `
     <div style="
       background-color: ${color};
@@ -165,10 +165,10 @@ const createCustomIcon = (status?: string) => {
   });
 };
 
-const createPopupHtml = (ponto: UiMapaPonto) => {
+const createPopup = (ponto: UiMapaPonto) => {
   if (ponto.popupHtml) return ponto.popupHtml;
 
-  const { color, label } = getStatusConfig(ponto.status);
+  const { color, label } = getStatus(ponto.status);
 
   const subtitleHtml = ponto.subtitulo
     ? `<div style="color: var(--color-text-muted); margin: 0; font-size: 13px; font-weight: 500; display: flex; align-items: center; gap: 6px; padding-right: 40px;">
@@ -424,17 +424,17 @@ const addMarker = (ponto: UiMapaPonto) => {
   if (lat === null || lng === null) return null;
 
   const marker = L.marker([lat, lng], {
-    icon: createCustomIcon(ponto.status),
+    icon: createIcon(ponto.status),
   });
 
-  marker.bindPopup(createPopupHtml(ponto));
+  marker.bindPopup(createPopup(ponto));
   marker.addTo(map);
   markers.push(marker);
 
   return [lat, lng] as [number, number];
 };
 
-const updateUserLocationMarker = (lat: number, lng: number) => {
+const updateUserMarker = (lat: number, lng: number) => {
   if (!map) return;
 
   if (userMarker) {
@@ -467,8 +467,8 @@ const updateUserLocationMarker = (lat: number, lng: number) => {
   }
 };
 
-const goToMyLocation = async () => {
-  isGettingLocation.value = true;
+const locateUser = async () => {
+  isLocating.value = true;
   geoError.value = null;
 
   try {
@@ -483,11 +483,11 @@ const goToMyLocation = async () => {
   } catch (err) {
     geoError.value = "Não foi possível obter sua localização";
   } finally {
-    isGettingLocation.value = false;
+    isLocating.value = false;
   }
 };
 
-const updateMapMarkers = () => {
+const updateMarkers = () => {
   if (!map) return;
 
   clearMarkers();
@@ -510,7 +510,7 @@ const updateMapMarkers = () => {
 const initMap = async () => {
   if (!mapContainer.value || map) return;
 
-  const tileConfig = getTileLayerConfig(props.mapType);
+  const tileConfig = getTileConfig(props.mapType);
 
   map = L.map(mapContainer.value, {
     zoomControl: true,
@@ -526,22 +526,22 @@ const initMap = async () => {
   await nextTick();
   map.invalidateSize();
 
-  updateMapMarkers();
+  updateMarkers();
 
   // Tenta obter localizaÃ§Ã£o inicial
   if (props.showMyLocationButton && position.value) {
-    updateUserLocationMarker(position.value.latitude, position.value.longitude);
+    updateUserMarker(position.value.latitude, position.value.longitude);
   }
 };
 
 // Observa mudanças na posição do usuário
 watch(position, (newPos) => {
-  if (newPos && map && !isGettingLocation.value) {
-    updateUserLocationMarker(newPos.latitude, newPos.longitude);
+  if (newPos && map && !isLocating.value) {
+    updateUserMarker(newPos.latitude, newPos.longitude);
   }
 }, { deep: true });
 
-watch(() => props.pontos, updateMapMarkers, { deep: true });
+watch(() => props.pontos, updateMarkers, { deep: true });
 
 onMounted(initMap);
 
@@ -553,7 +553,7 @@ onUnmounted(() => {
 });
 
 defineExpose({
-  goToMyLocation,
+  locateUser,
   map,
 });
 </script>
