@@ -105,6 +105,7 @@
 
 <script setup lang="ts">
 import { Menu, Moon, Sun, User } from "lucide-vue-next";
+
 import OfflineIndicator from "~/components/common/OfflineIndicator.vue";
 import Profile from "~/layouts/profile.vue";
 

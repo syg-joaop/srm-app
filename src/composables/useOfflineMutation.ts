@@ -1,5 +1,6 @@
-﻿import type { OfflineHttpMethod, OfflineMutationResult, OfflinePendingOperation } from "~/types/offline";
-import { useAuthStore } from "~/stores/auth";
+﻿import { useAuthStore } from "~/stores/auth";
+
+import type { OfflineHttpMethod, OfflineMutationResult, OfflinePendingOperation } from "~/types/offline";
 
 export interface UseOfflineMutationConfig {
   entity: string;

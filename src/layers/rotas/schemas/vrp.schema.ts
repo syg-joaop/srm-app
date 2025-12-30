@@ -1,5 +1,7 @@
 import { z } from "zod";
 
+import type { VrpRouteResponse } from "../types/rotas.types";
+
 /**
  * Schemas Zod para validação de respostas da API VRP (Vehicle Routing Problem)
  * API externa de terceiros para roteirização

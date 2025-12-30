@@ -1,3 +1,5 @@
+import { logger } from "./logger";
+
 import type { $Fetch } from "ofetch";
 
 const AUTH_STORAGE_KEY = "srm_auth_user";
@@ -39,8 +41,12 @@ const createApiClient = (
   return $fetch.create({
     baseURL,
     headers,
-    onResponseError({ response }) {
-      console.error(`[API Error] ${response.status}`, {
+    onResponseError({
+      response
+    }: {
+      response: { status: number; url: string; _data: unknown };
+    }) {
+      logger.error(`[API Error] ${response.status}`, {
         url: response.url,
         data: response._data,
       });

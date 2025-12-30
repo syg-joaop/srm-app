@@ -21,16 +21,11 @@
     </UiListToolbar>
 
     <div>
-      <div v-if="isLoading" class="flex flex-col items-center justify-center py-12">
-        <UiSpinner size="large" text="Carregando dados..." />
-      </div>
-
-      <div v-else>
-        <div v-if="viewMode === 'list'">
-          <div class="mb-4 font-semibold text-sm" style="color: var(--color-primary)">
-            {{ prospectos?.data?.totalItems ?? 0 }} resultados
-          </div>
-          <ListaProspectos :prospectos="paginatedProspectos" @select="handleSelectProspecto" />
+      <div v-if="viewMode === 'list'">
+        <div class="mb-4 font-semibold text-sm" style="color: var(--color-primary)">
+          {{ prospectos?.data?.totalItems ?? 0 }} resultados
+        </div>
+        <ListaProspectos :prospectos="paginatedProspectos" @select="handleSelectProspecto" />
 
           <UiPaginacao
             v-model:page="currentPage"
@@ -43,23 +38,21 @@
         <div v-else>
           <MapaProspectos :prospectos="prospectos?.data?.items ?? []" />
         </div>
-      </div>
     </div>
 
-    <ModalDetalhesParceiro v-model="showModal" :parceiro="selectedProspecto" />
+    <ModalDetalhesParceiro v-model="showModal" :parceiro="selectedProspecto" variant="parceiro" />
   </div>
 </template>
 
 <script setup lang="ts">
 import { List, Map } from "lucide-vue-next";
+
 import ModalDetalhesParceiro from "~/components/common/ModalDetalhesParceiro.vue";
-import UiListToolbar from "~/components/ui/UiListToolbar.vue";
-import UiPaginacao from "~/components/ui/UiPaginacao.vue";
-import UiSegmentedControl from "~/components/ui/UiSegmentedControl.vue";
-import UiSpinner from "~/components/ui/UiSpinner.vue";
+
 import ListaProspectos from "../components/ListaProspectos.vue";
 import MapaProspectos from "../components/MapaProspectos.vue";
-import type { Prospecto } from "../prospecto.types";
+
+import type { Prospecto } from "../types/prospecto.types";
 
 const viewMode = ref<"list" | "map">("list");
 const currentPage = ref(1);
@@ -122,7 +115,7 @@ const filterItems = [
     options: sortOptions,
     defaultValue: "prospecto",
     segmentedFullWidth: true,
-    segmentedMobileSize: "xs",
+    segmentedMobileSize: "xs" as const,
   },
 ];
 
@@ -148,9 +141,7 @@ watch(currentPage, () => {
   window.scrollTo({ top: 0, behavior: "smooth" });
 });
 
-const { data: prospectos, status } = fetchProspectos(currentPage, itemsPerPage, prospectoFilters);
-
-const isLoading = computed(() => status.value === "pending");
+const { data: prospectos } = fetchProspectos(currentPage, itemsPerPage, prospectoFilters);
 
 const paginatedProspectos = computed(() => prospectos.value?.data?.items ?? []);
 
@@ -160,7 +151,8 @@ const selectedProspecto = ref<Prospecto | null>(null);
 const handleSelectProspecto = (prospecto: Prospecto) => {
   selectedProspecto.value = {
     ...prospecto,
-  };
+    name: prospecto.prospecto,
+  } as typeof selectedProspecto.value;
   showModal.value = true;
 };
 </script>

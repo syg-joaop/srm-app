@@ -128,15 +128,14 @@ import {
   GripVertical,
   Trash2,
 } from "lucide-vue-next";
-import UiButton from "~/components/ui/UiButton.vue";
-import UiBadge from "~/components/ui/UiBadge.vue";
-import UiEmptyState from "~/components/ui/UiEmptyState.vue";
-import type { Roteiro } from "../../rotas.types";
+
 import {
   getRotaStatusColor,
   getRotaStatusVariant,
   getRotaStatusLabel,
 } from "~/utils/helpers/status-rota";
+
+import type { Roteiro } from "../../types/rotas.types";
 
 const props = defineProps<{
   roteiros: Roteiro[];

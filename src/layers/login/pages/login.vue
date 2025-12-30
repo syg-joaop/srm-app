@@ -1,8 +1,5 @@
 ﻿<script setup lang="ts">
 import { Eye, EyeOff, Info, Moon, Sun } from "lucide-vue-next";
-import UiButton from "~/components/ui/UiButton.vue";
-import UiCheckbox from "~/components/ui/UiCheckbox.vue";
-import UiInput from "~/components/ui/UiInput.vue";
 
 definePageMeta({
   layout: "blank",

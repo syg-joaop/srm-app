@@ -1,7 +1,10 @@
-import type { Map, CircleMarker, Polyline } from "leaflet";
 import L from "leaflet";
-import type { UserLocation } from "./maps.types";
+
 import { toNumber } from "~/utils/coerce";
+import { areValidCoordinates } from "~/utils/mapTypeGuards";
+
+import type { UserLocation } from "./maps.types";
+import type { Map, CircleMarker, Polyline } from "leaflet";
 
 /**
  * Composable para gerenciar a localização do usuário no mapa.
@@ -46,11 +49,12 @@ export function useMapUserLocation() {
     const lat = toNumber(userLocation.latitude);
     const lng = toNumber(userLocation.longitude);
 
-    if (lat === null || lng === null) {
+    if (!areValidCoordinates(lat, lng)) {
       return null;
     }
 
-    const userCoords: [number, number] = [lat, lng];
+    // Type assertion: after areValidCoordinates check, lat and lng are guaranteed to be number
+    const userCoords: [number, number] = [lat as number, lng as number];
 
     userMarker = L.circleMarker(userCoords, {
       radius: 8,
@@ -110,9 +114,12 @@ export function useMapUserLocation() {
       const lat = toNumber(firstPonto.latitude);
       const lng = toNumber(firstPonto.longitude);
 
-      if (lat !== null && lng !== null) {
-        return [lat, lng];
+      if (!areValidCoordinates(lat, lng)) {
+        return null;
       }
+
+      // Type assertion: after areValidCoordinates check, lat and lng are guaranteed to be number
+      return [lat as number, lng as number];
     }
 
     return null;

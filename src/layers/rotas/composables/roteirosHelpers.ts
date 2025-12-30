@@ -1,6 +1,8 @@
-import { isValidCoordinate } from "~/utils/validators/geo";
+import { parseCoordinates, hasValidCoordinates } from "~/utils/geo/coordinateUtils";
 import { logger } from "~/utils/logger";
-import type { Roteiro, VrpTask, VrpVehicle } from "../types/rotas.types";
+
+import type { VrpTask, VrpVehicle } from "../types/rotas.types";
+import type { Roteiro } from "~/server/schemas/rotas.schema";
 
 const VRP_TASK_DURATION = "00:10";
 const VRP_VEHICLE_ID = 1;
@@ -11,26 +13,14 @@ const VRP_WORK_START = "06:00";
 const VRP_WORK_END = "22:00";
 
 /**
- * Converte valor para number ou retorna null.
- * Implementação específica para roteiros.
- */
-export const parseNumber = (value: string | number | null | undefined): number | null => {
-  if (value === null || value === undefined) return null;
-  const parsed = typeof value === "string" ? Number.parseFloat(value) : value;
-  return Number.isFinite(parsed) ? parsed : null;
-};
-
-/**
  * Obtém coordenadas de um roteiro.
+ * Usa o utilitário consolidado de coordenadas.
  */
 export const getRoteiroCoordinates = (
   roteiro: Roteiro,
 ): { latitude: number; longitude: number } | null => {
   if (!roteiro.endereco) return null;
-  const lat = parseNumber(roteiro.endereco.latitude);
-  const lng = parseNumber(roteiro.endereco.longitude);
-  if (lat === null || lng === null) return null;
-  return isValidCoordinate(lat, lng) ? { latitude: lat, longitude: lng } : null;
+  return parseCoordinates(roteiro.endereco);
 };
 
 /**
@@ -88,11 +78,8 @@ export const createVirtualVehicle = (
   const primeiro = roteirosWithCoords[0];
   const ultimo = roteirosWithCoords[roteirosWithCoords.length - 1];
 
-  const hasValidUserLocation =
-    !!userLocation && isValidCoordinate(userLocation.latitude, userLocation.longitude);
-  const start = hasValidUserLocation
-    ? { latitude: userLocation!.latitude, longitude: userLocation!.longitude }
-    : primeiro.coords;
+  const hasValidUserLocation = userLocation && hasValidCoordinates(userLocation);
+  const start = hasValidUserLocation ? userLocation : primeiro.coords;
 
   if (hasValidUserLocation && userLocation) {
     logger.info("[createVirtualVehicle] Usando localizacao do usuario como ponto de partida:", start);

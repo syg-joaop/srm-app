@@ -122,15 +122,15 @@
 
 <script setup lang="ts">
 import { Building2, MapPin, MessageSquareText } from "lucide-vue-next";
-import type { Variant } from "~/components/ui/UiBadge.vue";
-import UiBadge from "~/components/ui/UiBadge.vue";
-import UiButton from "~/components/ui/UiButton.vue";
+
+import { type Variant } from "~/components/ui/UiBadge.vue";
 import {
   COMMON_STATUS_ICON_CLASSES,
   COMMON_STATUS_VARIANTS,
   resolveStatusIconClass,
   resolveStatusVariant,
 } from "~/utils/status";
+
 import type { Prospecto } from "../types/prospecto.types";
 
 defineProps<{

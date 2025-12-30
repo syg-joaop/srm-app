@@ -14,16 +14,11 @@
     />
 
     <div>
-      <div v-if="isLoading" class="flex flex-col items-center justify-center py-12">
-        <UiSpinner size="large" text="Carregando dados..." />
+      <div class="mb-4 font-semibold text-sm" style="color: var(--color-primary)">
+        {{ fallbackTotalItems }} resultados
       </div>
 
-      <div v-else>
-        <div class="mb-4 font-semibold text-sm" style="color: var(--color-primary)">
-          {{ fallbackTotalItems }} resultados
-        </div>
-
-        <ListaCheckins
+      <ListaCheckins
           v-if="paginatedCheckins.length > 0"
           :checkins="paginatedCheckins"
           @select="handleSelectCheckin"
@@ -46,7 +41,6 @@
           :total-pages="totalPages"
           class="mt-6"
         />
-      </div>
     </div>
 
     <ModalDetalhesCheckin v-model="showModal" :checkin="selectedCheckin" />
@@ -55,12 +49,11 @@
 
 <script setup lang="ts">
 import { MapPin } from "lucide-vue-next";
-import UiEmptyState from "~/components/ui/UiEmptyState.vue";
-import UiListToolbar from "~/components/ui/UiListToolbar.vue";
-import UiPaginacao from "~/components/ui/UiPaginacao.vue";
-import UiSpinner from "~/components/ui/UiSpinner.vue";
+
 import ListaCheckins from "../components/ListaCheckins.vue";
 import ModalDetalhesCheckin from "../components/ModalDetalhesCheckin.vue";
+import { toNumber, toStringValue } from "~/utils/coerce";
+
 import type { Checkin, CheckinFilters } from "../types/checkin.types";
 
 definePageMeta({ layout: "default" });
@@ -133,9 +126,7 @@ watch(currentPage, () => {
   window.scrollTo({ top: 0, behavior: "smooth" });
 });
 
-const { data: checkinsResponse, status } = fetchCheckins(currentPage, itemsPerPage, checkinFilters);
-
-const isLoading = computed(() => status.value === "pending");
+const { data: checkinsResponse } = fetchCheckins(currentPage, itemsPerPage, checkinFilters);
 
 const normalizeCheckin = (raw: Record<string, unknown>): Checkin => ({
   id:

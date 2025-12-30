@@ -1,4 +1,4 @@
-import type { GetOfflineCacheOptions, OfflineCacheEntry, OfflinePendingOperation } from "~/types/offline";
+import { logger } from "~/utils/logger";
 import {
   OFFLINE_CACHE_STORE,
   OFFLINE_PENDING_STORE,
@@ -9,6 +9,8 @@ import {
   requestToPromise,
   transactionToPromise,
 } from "~/utils/offline/database";
+
+import type { GetOfflineCacheOptions, OfflineCacheEntry, OfflinePendingOperation } from "~/types/offline";
 
 type CacheLookup<T> = { data: T; isExpired: boolean };
 
@@ -56,7 +58,7 @@ export const useOfflineStorage = () => {
     try {
       return await readCacheEntry<T>(key, options);
     } catch (error) {
-      console.warn("[offline] Falha ao ler cache:", error);
+      logger.warn("[offline] Falha ao ler cache:", error);
       return null;
     }
   };
@@ -77,7 +79,7 @@ export const useOfflineStorage = () => {
       await requestToPromise(store.put(entry) as IDBRequest<IDBValidKey>);
       await transactionToPromise(tx);
     } catch (error) {
-      console.warn("[offline] Falha ao salvar cache:", error);
+      logger.warn("[offline] Falha ao salvar cache:", error);
     }
   };
 
@@ -107,7 +109,7 @@ export const useOfflineStorage = () => {
 
       await transactionToPromise(tx);
     } catch (error) {
-      console.warn("[offline] Falha ao invalidar cache:", error);
+      logger.warn("[offline] Falha ao invalidar cache:", error);
     }
   };
 
@@ -120,7 +122,7 @@ export const useOfflineStorage = () => {
       await transactionToPromise(tx);
       return operation.id;
     } catch (error) {
-      console.warn("[offline] Falha ao adicionar operação pendente:", error);
+      logger.warn("[offline] Falha ao adicionar operação pendente:", error);
       return operation.id;
     }
   };
@@ -133,7 +135,7 @@ export const useOfflineStorage = () => {
       await requestToPromise(store.put(operation) as IDBRequest<IDBValidKey>);
       await transactionToPromise(tx);
     } catch (error) {
-      console.warn("[offline] Falha ao atualizar operação pendente:", error);
+      logger.warn("[offline] Falha ao atualizar operação pendente:", error);
     }
   };
 
@@ -166,7 +168,7 @@ export const useOfflineStorage = () => {
       await transactionToPromise(tx);
       return items;
     } catch (error) {
-      console.warn("[offline] Falha ao buscar fila offline:", error);
+      logger.warn("[offline] Falha ao buscar fila offline:", error);
       return [];
     }
   };
@@ -179,7 +181,7 @@ export const useOfflineStorage = () => {
       await requestToPromise(store.delete(id) as IDBRequest<unknown>);
       await transactionToPromise(tx);
     } catch (error) {
-      console.warn("[offline] Falha ao remover operação pendente:", error);
+      logger.warn("[offline] Falha ao remover operação pendente:", error);
     }
   };
 
@@ -192,7 +194,7 @@ export const useOfflineStorage = () => {
       await transactionToPromise(tx);
       return count;
     } catch (error) {
-      console.warn("[offline] Falha ao contar pendências:", error);
+      logger.warn("[offline] Falha ao contar pendências:", error);
       return 0;
     }
   };

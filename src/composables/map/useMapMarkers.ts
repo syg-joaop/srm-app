@@ -1,6 +1,7 @@
-import type { Map, Marker } from "leaflet";
 import L from "leaflet";
+
 import type { MapaPonto, MapaStatusConfig } from "./maps.types";
+import type { Map, Marker } from "leaflet";
 
 /**
  * Composable para gerenciar markers em um mapa Leaflet.

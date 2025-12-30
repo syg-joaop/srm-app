@@ -72,6 +72,47 @@ module.exports = {
     "vue/multi-word-component-names": "off",
     "no-console": ["warn", { allow: ["warn", "error"] }],
     "no-debugger": "error",
+
+    // Organização de imports
+    "import/order": [
+      "warn",
+      {
+        groups: [
+          "builtin", // Node.js built-in modules
+          "external", // External libraries
+          "internal", // Internal modules (usando ~ ou @)
+          "parent", // Parent imports
+          "sibling", // Sibling imports
+          "index", // Index imports
+          "type", // Type imports
+        ],
+        "newlines-between": "always",
+        alphabetize: {
+          order: "asc",
+          caseInsensitive: true,
+        },
+        pathGroups: [
+          {
+            pattern: "~/**",
+            group: "internal",
+            position: "before",
+          },
+          {
+            pattern: "@/**",
+            group: "internal",
+            position: "before",
+          },
+          {
+            pattern: "*.vue",
+            group: "sibling",
+            position: "after",
+          },
+        ],
+        pathGroupsExcludedImportTypes: ["type"],
+      },
+    ],
+    "import/newline-after-import": "warn",
+    "import/no-duplicates": "warn",
     "import/no-restricted-paths": [
       "error",
       {

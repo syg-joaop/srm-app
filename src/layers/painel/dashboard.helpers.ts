@@ -3,7 +3,7 @@
   DashboardApiResponse,
   PurchasingStats,
   SummaryItem,
-} from "./dashboard.types";
+} from "./types/dashboard.types";
 
 export function emptyChartData(): ChartData {
   return {

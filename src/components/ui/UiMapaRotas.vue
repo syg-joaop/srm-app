@@ -36,16 +36,18 @@
 
 <script setup lang="ts">
 import L from "leaflet";
+
 import "leaflet/dist/leaflet.css";
-import { logger } from "~/utils/logger";
-import type { UiMapaStatusConfig } from "./maps.types";
-import type { MapaPonto, MapaStatusConfig, RotaPolylineConfig, UserLocation } from "~/composables/map";
 import {
   useMapMarkers,
   useMapPolyline,
   useMapUserLocation,
   useMapBounds,
 } from "~/composables/map";
+import { logger } from "~/utils/logger";
+
+import type { UiMapaStatusConfig } from "./maps.types";
+import type { MapaPonto, MapaStatusConfig, RotaPolylineConfig, UserLocation } from "~/composables/map";
 
 export interface RotaPonto {
   id: number | string;
@@ -309,7 +311,8 @@ watch(() => props.mapType, () => {
 
   const tileConfig = getTileConfig(props.mapType);
   mapTileLayer.setUrl(tileConfig.url);
-  mapTileLayer.setAttribution(tileConfig.attribution);
+  // Note: setAttribution não existe no TileLayer do Leaflet
+  // Para alterar attribution, seria necessário remover e recriar a camada
 });
 
 // Inicializa o mapa quando o componente for montado

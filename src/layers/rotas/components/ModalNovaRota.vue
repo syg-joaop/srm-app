@@ -45,13 +45,12 @@
 
 <script setup lang="ts">
 import { Route as RouteIcon, Plus } from "lucide-vue-next";
-import UiModal from "~/components/ui/UiModal.vue";
-import UiButton from "~/components/ui/UiButton.vue";
-import UiMapaPontos from "~/components/ui/UiMapaPontos.vue";
-import type { UiMapaPonto } from "~/components/ui/maps.types";
+
 import FormularioRota from "./FormularioRota.vue";
 import ListaFornecedoresRota from "./ListaFornecedoresRota.vue";
+
 import type { FornecedorRotaSimples } from "../types/rotas.types";
+import type { UiMapaPonto } from "~/components/ui/maps.types";
 
 const props = defineProps<{
   modelValue: boolean;

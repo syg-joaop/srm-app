@@ -1,6 +1,7 @@
-﻿import type { ConcorrenteFilters, PaginatedConcorrenteResponse } from "../types/concorrentes.types";
-import { schemaPaginatedConcorrenteResponse } from "~/server/schemas/concorrentes.schema";
+﻿import { schemaPaginatedConcorrenteResponse } from "~/server/schemas/concorrentes.schema";
 import { buildPagedBody } from "~/utils/apiPayload";
+
+import type { ConcorrenteFilters, PaginatedConcorrenteResponse } from "../types/concorrentes.types";
 
 const CONCORRENTES_LIST_ENDPOINT = "/sygecom/chameleon-mode/SRM_GET_CONCORRENTES";
 

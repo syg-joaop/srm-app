@@ -44,7 +44,6 @@
 
 <script setup lang="ts">
 import * as LucideIcons from "lucide-vue-next";
-import UiCard from "~/components/ui/UiCard.vue";
 
 const props = defineProps<{
   label: string;

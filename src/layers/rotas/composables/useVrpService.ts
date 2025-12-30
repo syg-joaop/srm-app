@@ -1,8 +1,13 @@
 import { logger } from "~/utils/logger";
-import type { Roteiro, VrpRouteRequest, VrpRouteResponse, VrpSummary } from "../types/rotas.types";
-import { usePolylineCache } from "./usePolylineCache";
-import { roteirosToVrpTasks, createVirtualVehicle, getRoteirosWithCoords } from "./roteirosHelpers";
+
 import { validateVrpResponse } from "../schemas/vrp.schema";
+
+import { roteirosToVrpTasks, createVirtualVehicle, getRoteirosWithCoords } from "./roteirosHelpers";
+import { usePolylineCache } from "./usePolylineCache";
+
+import type { VrpRouteRequest, VrpRouteResponse, VrpSummary } from "../types/rotas.types";
+import type { Roteiro } from "~/server/schemas/rotas.schema";
+
 
 const LOG_PREFIX = "[useVrpService]";
 

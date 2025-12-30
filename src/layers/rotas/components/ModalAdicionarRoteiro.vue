@@ -150,11 +150,12 @@
 
 <script setup lang="ts">
 import { Plus, Search, MapPin, MapPinOff, Building2, Check } from "lucide-vue-next";
-import UiModal from "~/components/ui/UiModal.vue";
-import UiButton from "~/components/ui/UiButton.vue";
-import UiInput from "~/components/ui/UiInput.vue";
+
+import { logger } from "~/utils/logger";
+import { isValidCoordinate } from "~/utils/validators/geo";
+
+import type { Fornecedor, FornecedorFilters } from "../../fornecedores/types/fornecedores.types";
 import type { Rota, FornecedorParaRoteiro } from "../types/rotas.types";
-import type { Fornecedor } from "../../fornecedores/types/fornecedores.types";
 
 const props = defineProps<{
   modelValue: boolean;
@@ -181,6 +182,11 @@ const isSearching = ref(false);
 const isAdding = ref(false);
 const hasSearched = ref(false);
 
+// Estado para paginação (necessário para fetchFornecedor)
+const fornecedorPage = ref(1);
+const fornecedorSize = ref(50);
+const fornecedorFilters = ref<FornecedorFilters>({});
+
 // Services
 const fornecedorService = useFornecedorService();
 const rotaService = useRotaService();
@@ -192,7 +198,7 @@ const hasValidCoordinates = (fornecedor: Fornecedor): boolean => {
   if (!fornecedor.latitude || !fornecedor.longitude) return false;
   const lat = parseFloat(fornecedor.latitude);
   const lng = parseFloat(fornecedor.longitude);
-  return rotaService.isValidCoordinate(lat, lng);
+  return isValidCoordinate(lat, lng);
 };
 
 /**
@@ -205,16 +211,25 @@ const buscarFornecedores = async () => {
   hasSearched.value = true;
 
   try {
-    const { data, execute } = fornecedorService.fetchFornecedor;
-    await execute({ search: searchTerm.value.trim() });
+    // Atualiza os filtros
+    fornecedorFilters.value = { search: searchTerm.value.trim() };
+    fornecedorPage.value = 1;
 
-    if (data.value?.data?.items) {
-      fornecedores.value = data.value.data.items;
+    // Chama fetchFornecedor com os 3 argumentos Ref (padrão correto)
+    const fornecedoresResponse = await fornecedorService.fetchFornecedor(
+      fornecedorPage,
+      fornecedorSize,
+      fornecedorFilters
+    );
+
+    // Acessa .value pois data é um Ref, depois acessa .data.items da response
+    if (fornecedoresResponse?.data?.value?.data?.items) {
+      fornecedores.value = fornecedoresResponse.data.value.data.items;
     } else {
       fornecedores.value = [];
     }
   } catch (error) {
-    console.error("[ModalAdicionarRoteiro] Erro ao buscar fornecedores:", error);
+    logger.error("[ModalAdicionarRoteiro] Erro ao buscar fornecedores:", error);
     fornecedores.value = [];
   } finally {
     isSearching.value = false;
@@ -267,7 +282,7 @@ const handleAdd = async () => {
       isOpen.value = false;
     }
   } catch (error) {
-    console.error("[ModalAdicionarRoteiro] Erro ao adicionar roteiro:", error);
+    logger.error("[ModalAdicionarRoteiro] Erro ao adicionar roteiro:", error);
   } finally {
     isAdding.value = false;
   }

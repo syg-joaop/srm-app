@@ -129,13 +129,15 @@
 </template>
 
 <script setup lang="ts">
-import { ref } from 'vue';
-import type { Component } from 'vue';
 import { ChevronDown } from 'lucide-vue-next';
-import UiBadge from './UiBadge.vue';
-import type { EnhancedDetail } from '~/types/parceiro';
-import { isSeparatorDetail, isTotalDetail } from '~/types/parceiro';
+import { ref } from 'vue';
+
 import { useHeightAnimation } from '~/composables/useHeightAnimation';
+import { isSeparatorDetail, isTotalDetail } from '~/types/parceiro';
+
+import type { Component } from 'vue';
+import type { EnhancedDetail } from '~/types/parceiro';
+
 
 export interface Detail {
   label: string;
@@ -150,7 +152,7 @@ interface Props {
   iconClass?: string;
   iconContainerClass?: string;
   status?: string;
-  statusVariant?: (status: string) => 'default' | 'primary' | 'success' | 'warning' | 'danger' | 'info';
+  statusVariant?: (status: string) => 'default' | 'primary' | 'success' | 'warning' | 'danger' | 'info' | 'neutral';
   details: EnhancedDetail[];
   initialVisibleDetails?: number;
   expandable?: boolean;

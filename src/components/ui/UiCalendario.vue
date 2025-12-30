@@ -277,7 +277,7 @@ function formatDate(date: Date): string {
 
 function isSelected(date: Date): boolean {
   if (props.range) {
-    return (
+    return Boolean(
       (internalStartDate.value && isSameDay(date, internalStartDate.value)) ||
       (internalEndDate.value && isSameDay(date, internalEndDate.value))
     );

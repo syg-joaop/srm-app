@@ -1,20 +1,12 @@
+import {
+  isValidCoordinate,
+  filterValidCoordinates as filterCoords,
+} from "~/utils/geo/coordinateUtils";
+
 import { decodePolyline } from "./decoder";
 
-/**
- * Valida se uma coordenada latitude/longitude está dentro dos limites válidos.
- *
- * @param lat - Latitude em graus
- * @param lng - Longitude em graus
- * @returns true se a coordenada é válida
- */
-export function isValidLatLng(lat: number, lng: number): boolean {
-  return (
-    Number.isFinite(lat) &&
-    Number.isFinite(lng) &&
-    Math.abs(lat) <= 90 &&
-    Math.abs(lng) <= 180
-  );
-}
+// Re-export para backward compatibility
+export { filterCoords as filterValidCoordinates, isValidCoordinate as isValidLatLng };
 
 /**
  * Calcula o centro (ponto médio) de um conjunto de coordenadas.
@@ -25,13 +17,15 @@ export function isValidLatLng(lat: number, lng: number): boolean {
 export function getBoundsCenter(coords: [number, number][]): [number, number] | null {
   if (coords.length === 0) return null;
 
+  const validCoords = filterCoords(coords);
+  if (validCoords.length === 0) return null;
+
   let minLat = Infinity;
   let maxLat = -Infinity;
   let minLng = Infinity;
   let maxLng = -Infinity;
 
-  for (const [lat, lng] of coords) {
-    if (!isValidLatLng(lat, lng)) continue;
+  for (const [lat, lng] of validCoords) {
     minLat = Math.min(minLat, lat);
     maxLat = Math.max(maxLat, lat);
     minLng = Math.min(minLng, lng);
@@ -51,16 +45,6 @@ export function getBoundsCenter(coords: [number, number][]): [number, number] | 
  */
 export function distanceSquared(a: [number, number], b: [number, number]): number {
   return (a[0] - b[0]) ** 2 + (a[1] - b[1]) ** 2;
-}
-
-/**
- * Filtra um array de coordenadas removendo entradas inválidas.
- *
- * @param coords - Array de coordenadas [latitude, longitude]
- * @returns Array filtrado apenas com coordenadas válidas
- */
-export function filterValidCoordinates(coords: [number, number][]): [number, number][] {
-  return coords.filter(([lat, lng]) => isValidLatLng(lat, lng));
 }
 
 /**
@@ -99,8 +83,8 @@ export function decodeWithBestPrecision(
     return decodePolyline(encoded);
   }
 
-  const decoded5 = filterValidCoordinates(decodePolyline(encoded, 5));
-  const decoded6 = filterValidCoordinates(decodePolyline(encoded, 6));
+  const decoded5 = filterCoords(decodePolyline(encoded, 5));
+  const decoded6 = filterCoords(decodePolyline(encoded, 6));
 
   const center5 = getBoundsCenter(decoded5);
   const center6 = getBoundsCenter(decoded6);

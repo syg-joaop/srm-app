@@ -1,3 +1,5 @@
+import { logger } from "~/utils/logger";
+
 export default defineNuxtPlugin({
   name: "offline",
   dependsOn: ["auth"],
@@ -8,7 +10,7 @@ export default defineNuxtPlugin({
     try {
       await storage.ready();
     } catch (error) {
-      console.warn("[offline] Falha ao inicializar IndexedDB:", error);
+      logger.warn("[offline] Falha ao inicializar IndexedDB:", error);
     } finally {
       await sync.refreshPendingCount();
     }

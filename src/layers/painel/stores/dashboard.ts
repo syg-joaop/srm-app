@@ -1,4 +1,5 @@
 ﻿import { defineStore } from "pinia";
+
 import {
   emptyChartData,
   formatarLabel,
@@ -10,17 +11,22 @@ import {
   transformPieData,
   transformProdutosData,
 } from "../dashboard.helpers";
+
 import type {
   AniversarianteItem,
   Atendente,
   AtendenteItem,
+  BuyerPerformance,
   ChartData,
   DashboardApiResponse,
   DashboardCount,
+  StaffPerformance,
   StatItem,
   SummaryItem,
+  SupplierBirthday,
   TableItem,
-} from "./types/dashboard.types";
+  TopProduct,
+} from "~/layers/painel/types/dashboard.types";
 
 export const useDashboardStore = defineStore("dashboard", () => {
   const rawData = ref<DashboardApiResponse | null>(null);
@@ -72,61 +78,61 @@ export const useDashboardStore = defineStore("dashboard", () => {
 
   const compradorItems = computed<TableItem[]>(() => {
     const data = rawData.value?.comprasComprador?.data ?? [];
-    return data.map((c) => ({
-      name: c.nome ?? "Não identificado",
-      current: formatarMoeda(c.atual),
-      previous: formatarMoeda(c.ant),
+    return data.map((comprador: BuyerPerformance) => ({
+      name: comprador.nome ?? "Não identificado",
+      current: formatarMoeda(comprador.atual),
+      previous: formatarMoeda(comprador.ant),
     }));
   });
 
   const produtosItems = computed<TableItem[]>(() => {
     const data = rawData.value?.prodsMaisCompradosMes?.data ?? [];
-    return data.map((p) => ({
-      name: p.produto ?? "Produto desc.",
-      current: formatarMoeda(p.mes_atual),
-      previous: formatarMoeda(p.mes_anterior),
+    return data.map((produto: TopProduct) => ({
+      name: produto.produto ?? "Produto desc.",
+      current: formatarMoeda(produto.mes_atual),
+      previous: formatarMoeda(produto.mes_anterior),
     }));
   });
 
   const aniversariantesItems = computed<AniversarianteItem[]>(() => {
     const data = rawData.value?.aniversariantesFornecedores?.data ?? [];
-    return data.map((a) => ({
-      name: a.fornecedor,
-      location: a.uf ? `${a.cidade}/${a.uf}` : a.cidade,
-      status: a.status,
-      date: a.dat_nasc,
+    return data.map((aniversariante: SupplierBirthday) => ({
+      name: aniversariante.fornecedor,
+      location: aniversariante.uf ? `${aniversariante.cidade}/${aniversariante.uf}` : aniversariante.cidade,
+      status: aniversariante.status,
+      date: aniversariante.dat_nasc,
     }));
   });
 
   const atendentesItems = computed<AtendenteItem[]>(() => {
     const data = rawData.value?.atendentes?.data ?? [];
-    return data.map((a) => ({
-      role: a.setor || "Geral",
-      geral: Number(a.atendimento_geral),
-      periodo: Number(a.atendimento_periodo),
-      concluidos: Number(a.atendimento_ok),
-      pendentes: Number(a.atendimento_pendente),
+    return data.map((atendente: StaffPerformance) => ({
+      role: atendente.setor || "Geral",
+      geral: Number(atendente.atendimento_geral),
+      periodo: Number(atendente.atendimento_periodo),
+      concluidos: Number(atendente.atendimento_ok),
+      pendentes: Number(atendente.atendimento_pendente),
       statuses: [
         {
-          value: Number(a.atendimento_periodo),
+          value: Number(atendente.atendimento_periodo),
           label: "Período",
           color: "gray",
           icon: "calendar",
         },
         {
-          value: Number(a.atendimento_ok),
+          value: Number(atendente.atendimento_ok),
           label: "OK",
           color: "green",
           icon: "check",
         },
         {
-          value: Number(a.atendimento_pendente),
+          value: Number(atendente.atendimento_pendente),
           label: "Pendente",
           color: "yellow",
           icon: "clock",
         },
         {
-          value: Number(a.atendimento_geral),
+          value: Number(atendente.atendimento_geral),
           label: "Geral",
           color: "red",
           icon: "x",
@@ -141,29 +147,29 @@ export const useDashboardStore = defineStore("dashboard", () => {
 
   const isOcorrenciasPieEmpty = computed(() => {
     const list = chartData.value.ocorrenciasPie;
-    return list.length === 0 || list.every((item) => item.value === 0);
+    return list.length === 0 || list.every((item: { value: number }) => item.value === 0);
   });
 
   const isOcorrenciasLineEmpty = computed(() => {
     const values = chartData.value.ocorrenciasLine.values;
-    return values.length === 0 || values.every((v) => v === 0);
+    return values.length === 0 || values.every((value: number) => value === 0);
   });
 
   const isMetaDiariaEmpty = computed(() => {
     const values = chartData.value.metaDiaria.values;
-    return values.length === 0 || values.every((v) => v === 0);
+    return values.length === 0 || values.every((value: number) => value === 0);
   });
 
   const isDescontosEmpty = computed(() => {
     const values = chartData.value.descontos.values;
-    return values.length === 0 || values.every((v) => v === 0);
+    return values.length === 0 || values.every((value: number) => value === 0);
   });
 
   const isProdutosBarEmpty = computed(() => {
     const data = chartData.value.produtosBar;
     return (
       data.names.length === 0 ||
-      (data.current.every((v) => v === 0) && data.previous.every((v) => v === 0))
+      (data.current.every((value: number) => value === 0) && data.previous.every((value: number) => value === 0))
     );
   });
 

@@ -134,11 +134,12 @@
 
 <script setup lang="ts">
 import { Calendar, CircleAlert, Edit, History, Send } from "lucide-vue-next";
-import UiButton from "~/components/ui/UiButton.vue";
-import UiModal from "~/components/ui/UiModal.vue";
-import type { Ocorrencia, OcorrenciaStatus } from "~/types/ocorrencias";
+
 import { formatarData } from "~/utils/utils";
+
 import DadoItem from "./DadoItem.vue";
+
+import type { Ocorrencia, OcorrenciaStatus } from "~/server/schemas/ocorrencias.schema";
 
 const props = defineProps<{
   modelValue: boolean;

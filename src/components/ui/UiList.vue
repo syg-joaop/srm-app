@@ -49,11 +49,11 @@ const emit = defineEmits<{
   "item-click": [item: ListItem, index: number];
 }>();
 
-const getKey = (item: ListItem, index: number) => {
+const getKey = (item: ListItem, index: number): PropertyKey => {
   if (!item || typeof item !== "object") return index;
   const record = item as Record<string, unknown>;
   const value = record[props.itemKey];
-  return value ?? index;
+  return (value as PropertyKey) ?? index;
 };
 
 const handleItemClick = (item: ListItem, index: number) => {

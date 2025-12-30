@@ -93,14 +93,14 @@
 </template>
 
 <script setup lang="ts">
-import { ChevronDown, Check, Search } from "lucide-vue-next";
+import { Check, ChevronDown, Search } from "lucide-vue-next";
 
 type OptionValue = string | number;
 type OptionObject = { label: string; value: OptionValue };
 type Option = OptionValue | OptionObject;
 
 interface Props {
-  modelValue: OptionValue | null;
+  modelValue: OptionValue | null | undefined;
   options: Option[];
   label?: string;
   placeholder?: string;
@@ -122,8 +122,8 @@ const props = withDefaults(defineProps<Props>(), {
 });
 
 const emit = defineEmits<{
-  "update:modelValue": [value: OptionValue | null];
-  change: [value: OptionValue | null];
+  "update:modelValue": [value: OptionValue | null | undefined];
+  change: [value: OptionValue | null | undefined];
 }>();
 
 const isOpen = ref(false);

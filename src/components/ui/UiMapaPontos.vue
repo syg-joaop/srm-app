@@ -53,6 +53,7 @@
 
 <script setup lang="ts">
 import L from "leaflet";
+
 import "leaflet/dist/leaflet.css";
 import type { UiMapaPonto, UiMapaStatusConfig } from "./maps.types";
 
@@ -475,7 +476,7 @@ const locateUser = async () => {
     const pos = await getCurrentPosition();
 
     if (pos && map) {
-      updateUserLocationMarker(pos.latitude, pos.longitude);
+      updateUserMarker(pos.latitude, pos.longitude);
       map.flyTo([pos.latitude, pos.longitude], 15, {
         duration: 1,
       });
@@ -528,8 +529,8 @@ const initMap = async () => {
 
   updateMarkers();
 
-  // Tenta obter localizaÃ§Ã£o inicial
-  if (props.showMyLocationButton && position.value) {
+  // Tenta obter localização inicial
+  if (props.showLocationButton && position.value) {
     updateUserMarker(position.value.latitude, position.value.longitude);
   }
 };

@@ -6,6 +6,8 @@
  * a implementação compartilhada.
  */
 
+import { useParceiroDetalhesService } from "~/composables/useParceiroDetalhesService";
+
 import type {
   ParceiroPrecoResponse as FornecedorPrecoResponse,
   ParceiroContatoResponse as FornecedorContatoResponse,
@@ -14,7 +16,6 @@ import type {
   ParceiroColetaResponse as FornecedorColetaResponse,
   ParceiroCheckinResponse as FornecedorCheckinResponse,
 } from "~/types/parceiro-detalhes.types";
-import { useParceiroDetalhesService } from "~/composables/useParceiroDetalhesService";
 
 // Re-export types com nomes específicos para fornecedores (backward compatibility)
 export type {

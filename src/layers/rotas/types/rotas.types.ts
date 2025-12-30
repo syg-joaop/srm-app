@@ -3,24 +3,24 @@ export interface Rota {
   id: number;
   codigo?: number;
   tipo: string;
-  data_inicio: string;
-  data_fim: string;
-  usuario: string;
-  usuario_created: string;
-  id_usuario: number;
-  id_usuario_created: number;
-  status: string;
+  data_inicio?: string;
+  data_fim?: string;
+  usuario?: string;
+  usuario_created?: string;
+  id_usuario?: number;
+  id_usuario_created?: number;
+  status?: string;
   observacao?: string;
-  progresso: RotaProgresso;
+  progresso?: RotaProgresso;
 }
 
 export interface RotaProgresso {
-  total: number;
-  concluidos: number;
-  em_andamento: number;
-  reagendados: number;
-  pendentes: number;
-  percentual_conclusao: number;
+  total?: number;
+  concluidos?: number;
+  em_andamento?: number;
+  reagendados?: number;
+  pendentes?: number;
+  percentual_conclusao?: number;
 }
 
 export interface RotaResponse {
@@ -43,22 +43,23 @@ export interface RotaFilters {
 // Roteiro/Ponto da rota (do backend /srm/roteiro)
 export interface Roteiro {
   id: number;
-  id_rota: number;
-  id_checkin: number;
-  nome: string;
-  codigo: number;
-  sequencia: number;
-  status: string;
+  id_rota?: number;
+  id_checkin?: number;
+  nome?: string;
+  codigo?: number;
+  sequencia?: number;
+  status?: string;
   observacao?: string;
-  endereco: RoteiroEndereco;
+  endereco?: RoteiroEndereco;
   srm_status_roteiro?: RoteiroStatus[];
   created_at?: string;
   updated_at?: string;
 }
 
 export interface RoteiroEndereco {
-  latitude: number;
-  longitude: number;
+  [key: string]: unknown;
+  latitude: number | string;
+  longitude: number | string;
   rua?: string;
   numero?: string;
   cidade?: string;
@@ -68,13 +69,13 @@ export interface RoteiroEndereco {
 }
 
 export interface RoteiroStatus {
-  id: number;
-  id_roteiro: number;
-  status: string;
-  id_usuario: number;
-  usuario: string;
+  id?: number;
+  id_roteiro?: number;
+  status?: string;
+  id_usuario?: number;
+  usuario?: string;
   observacao?: string;
-  created_at: string;
+  created_at?: string;
 }
 
 export interface RoteiroResponse {

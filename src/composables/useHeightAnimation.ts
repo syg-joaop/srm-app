@@ -7,53 +7,59 @@ export const useHeightAnimation = () => {
   /**
    * Configura elemento antes de entrar (height = 0, opacity = 0)
    */
-  const beforeEnter = (el: HTMLElement) => {
-    el.style.height = '0';
-    el.style.opacity = '0';
+  const beforeEnter = (el: Element) => {
+    const htmlEl = el as HTMLElement;
+    htmlEl.style.height = '0';
+    htmlEl.style.opacity = '0';
   };
 
   /**
    * Anima entrada do elemento (height para scrollHeight, opacity para 1)
    */
-  const enter = (el: HTMLElement) => {
-    el.style.transition = 'height 250ms ease-out, opacity 250ms ease-out';
+  const enter = (el: Element) => {
+    const htmlEl = el as HTMLElement;
+    htmlEl.style.transition = 'height 250ms ease-out, opacity 250ms ease-out';
     requestAnimationFrame(() => {
-      el.style.height = el.scrollHeight + 'px';
-      el.style.opacity = '1';
+      htmlEl.style.height = htmlEl.scrollHeight + 'px';
+      htmlEl.style.opacity = '1';
     });
   };
 
   /**
    * Limpa estilos após entrada (height = auto)
    */
-  const afterEnter = (el: HTMLElement) => {
-    el.style.height = 'auto';
+  const afterEnter = (el: Element) => {
+    const htmlEl = el as HTMLElement;
+    htmlEl.style.height = 'auto';
   };
 
   /**
    * Configura elemento antes de sair (height = scrollHeight, opacity = 1)
    */
-  const beforeLeave = (el: HTMLElement) => {
-    el.style.height = el.scrollHeight + 'px';
-    el.style.opacity = '1';
+  const beforeLeave = (el: Element) => {
+    const htmlEl = el as HTMLElement;
+    htmlEl.style.height = htmlEl.scrollHeight + 'px';
+    htmlEl.style.opacity = '1';
   };
 
   /**
-   * Anima saída do elemento (height para 0, opacity para 0)
+   * Anima saída do elemento (height para 0, opacity = 0)
    */
-  const leave = (el: HTMLElement) => {
-    el.style.transition = 'height 250ms ease-out, opacity 250ms ease-out';
+  const leave = (el: Element) => {
+    const htmlEl = el as HTMLElement;
+    htmlEl.style.transition = 'height 250ms ease-out, opacity 250ms ease-out';
     requestAnimationFrame(() => {
-      el.style.height = '0';
-      el.style.opacity = '0';
+      htmlEl.style.height = '0';
+      htmlEl.style.opacity = '0';
     });
   };
 
   /**
    * Limpa estilos após saída (height = auto)
    */
-  const afterLeave = (el: HTMLElement) => {
-    el.style.height = 'auto';
+  const afterLeave = (el: Element) => {
+    const htmlEl = el as HTMLElement;
+    htmlEl.style.height = 'auto';
   };
 
   return {

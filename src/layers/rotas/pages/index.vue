@@ -36,11 +36,8 @@
     </div>
 
     <!-- Loading state -->
-    <div
-      v-if="isLoading"
-      class="flex flex-col items-center justify-center py-16 text-[var(--color-text-muted)]"
-    >
-      <UiSpinner size="large" text="Carregando rotas..." />
+    <div v-if="isLoading" class="p-4">
+      <UiSkeletonLoader pattern="card" :count="itemsPerPage" />
     </div>
 
     <!-- Error state -->
@@ -119,15 +116,13 @@
 
 <script setup lang="ts">
 import { Icon, Plus, Route as RouteIcon, X } from "lucide-vue-next";
+
 import { logger } from "~/utils/logger";
-import UiButton from "~/components/ui/UiButton.vue";
-import UiCalendario from "~/components/ui/UiCalendario.vue";
-import UiEmptyState from "~/components/ui/UiEmptyState.vue";
-import UiPaginacao from "~/components/ui/UiPaginacao.vue";
-import UiSpinner from "~/components/ui/UiSpinner.vue";
+
 import ModalDetalhesRota from "../components/ModalDetalhesRota.vue";
 import ModalNovaRota from "../components/ModalNovaRota.vue";
 import RotaCardItem from "../components/RotaCardItem.vue";
+
 import type { Rota, RotaFilters } from "../types/rotas.types";
 
 definePageMeta({

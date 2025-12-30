@@ -15,7 +15,9 @@
 
 <script setup lang="ts">
 import MapaRota from "../MapaRota.vue";
-import type { Roteiro, VrpSummary } from "../../rotas.types";
+
+import type { Roteiro } from "~/server/schemas/rotas.schema";
+import type { VrpSummary } from "../../types/rotas.types";
 
 defineProps<{
   roteiros: Roteiro[];

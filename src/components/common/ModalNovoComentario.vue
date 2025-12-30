@@ -34,10 +34,6 @@
 </template>
 
 <script setup lang="ts">
-import UiModal from "~/components/ui/UiModal.vue";
-import UiButton from "~/components/ui/UiButton.vue";
-import UiToggle from "~/components/ui/UiToggle.vue";
-
 defineProps({
   modelValue: {
     type: Boolean,

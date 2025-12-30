@@ -1,4 +1,5 @@
 import { useAuthStore } from "~/stores/auth";
+
 import type { Permissao } from "~/types/auth";
 
 /**

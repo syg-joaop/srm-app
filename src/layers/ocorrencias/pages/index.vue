@@ -116,16 +116,11 @@
     </Transition>
 
     <div>
-      <div v-if="isLoading" class="flex flex-col items-center justify-center py-12">
-        <UiSpinner size="large" text="Carregando dados..." />
+      <div class="mb-4 font-semibold text-sm" style="color: var(--color-primary)">
+        {{ fallbackTotalItems }} resultados
       </div>
 
-      <div v-else>
-        <div class="mb-4 font-semibold text-sm" style="color: var(--color-primary)">
-          {{ fallbackTotalItems }} resultados
-        </div>
-
-        <div v-if="paginatedOcorrencias.length > 0">
+      <div v-if="paginatedOcorrencias.length > 0">
           <div
             class="hidden md:grid grid-cols-12 gap-4 px-5 py-3 bg-[var(--color-background)] rounded-t-lg border border-[var(--color-border)] text-xs font-semibold text-[var(--color-text-muted)] uppercase tracking-wider"
           >
@@ -252,7 +247,6 @@
           :total-pages="totalPages"
           class="mt-6"
         />
-      </div>
     </div>
 
     <ModalDetalhesOcorrencia
@@ -265,15 +259,13 @@
 
 <script setup lang="ts">
 import { ChevronRight, Eye, Filter, MessageSquare, Plus, Search, X } from "lucide-vue-next";
-import UiButton from "~/components/ui/UiButton.vue";
-import UiEmptyState from "~/components/ui/UiEmptyState.vue";
-import UiPaginacao from "~/components/ui/UiPaginacao.vue";
-import UiSelect from "~/components/ui/UiSelect.vue";
-import UiSpinner from "~/components/ui/UiSpinner.vue";
-import ModalDetalhesOcorrencia from "../components/ModalDetalhesOcorrencia.vue";
-import type { Ocorrencia, OcorrenciaFilters } from "~/types/ocorrencias";
+
 import { normalizeOcorrencias, getStatusConfig } from "~/utils/ocorrencias";
 import { formatarData } from "~/utils/utils";
+
+import ModalDetalhesOcorrencia from "../components/ModalDetalhesOcorrencia.vue";
+
+import type { Ocorrencia, OcorrenciaFilters, OcorrenciaStatus } from "~/server/schemas/ocorrencias.schema";
 
 definePageMeta({
   layout: "default",
@@ -313,13 +305,11 @@ watch(currentPage, () => {
   window.scrollTo({ top: 0, behavior: "smooth" });
 });
 
-const { data: ocorrenciasResponse, status } = fetchOcorrencias(
+const { data: ocorrenciasResponse } = fetchOcorrencias(
   currentPage,
   itemsPerPage,
   ocorrenciaFilters,
 );
-
-const isLoading = computed(() => status.value === "pending");
 
 const ocorrencias = computed(() => {
   const rawItems = ocorrenciasResponse.value?.data?.items ?? [];
@@ -400,7 +390,7 @@ const clearFilters = () => {
 };
 
 const getStatusIconClass = (status: string): string => {
-  const config = getStatusConfig(status);
+  const config = getStatusConfig(status as OcorrenciaStatus);
   const colorMap: Record<string, string> = {
     "#f59e0b": "bg-[var(--color-danger-soft)] text-[var(--color-danger)]",
     "#3b82f6": "bg-[var(--color-warning-soft)] text-[var(--color-warning)]",
@@ -419,7 +409,7 @@ const handleStatusChange = (status: string) => {
 
   ocorrenciaSelecionada.value = {
     ...ocorrenciaSelecionada.value,
-    status,
+    status: status as OcorrenciaStatus,
   };
 };
 </script>

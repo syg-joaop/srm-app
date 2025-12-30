@@ -17,7 +17,7 @@ export const schemaRota = z
   .object({
     id: z.coerce.number(),
     codigo: z.coerce.number().optional(),
-    tipo: z.string().optional(),
+    tipo: z.string(),
     data_inicio: z.string().optional(),
     data_fim: z.string().optional(),
     usuario: z.string().optional(),
@@ -32,12 +32,12 @@ export const schemaRota = z
 
 export const schemaRotaResponse = z
   .object({
-    message: z.string().optional(),
+    message: z.string(),
     total: z.coerce.number().optional(),
     page: z.coerce.number().optional(),
     itens: z.coerce.number().optional(),
     total_pages: z.coerce.number().optional(),
-    data: z.array(schemaRota).default([]),
+    data: z.array(schemaRota),
   })
   .passthrough();
 
@@ -95,12 +95,12 @@ export const schemaRoteiro = z
 
 export const schemaRoteiroResponse = z
   .object({
-    message: z.string().optional(),
+    message: z.string(),
     total: z.coerce.number().optional(),
     page: z.coerce.number().optional(),
     itens: z.coerce.number().optional(),
     total_pages: z.coerce.number().optional(),
-    data: z.array(schemaRoteiro).default([]),
+    data: z.array(schemaRoteiro),
   })
   .passthrough();
 
@@ -140,3 +140,5 @@ export type Rota = z.infer<typeof schemaRota>;
 export type RotaResponse = z.infer<typeof schemaRotaResponse>;
 export type Roteiro = z.infer<typeof schemaRoteiro>;
 export type RoteiroResponse = z.infer<typeof schemaRoteiroResponse>;
+export type RotaFilters = z.infer<typeof schemaRotaFilters>;
+export type RoteiroFilters = z.infer<typeof schemaRoteiroFilters>;

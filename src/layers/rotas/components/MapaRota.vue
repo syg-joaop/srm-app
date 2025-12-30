@@ -169,10 +169,13 @@ import {
   Navigation,
   TrendingUp,
 } from "lucide-vue-next";
+
 import { logger } from "~/utils/logger";
-import type { RotaPonto } from "~/components/ui/UiMapaRotas.vue";
+
+import type { Roteiro } from "~/server/schemas/rotas.schema";
+import type { VrpSummary } from "../types/rotas.types";
 import type { UiMapaStatusConfig } from "~/components/ui/maps.types";
-import type { Roteiro, VrpSummary } from "../types/rotas.types";
+import type { RotaPonto } from "~/components/ui/UiMapaRotas.vue";
 
 const props = defineProps<{
   roteiros?: Roteiro[];
@@ -242,43 +245,48 @@ const statusConfig: UiMapaStatusConfig = {
 const pontos = computed<RotaPonto[]>(() => {
   const source = props.roteiros || roteirosCarregados.value;
 
-  return source
-    .filter((r) => {
-      // Filtra apenas roteiros com coordenadas vÃ¡lidas
-      if (!r.endereco) return false;
-      return isValidCoordinate(r.endereco.latitude, r.endereco.longitude);
-    })
-    .sort((a, b) => (a.sequencia || 0) - (b.sequencia || 0))
-    .map((r) => {
-      // Pega o Ãºltimo status do roteiro
-      const ultimoStatus = r.srm_status_roteiro?.[0]?.status?.toLowerCase() || "aguardando";
+  const validRoteiros = source.filter((r) => {
+    // Filtra apenas roteiros com coordenadas vÃ¡lidas
+    if (!r.endereco) return false;
+    return isValidCoordinate(r.endereco.latitude, r.endereco.longitude);
+  });
 
-      // Converte coordenadas para nÃºmero
-      const lat =
-        typeof r.endereco.latitude === "string"
-          ? parseFloat(r.endereco.latitude)
-          : r.endereco.latitude;
-      const lng =
-        typeof r.endereco.longitude === "string"
-          ? parseFloat(r.endereco.longitude)
-          : r.endereco.longitude;
+  const result: RotaPonto[] = [];
 
-      return {
-        id: r.id,
-        latitude: lat,
-        longitude: lng,
-        titulo: r.nome || `Ponto ${r.sequencia}`,
-        subtitulo: r.observacao,
-        sequencia: r.sequencia,
-        status: ultimoStatus,
-        endereco: {
-          rua: r.endereco.logradouro,
-          numero: r.endereco.numero,
-          cidade: r.endereco.cidade,
-          bairro: r.endereco.bairro,
-        },
-      };
+  for (const r of validRoteiros.sort((a, b) => (a.sequencia || 0) - (b.sequencia || 0))) {
+    if (!r.endereco) continue;
+
+    // Pega o Ãºltimo status do roteiro
+    const ultimoStatus = r.srm_status_roteiro?.[0]?.status?.toLowerCase() || "aguardando";
+
+    // Converte coordenadas para nÃºmero
+    const lat =
+      typeof r.endereco.latitude === "string"
+        ? parseFloat(r.endereco.latitude)
+        : r.endereco.latitude;
+    const lng =
+      typeof r.endereco.longitude === "string"
+        ? parseFloat(r.endereco.longitude)
+        : r.endereco.longitude;
+
+    result.push({
+      id: r.id,
+      latitude: lat,
+      longitude: lng,
+      titulo: r.nome || `Ponto ${r.sequencia}`,
+      subtitulo: r.observacao,
+      sequencia: r.sequencia,
+      status: ultimoStatus,
+      endereco: {
+        rua: r.endereco.rua,
+        numero: r.endereco.numero,
+        cidade: r.endereco.cidade,
+        bairro: r.endereco.bairro,
+      },
     });
+  }
+
+  return result;
 });
 
 /**
@@ -389,6 +397,10 @@ const carregarRota = async () => {
     loadingMessage.value = "Carregando rota...";
 
     const result = await rotaService.fetchRotaComPolyline(props.idRota, userLocation.value);
+
+    if (!result) {
+      throw new Error("Falha ao carregar rota: resposta vazia");
+    }
 
     roteirosCarregados.value = result.roteiros;
     polyline.value = result.polyline;

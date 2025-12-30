@@ -6,7 +6,16 @@
  * ou prospecto baseado na propriedade 'codfor' ou 'codpros' do parceiro.
  */
 
+import { logger } from "~/utils/logger";
+
+import type { Atendimento } from "~/server/schemas/atendimento.schema";
+import type { Carga } from "~/server/schemas/carga.schema";
+import type { Checkin } from "~/server/schemas/checkin.schema";
+import type { Coleta } from "~/server/schemas/coleta.schema";
+import type { Contato } from "~/server/schemas/contato.schema";
 import type { ParceiroData } from "~/types/parceiro";
+import type { Preco } from "~/server/schemas/preco.schema";
+
 
 export const useParceiroDetalhesData = (
   parceiroFn: () => ParceiroData | null,
@@ -14,13 +23,13 @@ export const useParceiroDetalhesData = (
   const isLoading = ref(false);
   const error = ref<string | null>(null);
   const detalhesData = ref<{
-    contatos?: unknown[];
-    cargas?: unknown[];
-    atendimentos?: unknown[];
-    coletas?: unknown[];
-    precos?: unknown[];
-    checkins?: unknown[];
-  }>({});
+    contatos?: Contato[];
+    cargas?: Carga[];
+    atendimentos?: Atendimento[];
+    coletas?: Coleta[];
+    precos?: Preco[];
+    checkins?: Checkin[];
+  }>({} as Record<string, unknown[]>);
 
   const parceiro = computed(() => parceiroFn());
 
@@ -29,12 +38,13 @@ export const useParceiroDetalhesData = (
   });
 
   const isProspecto = computed(() => {
-    return parceiro.value?.codpros || (parceiro.value?.tf?.startsWith("PRO"));
+    return parceiro.value?.codpros || (typeof parceiro.value?.tf === 'string' && parceiro.value.tf.startsWith("PRO"));
   });
 
   const codforOrCodpros = computed(() => {
     if (!parceiro.value) return null;
-    return parceiro.value.codfor || parceiro.value.codpros || null;
+    const cod = parceiro.value.codfor || parceiro.value.codpros;
+    return cod ? String(cod) : null;
   });
 
   /**
@@ -60,12 +70,12 @@ export const useParceiroDetalhesData = (
         const data = await service.fetchAllDetalhes(codforOrCodpros.value);
 
         detalhesData.value = {
-          contatos: data.contatos?.data.items || [],
-          cargas: data.cargas?.data.items || [],
-          atendimentos: data.atendimentos?.data.items || [],
-          coletas: data.coletas?.data.items || [],
-          precos: data.precos?.data.items || [],
-          checkins: data.checkins?.data.items || [],
+          contatos: data.contatos?.data.items as Contato[] || [],
+          cargas: data.cargas?.data.items as Carga[] || [],
+          atendimentos: data.atendimentos?.data.items as Atendimento[] || [],
+          coletas: data.coletas?.data.items as Coleta[] || [],
+          precos: data.precos?.data.items as Preco[] || [],
+          checkins: data.checkins?.data.items as Checkin[] || [],
         };
       } else if (isProspecto.value) {
         const { useProspectoDetalhesService } = await import(
@@ -76,18 +86,18 @@ export const useParceiroDetalhesData = (
         const data = await service.fetchAllDetalhes(codforOrCodpros.value);
 
         detalhesData.value = {
-          contatos: data.contatos?.data.items || [],
-          cargas: data.cargas?.data.items || [],
-          atendimentos: data.atendimentos?.data.items || [],
-          coletas: data.coletas?.data.items || [],
-          precos: data.precos?.data.items || [],
-          checkins: data.checkins?.data.items || [],
+          contatos: data.contatos?.data.items as Contato[] || [],
+          cargas: data.cargas?.data.items as Carga[] || [],
+          atendimentos: data.atendimentos?.data.items as Atendimento[] || [],
+          coletas: data.coletas?.data.items as Coleta[] || [],
+          precos: data.precos?.data.items as Preco[] || [],
+          checkins: data.checkins?.data.items as Checkin[] || [],
         };
       } else {
         error.value = "Tipo de parceiro não reconhecido";
       }
     } catch (err) {
-      console.error("Erro ao carregar detalhes do parceiro:", err);
+      logger.error("[useParceiroDetalhesData] Erro ao carregar detalhes do parceiro:", err);
       error.value = err instanceof Error ? err.message : "Erro ao carregar dados";
       detalhesData.value = {};
     } finally {

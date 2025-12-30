@@ -6,7 +6,7 @@
 </template>
 
 <script setup lang="ts">
-export type Variant = "default" | "primary" | "success" | "warning" | "danger" | "info";
+export type Variant = "default" | "primary" | "success" | "warning" | "danger" | "info" | "neutral";
 type Size = "small" | "medium" | "large";
 
 withDefaults(

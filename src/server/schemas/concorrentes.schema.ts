@@ -1,5 +1,19 @@
 import { z } from "zod";
 
+// Schema baseado na interface Concorrente existente
+const schemaConcorrente = z
+  .object({
+    id: z.number(),
+    nome: z.string(),
+    cidade: z.string().optional(),
+    estado: z.string().optional(),
+    telefone: z.string().optional(),
+    segmento: z.string().optional(),
+    observacao: z.string().optional(),
+    status: z.string().optional(),
+  })
+  .passthrough();
+
 export const schemaPaginatedConcorrenteResponse = z
   .object({
     status: z.coerce.number().optional(),
@@ -10,7 +24,7 @@ export const schemaPaginatedConcorrenteResponse = z
       size: z.coerce.number().optional(),
       totalItems: z.coerce.number().optional(),
       totalPages: z.coerce.number().optional(),
-      items: z.array(z.unknown()).default([]),
+      items: z.array(schemaConcorrente).default([]),
     }),
   })
   .passthrough();

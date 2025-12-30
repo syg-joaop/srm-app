@@ -72,7 +72,7 @@ export const useGeolocation = (options: UseGeolocationOptions = {}) => {
         error.value = "Erro desconhecido ao obter localização.";
     }
 
-    console.error("[useGeolocation] Erro:", error.value);
+    logger.error("[useGeolocation] Erro:", error.value);
   };
 
   /**

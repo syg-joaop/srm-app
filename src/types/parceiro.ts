@@ -2,6 +2,15 @@
  * Tipos relacionados ao parceiro e suas visualizações.
  */
 
+import type { Agendamento } from '~/server/schemas/agendamento.schema';
+import type { Atendimento } from '~/server/schemas/atendimento.schema';
+import type { Carga } from '~/server/schemas/carga.schema';
+import type { Checkin } from '~/server/schemas/checkin.schema';
+import type { Coleta } from '~/server/schemas/coleta.schema';
+import type { Contato } from '~/server/schemas/contato.schema';
+import type { Favorecido } from '~/server/schemas/favorecido.schema';
+import type { Preco } from '~/server/schemas/preco.schema';
+
 export type ParceiroVariant = "parceiro" | "atendente" | "time";
 
 export type TabId =
@@ -24,6 +33,7 @@ export interface ParceiroData {
   fornecedor?: string;
   fanta?: string;
   codfor?: string;
+  codpros?: string;
   categoria?: string;
   cidade?: string;
   uf?: string;
@@ -35,14 +45,14 @@ export interface ParceiroData {
   celular?: string;
   tel3?: string;
   email?: string;
-  contatos?: unknown[];
-  cargas?: unknown[];
-  agendamentos?: unknown[];
-  atendimentos?: unknown[];
-  coletas?: unknown[];
-  precos?: unknown[];
-  checkins?: unknown[];
-  favorecidos?: unknown[];
+  contatos?: Contato[];
+  cargas?: Carga[];
+  agendamentos?: Agendamento[];
+  atendimentos?: Atendimento[];
+  coletas?: Coleta[];
+  precos?: Preco[];
+  checkins?: Checkin[];
+  favorecidos?: Favorecido[];
   [key: string]: unknown;
 }
 
@@ -61,7 +71,7 @@ export interface TabItem {
   detailsLayout?: 'grid' | 'list';
 }
 
-export interface TabOption {
+export interface ParceiroTabOption {
   id: TabId;
   label: string;
 }

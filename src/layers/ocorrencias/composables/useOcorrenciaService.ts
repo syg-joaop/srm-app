@@ -1,6 +1,7 @@
-﻿import type { OcorrenciaFilters, PaginatedOcorrenciaResponse } from "~/types/ocorrencias";
-import { schemaPaginatedOcorrenciaResponse } from "~/server/schemas/ocorrencias.schema";
+﻿import { schemaPaginatedOcorrenciaResponse } from "~/server/schemas/ocorrencias.schema";
 import { buildPagedBody } from "~/utils/apiPayload";
+
+import type { OcorrenciaFilters, PaginatedOcorrenciaResponse } from "~/server/schemas/ocorrencias.schema";
 
 const OCORRENCIAS_LIST_ENDPOINT = "/sygecom/chameleon-mode/SRM_GET_OCORRENCIAS";
 

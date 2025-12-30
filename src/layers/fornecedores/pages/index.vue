@@ -20,37 +20,29 @@
       </template>
     </UiListToolbar>
 
-    <div>
-      <div v-if="isLoading" class="flex flex-col items-center justify-center py-12">
-        <UiSpinner size="large" text="Carregando dados..." />
+    <div v-if="viewMode === 'list'">
+      <div class="mb-4 font-semibold text-sm" style="color: var(--color-primary)">
+        {{ fornecedores?.data.totalItems }} resultados
       </div>
+      <ListaFornecedores
+        :fornecedores="paginatedFornecedores"
+        @select="handleSelectFornecedor"
+        @add-route="handleAddToRoute"
+      />
 
-      <div v-else>
-        <div v-if="viewMode === 'list'">
-          <div class="mb-4 font-semibold text-sm" style="color: var(--color-primary)">
-            {{ fornecedores?.data.totalItems }} resultados
-          </div>
-          <ListaFornecedores
-            :fornecedores="paginatedFornecedores"
-            @select="handleSelectFornecedor"
-            @add-route="handleAddToRoute"
-          />
-
-          <UiPaginacao
-            v-model:page="currentPage"
-            :total-items="fornecedores?.data.totalItems"
-            :total-pages="fornecedores?.data.totalPages ?? 0"
-            class="mt-6"
-          />
-        </div>
-
-        <div v-else>
-          <MapaFornecedores :fornecedores="fornecedores?.data.items" />
-        </div>
-      </div>
+      <UiPaginacao
+        v-model:page="currentPage"
+        :total-items="fornecedores?.data.totalItems"
+        :total-pages="fornecedores?.data.totalPages ?? 0"
+        class="mt-6"
+      />
     </div>
 
-    <ModalDetalhesParceiro v-model="showModal" :parceiro="selectedFornecedor" />
+    <div v-else>
+      <MapaFornecedores :fornecedores="fornecedores?.data.items" />
+    </div>
+
+    <ModalDetalhesParceiro v-model="showModal" :parceiro="selectedFornecedor" variant="parceiro" />
     <ModalAdicionarARota
       v-model="showAddRouteModal"
       :fornecedor="fornecedorParaRota"
@@ -61,17 +53,16 @@
 
 <script setup lang="ts">
 import { List, Map } from "lucide-vue-next";
-import { logger } from "~/utils/logger";
+
 import ModalDetalhesParceiro from "~/components/common/ModalDetalhesParceiro.vue";
-import UiListToolbar from "~/components/ui/UiListToolbar.vue";
-import UiPaginacao from "~/components/ui/UiPaginacao.vue";
-import UiSegmentedControl from "~/components/ui/UiSegmentedControl.vue";
-import UiSpinner from "~/components/ui/UiSpinner.vue";
+import { logger } from "~/utils/logger";
+
 import ListaFornecedores from "../components/ListaFornecedores.vue";
 import MapaFornecedores from "../components/MapaFornecedores.vue";
 import ModalAdicionarARota from "../components/ModalAdicionarARota.vue";
-import type { Fornecedor } from "../types/fornecedores.types";
+
 import type { Rota } from "../../rotas/types/rotas.types";
+import type { Fornecedor } from "../types/fornecedores.types";
 
 const viewMode = ref<"list" | "map">("list");
 const currentPage = ref(1);
@@ -133,7 +124,7 @@ const filterItems = [
     options: sortOptions,
     defaultValue: "fornecedor",
     segmentedFullWidth: true,
-    segmentedMobileSize: "xs",
+    segmentedMobileSize: "xs" as const,
   },
 ];
 
@@ -159,13 +150,11 @@ watch(currentPage, () => {
   window.scrollTo({ top: 0, behavior: "smooth" });
 });
 
-const { data: fornecedores, status } = fetchFornecedor(
+const { data: fornecedores } = fetchFornecedor(
   currentPage,
   itemsPerPage,
   fornecedorFilters,
 );
-
-const isLoading = computed(() => status.value === "pending");
 
 const paginatedFornecedores = computed(() => fornecedores.value?.data.items ?? []);
 
@@ -176,7 +165,7 @@ const handleSelectFornecedor = (fornecedor: Fornecedor) => {
   selectedFornecedor.value = {
     ...fornecedor,
     name: fornecedor.fornecedor,
-  };
+  } as typeof selectedFornecedor.value;
   showModal.value = true;
 };
 

@@ -1,69 +1,28 @@
 /**
  * Composable para gerenciar status variants de parceiros.
  * Extrai lógica de mapeamento de status para variantes visuais.
- */
-
-import type { Variant } from '~/components/ui/UiBadge.vue';
-
-/**
- * Mapeamento de status para variantes visuais.
- * Substitui o STATUS_MAP hardcoded em componentes.
- */
-const VARIANT_MAP: Record<string, Variant> = {
-  ativo: 'success',
-  active: 'success',
-  concluido: 'success',
-  completed: 'success',
-  pendente: 'warning',
-  pending: 'warning',
-  vencido: 'warning',
-  overdue: 'warning',
-  agendado: 'warning',
-  scheduled: 'warning',
-  inativo: 'danger',
-  inactive: 'danger',
-  cancelado: 'danger',
-  cancelled: 'danger',
-  confirmado: 'info',
-  confirmed: 'info',
-  'em andamento': 'info',
-  'in progress': 'info',
-  aberto: 'primary',
-  open: 'primary',
-};
-
-/**
- * Retorna a variante visual apropriada para um status.
- * Usa normalização de texto para matching flexível.
  *
- * @param status - Status a ser convertido
- * @returns Variant do badge
+ * @deprecated Use getStatusVariant, getStatusBadgeClass, etc. de ~/utils/status-helpers diretamente.
+ * Este composable é mantido para backward compatibility.
  */
-export const getVariant = (status: string): Variant => {
-  if (!status) return 'default';
 
-  const normalized = status.toLowerCase().trim();
+import { getStatusVariant, getStatusBadgeClass, getStatusLabel, getStatusColor } from '~/utils/status-helpers';
 
-  // Tenta match exato primeiro
-  if (normalized in VARIANT_MAP) {
-    return VARIANT_MAP[normalized];
-  }
+import type { Variant } from '~/components/ui/badge.types';
 
-  // Tenta matching por inclusão
-  for (const [key, variant] of Object.entries(VARIANT_MAP)) {
-    if (normalized.includes(key)) {
-      return variant;
-    }
-  }
-
-  return 'default';
-};
+// Re-export para backward compatibility
+export const getVariant = getStatusVariant as (status: string) => Variant;
 
 /**
  * Hook para usar status variants em componentes.
+ *
+ * @deprecated Use getStatusVariant, getStatusBadgeClass, etc. de ~/utils/status-helpers diretamente.
  */
 export const useParceiroStatus = () => {
   return {
-    getVariant,
+    getVariant: getStatusVariant,
+    getStatusBadgeClass,
+    getStatusLabel,
+    getStatusColor,
   };
 };

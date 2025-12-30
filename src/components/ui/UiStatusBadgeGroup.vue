@@ -38,8 +38,9 @@
 </template>
 
 <script setup lang="ts">
-import type { Component } from 'vue';
 import { Calendar, CheckCircle, Clock, XCircle, Circle } from "lucide-vue-next";
+
+import type { Component } from 'vue';
 
 interface StatusBadgeItem {
   value: string | number;

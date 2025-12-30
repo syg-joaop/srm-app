@@ -1,5 +1,7 @@
-import type { Map, LatLngBoundsExpression } from "leaflet";
+import { logger } from "~/utils/logger";
+
 import type { FitBoundsOptions } from "./maps.types";
+import type { Map, LatLngBoundsExpression } from "leaflet";
 
 /**
  * Composable para gerenciar bounds e viewport do mapa.
@@ -26,7 +28,7 @@ export function useMapBounds() {
       });
       return true;
     } catch (error) {
-      console.error("Erro ao ajustar bounds do mapa:", error);
+      logger.error("[useMapBounds] Erro ao ajustar bounds do mapa:", error);
       return false;
     }
   };
@@ -51,7 +53,7 @@ export function useMapBounds() {
       });
       return true;
     } catch (error) {
-      console.error("Erro ao definir view do mapa:", error);
+      logger.error("[useMapBounds] Erro ao definir view do mapa:", error);
       return false;
     }
   };
@@ -68,7 +70,7 @@ export function useMapBounds() {
       map.setZoom(zoom);
       return true;
     } catch (error) {
-      console.error("Erro ao definir zoom do mapa:", error);
+      logger.error("[useMapBounds] Erro ao definir zoom do mapa:", error);
       return false;
     }
   };
@@ -84,7 +86,7 @@ export function useMapBounds() {
     try {
       return map.getBounds();
     } catch (error) {
-      console.error("Erro ao obter bounds do mapa:", error);
+      logger.error("[useMapBounds] Erro ao obter bounds do mapa:", error);
       return null;
     }
   };
@@ -101,7 +103,7 @@ export function useMapBounds() {
       const center = map.getCenter();
       return [center.lat, center.lng];
     } catch (error) {
-      console.error("Erro ao obter centro do mapa:", error);
+      logger.error("[useMapBounds] Erro ao obter centro do mapa:", error);
       return null;
     }
   };
@@ -117,7 +119,7 @@ export function useMapBounds() {
     try {
       return map.getZoom();
     } catch (error) {
-      console.error("Erro ao obter zoom do mapa:", error);
+      logger.error("[useMapBounds] Erro ao obter zoom do mapa:", error);
       return null;
     }
   };

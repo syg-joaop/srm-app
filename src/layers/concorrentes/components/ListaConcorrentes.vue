@@ -121,13 +121,15 @@
 
 <script setup lang="ts">
 import { Users } from "lucide-vue-next";
-import UiBadge, { type Variant } from "~/components/ui/UiBadge.vue";
+
+import { type Variant } from "~/components/ui/UiBadge.vue";
 import {
   COMMON_STATUS_ICON_CLASSES,
   COMMON_STATUS_VARIANTS,
   resolveStatusIconClass,
   resolveStatusVariant,
 } from "~/utils/status";
+
 import type { Concorrente } from "../types/concorrentes.types";
 
 defineProps<{

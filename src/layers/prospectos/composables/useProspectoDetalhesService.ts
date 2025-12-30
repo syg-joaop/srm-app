@@ -9,6 +9,8 @@
  * e estrutura de API, por isso usam o mesmo service compartilhado.
  */
 
+import { useParceiroDetalhesService } from "~/composables/useParceiroDetalhesService";
+
 import type {
   ParceiroPrecoResponse as ProspectoPrecoResponse,
   ParceiroContatoResponse as ProspectoContatoResponse,
@@ -17,7 +19,6 @@ import type {
   ParceiroColetaResponse as ProspectoColetaResponse,
   ParceiroCheckinResponse as ProspectoCheckinResponse,
 } from "~/types/parceiro-detalhes.types";
-import { useParceiroDetalhesService } from "~/composables/useParceiroDetalhesService";
 
 // Re-export types com nomes específicos para prospectos (backward compatibility)
 export type {

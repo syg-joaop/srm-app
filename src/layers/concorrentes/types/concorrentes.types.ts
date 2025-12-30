@@ -3,6 +3,7 @@ export interface ConcorrenteFilters {
 }
 
 export interface Concorrente {
+  [key: string]: unknown;
   id: number;
   nome: string;
   cidade?: string;
@@ -22,6 +23,6 @@ export interface PaginatedConcorrenteResponse {
     size: number;
     totalItems?: number;
     totalPages?: number;
-    items: unknown[];
+    items: Concorrente[];
   };
 }

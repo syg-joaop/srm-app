@@ -1,7 +1,16 @@
-import type { OcorrenciaStatus } from "~/types/ocorrencias";
+/**
+ * Mapeamento de status específico para ocorrências.
+ *
+ * @deprecated A maior parte da funcionalidade foi movida para ~/utils/status-helpers.
+ * Este arquivo é mantido para backward compatibility e para o tipo OcorrenciaStatus específico.
+ */
+
+import { getStatusVariant, getStatusLabel, getStatusBadgeClass } from "~/utils/status-helpers";
+
+import type { OcorrenciaStatus } from "~/server/schemas/ocorrencias.schema";
 
 /**
- * Mapeia diversos valores de status para os três status padronizados.
+ * Mapeia diversos valores de status para os três status padronizados de ocorrências.
  *
  * @param statusValue - Valor de status em qualquer formato
  * @returns Status padronizado (pendente, acompanhamento, concluida)
@@ -15,7 +24,18 @@ export function mapStatus(statusValue: string | unknown): OcorrenciaStatus {
   }
 
   // Status concluídos
-  if (["concluida", "concluído", "ok", "finalizada", "finalizado", "concluido", "resolvida", "resolvido"].includes(normalized)) {
+  if (
+    [
+      "concluida",
+      "concluído",
+      "ok",
+      "finalizada",
+      "finalizado",
+      "concluido",
+      "resolvida",
+      "resolvido",
+    ].includes(normalized)
+  ) {
     return "concluida";
   }
 
@@ -24,13 +44,18 @@ export function mapStatus(statusValue: string | unknown): OcorrenciaStatus {
 }
 
 /**
- * Retorna a configuração de estilo para um status.
+ * Retorna a configuração de estilo para um status de ocorrência.
  *
  * @param status - Status da ocorrência
  * @returns Objeto com cor, label e classe CSS
+ *
+ * @deprecated Use getStatusLabel e getStatusBadgeClass de ~/utils/status-helpers.
  */
 export function getStatusConfig(status: OcorrenciaStatus) {
-  const configs: Record<OcorrenciaStatus, { color: string; label: string; className: string }> = {
+  const configs: Record<
+    OcorrenciaStatus,
+    { color: string; label: string; className: string }
+  > = {
     pendente: {
       color: "#f59e0b",
       label: "Pendente",

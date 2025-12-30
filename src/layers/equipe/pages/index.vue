@@ -56,9 +56,12 @@
 
 <script setup lang="ts">
 import { Search } from "lucide-vue-next";
+
 import ModalDetalhesParceiro from "~/components/common/ModalDetalhesParceiro.vue";
-import type { Membro } from "../components/ListaMembros.vue";
+
 import ListaMembros from "../components/ListaMembros.vue";
+
+import type { Membro } from "../components/ListaMembros.vue";
 
 definePageMeta({ layout: "default" });
 

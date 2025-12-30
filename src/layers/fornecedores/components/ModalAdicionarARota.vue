@@ -148,10 +148,13 @@
 
 <script setup lang="ts">
 import { Route, Building2, Plus, Check } from "lucide-vue-next";
-import UiModal from "~/components/ui/UiModal.vue";
-import UiButton from "~/components/ui/UiButton.vue";
-import type { Fornecedor } from "../types/fornecedores.types";
+
+import { getRotaStatusLabel, getRotaStatusColor, getRotaStatusVariant } from "~/utils/helpers/status-rota";
+import { logger } from "~/utils/logger";
+import { isValidCoordinate } from "~/utils/validators/geo";
+
 import type { Rota } from "../../rotas/types/rotas.types";
+import type { Fornecedor } from "../types/fornecedores.types";
 
 const props = defineProps<{
   modelValue: boolean;
@@ -184,8 +187,30 @@ const hasValidCoordinates = computed(() => {
   if (!props.fornecedor) return false;
   const lat = parseFloat(props.fornecedor.latitude);
   const lng = parseFloat(props.fornecedor.longitude);
-  return rotaService.isValidCoordinate(lat, lng);
+  return isValidCoordinate(lat, lng);
 });
+
+/**
+ * Helpers para status
+ */
+const getStatusLabel = (status?: string) => getRotaStatusLabel(status);
+
+const getStatusBgClass = (status?: string) => {
+  const color = getRotaStatusColor(status);
+  return { backgroundColor: color };
+};
+
+const getStatusBadgeClass = (status?: string) => {
+  const variant = getRotaStatusVariant(status);
+  const variantClasses: Record<typeof variant, string> = {
+    default: "bg-gray-100 text-gray-700 dark:bg-gray-800 dark:text-gray-300",
+    primary: "bg-blue-100 text-blue-700 dark:bg-blue-900 dark:text-blue-300",
+    success: "bg-green-100 text-green-700 dark:bg-green-900 dark:text-green-300",
+    warning: "bg-yellow-100 text-yellow-700 dark:bg-yellow-900 dark:text-yellow-300",
+    danger: "bg-red-100 text-red-700 dark:bg-red-900 dark:text-red-300",
+  };
+  return variantClasses[variant];
+};
 
 /**
  * Carrega rotas disponíveis
@@ -202,7 +227,7 @@ const carregarRotas = async () => {
       );
     }
   } catch (error) {
-    console.error("[ModalAdicionarARota] Erro ao carregar rotas:", error);
+    logger.error("[ModalAdicionarARota] Erro ao carregar rotas:", error);
   } finally {
     isLoadingRotas.value = false;
   }
@@ -247,7 +272,7 @@ const handleAdd = async () => {
       isOpen.value = false;
     }
   } catch (error) {
-    console.error("[ModalAdicionarARota] Erro ao adicionar roteiro:", error);
+    logger.error("[ModalAdicionarARota] Erro ao adicionar roteiro:", error);
   } finally {
     isAdding.value = false;
   }
@@ -289,45 +314,6 @@ const formatDateRange = (inicio?: string, fim?: string): string => {
   }
 
   return dataInicio || dataFim || "—";
-};
-
-/**
- * Retorna label do status
- */
-const getStatusLabel = (status?: string): string => {
-  const map: Record<string, string> = {
-    aguardando: "Aguardando",
-    em_andamento: "Em Andamento",
-    concluida: "Concluída",
-    cancelada: "Cancelada",
-  };
-  return map[status?.toLowerCase() || ""] || status || "—";
-};
-
-/**
- * Retorna classe de fundo do status
- */
-const getStatusBgClass = (status?: string): string => {
-  const map: Record<string, string> = {
-    aguardando: "bg-gray-500",
-    em_andamento: "bg-blue-500",
-    concluida: "bg-green-500",
-    cancelada: "bg-red-500",
-  };
-  return map[status?.toLowerCase() || ""] || "bg-gray-500";
-};
-
-/**
- * Retorna classes do badge de status
- */
-const getStatusBadgeClass = (status?: string): string => {
-  const map: Record<string, string> = {
-    aguardando: "bg-gray-100 text-gray-700 dark:bg-gray-800 dark:text-gray-300",
-    em_andamento: "bg-blue-100 text-blue-700 dark:bg-blue-900 dark:text-blue-300",
-    concluida: "bg-green-100 text-green-700 dark:bg-green-900 dark:text-green-300",
-    cancelada: "bg-red-100 text-red-700 dark:bg-red-900 dark:text-red-300",
-  };
-  return map[status?.toLowerCase() || ""] || map.aguardando;
 };
 
 // Carrega rotas quando modal abre

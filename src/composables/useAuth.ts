@@ -1,5 +1,6 @@
-import type { LoginCredentials } from "~/types/auth";
 import { useAuthStore } from "~/stores/auth";
+
+import type { LoginCredentials } from "~/types/auth";
 
 /**
  * Facade da autenticação para uso em componentes.

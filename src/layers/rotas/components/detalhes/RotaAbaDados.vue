@@ -122,13 +122,14 @@
 
 <script setup lang="ts">
 import { User, Calendar, TrendingUp } from "lucide-vue-next";
-import UiCard from "~/components/ui/UiCard.vue";
-import type { Rota, VrpSummary } from "../../rotas.types";
+
 import {
   getRotaStatusColor,
   getRotaStatusLabel,
 } from "~/utils/helpers/status-rota";
 import { formatarIntervaloDatas } from "~/utils/utils";
+
+import type { Rota, VrpSummary } from "../../types/rotas.types";
 
 defineProps<{
   rota: Rota | null;

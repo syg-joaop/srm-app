@@ -3,6 +3,7 @@ export interface CheckinFilters {
 }
 
 export interface Checkin {
+  [key: string]: unknown;
   id: number;
   fornecedor: string;
   cidade?: string;
@@ -24,6 +25,6 @@ export interface PaginatedCheckinResponse {
     size: number;
     totalItems?: number;
     totalPages?: number;
-    items: unknown[];
+    items: Checkin[];
   };
 }

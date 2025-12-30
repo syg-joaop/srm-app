@@ -1,5 +1,6 @@
-﻿import type { Fornecedor, FornecedorFilters, FornecedorResponse } from "../types/fornecedores.types";
-import { schemaFornecedorResponse } from "~/server/schemas/fornecedores.schema";
+﻿import { schemaFornecedorResponse } from "~/server/schemas/fornecedores.schema";
+
+import type { Fornecedor, FornecedorFilters, FornecedorResponse } from "../types/fornecedores.types";
 
 const FORNECEDORES_LIST_ENDPOINT = "/sygecom/chameleon-mode/SRM_GET_FORNECEDORES";
 const FORNECEDORES_CREATE_ENDPOINT = "/sygecom/chameleon-mode/SRM_POST_FORNECEDOR";

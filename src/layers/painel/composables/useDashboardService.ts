@@ -1,6 +1,8 @@
 ﻿import { useAuthStore } from "~/stores/auth";
-import type { DashboardApiResponse } from "./types/dashboard.types";
+
 import { schemaDashboardApiResponse } from "../schemas/dashboard.schema";
+
+import type { DashboardApiResponse } from "~/layers/painel/types/dashboard.types";
 
 type ApiDataWrapper<T> = { data: T };
 

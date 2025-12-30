@@ -1,4 +1,3 @@
-import type { DetailPair, ParceiroData, ParceiroVariant, TabId, TabItem } from "~/types/parceiro";
 import {
   ALL_TABS,
   EMPTY_STATE_COPY,
@@ -12,7 +11,9 @@ import {
   getInitialTab,
   getTabLabel,
   isParceiroInactive,
-} from "~/utils/helpers/parceiro";
+} from "~/utils/helpers/parceiro/index";
+
+import type { DetailPair, ParceiroData, ParceiroTabOption, ParceiroVariant, TabId, TabItem } from "~/types/parceiro";
 
 /**
  * Composable para gerenciar tabs do modal de detalhes do parceiro.
@@ -69,8 +70,8 @@ export function useParceiroTabs(
 
   const itemsMap = computed(() => {
     const result = {} as Record<TabId, TabItem[]>;
-    ALL_TABS.forEach((tab) => {
-      result[tab.id] = getItems(tab.id);
+    ALL_TABS.forEach((tab: ParceiroTabOption) => {
+      result[tab.id as TabId] = getItems(tab.id);
     });
     return result;
   });

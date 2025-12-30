@@ -3,8 +3,9 @@
  * Funções pequenas e focadas para lidar com a lógica complexa de cargas.
  */
 
+import { normalize } from './parceiro/normalizers';
+
 import type { CargaRecord, EnhancedDetail, TotalDetail, ProductDetail, SeparatorDetail } from '~/types/parceiro';
-import { normalize } from './parceiro';
 
 /**
  * Gets the count field from a carga record.

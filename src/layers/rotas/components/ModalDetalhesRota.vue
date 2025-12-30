@@ -140,18 +140,21 @@
 
 <script setup lang="ts">
 import { Calendar, Info, List, Map as MapIcon, User } from "lucide-vue-next";
-import UiSegmentedControl from "~/components/ui/UiSegmentedControl.vue";
-import type { Rota, Roteiro, VrpSummary } from "../types/rotas.types";
+
 import {
   getRotaStatusColor,
   getRotaStatusVariant,
   getRotaStatusLabel,
 } from "~/utils/helpers/status-rota";
+import { logger } from "~/utils/logger";
 import { formatarIntervaloDatas } from "~/utils/utils";
-import ModalAdicionarRoteiro from "./ModalAdicionarRoteiro.vue";
+
 import RotaAbaDados from "./detalhes/RotaAbaDados.vue";
 import RotaAbaMapa from "./detalhes/RotaAbaMapa.vue";
 import RotaAbaRoteiros from "./detalhes/RotaAbaRoteiros.vue";
+import ModalAdicionarRoteiro from "./ModalAdicionarRoteiro.vue";
+
+import type { Rota, Roteiro, VrpSummary } from "../types/rotas.types";
 
 const props = defineProps<{
   modelValue: boolean;
@@ -219,7 +222,7 @@ const carregarDados = async () => {
     hasChanges.value = false;
     originalOrder.value = roteiros.value.map((r) => r.id);
   } catch (error) {
-    console.error("[ModalDetalhesRota] Erro ao carregar dados:", error);
+    logger.error("[ModalDetalhesRota] Erro ao carregar dados:", error);
   } finally {
     isLoadingRoteiros.value = false;
   }
@@ -268,7 +271,7 @@ const salvarOrdem = async () => {
       mapaRef.value?.invalidateSize();
     }
   } catch (error) {
-    console.error("[ModalDetalhesRota] Erro ao salvar ordem:", error);
+    logger.error("[ModalDetalhesRota] Erro ao salvar ordem:", error);
   } finally {
     isSaving.value = false;
   }

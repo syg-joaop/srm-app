@@ -1,10 +1,12 @@
+import { logger } from "~/utils/logger";
+
 import type { PolylineCache, VrpSummary } from "../types/rotas.types";
 
 const LOG_PREFIX = "[usePolylineCache]";
 const CACHE_PREFIX = "polyline:";
 const POLYLINE_CACHE_TTL_MS = 24 * 60 * 60 * 1000; // 24 horas
 
-const logWarn = (...args: unknown[]) => console.warn(LOG_PREFIX, ...args);
+const logWarn = (...args: unknown[]) => logger.warn(LOG_PREFIX, ...args);
 
 /**
  * Composable para gerenciar cache de polylines em localStorage.

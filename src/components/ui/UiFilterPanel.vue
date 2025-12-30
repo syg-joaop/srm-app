@@ -92,7 +92,7 @@
             <UiSegmentedControl
               v-else-if="filter.type === 'segmented'"
               :model-value="modelValue[filter.key]"
-              :options="filter.options ?? []"
+              :options="filter.options?.map(opt => ({ ...opt, value: String(opt.value) })) ?? []"
               :size="filter.segmentedSize"
               :mobile-size="filter.segmentedMobileSize"
               :full-width="filter.segmentedFullWidth ?? true"
@@ -152,8 +152,7 @@
 
 <script setup lang="ts">
 import { Filter, X } from "lucide-vue-next";
-import UiSegmentedControl from "~/components/ui/UiSegmentedControl.vue";
-import UiSelect from "~/components/ui/UiSelect.vue";
+
 import { getActiveCount, type FilterConfig } from "~/utils/filterPanel";
 
 interface Props {

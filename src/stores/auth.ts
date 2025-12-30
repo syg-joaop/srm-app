@@ -1,6 +1,8 @@
 import { defineStore } from "pinia";
-import type { LoginCredentials, Parametros, Permissao, User } from "~/types/auth";
+
 import { loginResponseSchema } from "~/types/auth";
+
+import type { LoginCredentials, Parametros, Permissao, User } from "~/types/auth";
 
 const STORAGE_KEY = "srm_auth_user";
 const DEFAULT_ORIGEM = "SRM";

@@ -14,16 +14,11 @@
       />
 
     <div>
-      <div v-if="isLoading" class="flex flex-col items-center justify-center py-12">
-        <UiSpinner size="large" text="Carregando dados..." />
+      <div class="mb-4 font-semibold text-sm" style="color: var(--color-primary)">
+        {{ fallbackTotalItems }} resultados
       </div>
 
-      <div v-else>
-        <div class="mb-4 font-semibold text-sm" style="color: var(--color-primary)">
-          {{ fallbackTotalItems }} resultados
-        </div>
-
-        <ListaConcorrentes
+      <ListaConcorrentes
           v-if="paginatedConcorrentes.length > 0"
           :concorrentes="paginatedConcorrentes"
           @select="handleSelectConcorrente"
@@ -46,19 +41,18 @@
           :total-pages="totalPages"
           class="mt-6"
         />
-      </div>
     </div>
   </div>
 </template>
 
 <script setup lang="ts">
 import { Users } from "lucide-vue-next";
+
 import { logger } from "~/utils/logger";
-import UiEmptyState from "~/components/ui/UiEmptyState.vue";
-import UiListToolbar from "~/components/ui/UiListToolbar.vue";
-import UiPaginacao from "~/components/ui/UiPaginacao.vue";
-import UiSpinner from "~/components/ui/UiSpinner.vue";
+import { toNumber, toStringValue } from "~/utils/coerce";
+
 import ListaConcorrentes from "../components/ListaConcorrentes.vue";
+
 import type { Concorrente, ConcorrenteFilters } from "../types/concorrentes.types";
 
 definePageMeta({ layout: "default" });
@@ -133,13 +127,11 @@ watch(currentPage, () => {
   window.scrollTo({ top: 0, behavior: "smooth" });
 });
 
-const { data: concorrentesResponse, status } = fetchConcorrentes(
+const { data: concorrentesResponse } = fetchConcorrentes(
   currentPage,
   itemsPerPage,
   concorrenteFilters,
 );
-
-const isLoading = computed(() => status.value === "pending");
 
 const normalizeConcorrente = (raw: Record<string, unknown>): Concorrente => ({
   id:

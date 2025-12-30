@@ -1,6 +1,8 @@
-import type { Ocorrencia } from "~/types/ocorrencias";
-import { mapStatus } from "./status-mapper";
 import { toNumber, toStringValue } from "~/utils/coerce";
+
+import { mapStatus } from "./status-mapper";
+
+import type { Ocorrencia } from "~/server/schemas/ocorrencias.schema";
 
 /**
  * Extrai um campo de um objeto tentando múltiplas chaves possíveis.
@@ -32,12 +34,12 @@ function extractField(
  */
 function extractNumber(
   raw: Record<string, unknown>,
-  possibleKeys: number[],
+  possibleKeys: string[],
   defaultValue: number,
 ): number {
   for (const key of possibleKeys) {
     const value = toNumber(raw[key]);
-    if (value !== null) return value;
+    if (value !== undefined) return value;
   }
   return defaultValue;
 }

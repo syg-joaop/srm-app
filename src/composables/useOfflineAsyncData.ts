@@ -1,5 +1,7 @@
-﻿import type { ZodTypeAny } from "zod";
-import { useAuthStore } from "~/stores/auth";
+﻿import { useAuthStore } from "~/stores/auth";
+import { logger } from "~/utils/logger";
+
+import type { ZodTypeAny } from "zod";
 
 export type OfflinePagedBodyBuilder<Filters> = (
   page: number,
@@ -49,7 +51,7 @@ export const useOfflineAsyncData = <Response, Filters>(config: UseOfflineAsyncDa
     if (!config.schema) return data;
     const parsed = config.schema.safeParse(data);
     if (!parsed.success) {
-      console.error(
+      logger.error(
         `[useOfflineAsyncData] Invalid ${source} response for ${config.key}`,
         parsed.error,
       );

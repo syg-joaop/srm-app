@@ -115,6 +115,7 @@
 
 <script setup lang="ts">
 import { Briefcase, Mail, User } from "lucide-vue-next";
+
 import UiButton from "~/components/ui/UiButton.vue";
 import UiModal from "~/components/ui/UiModal.vue";
 

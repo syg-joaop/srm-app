@@ -8,8 +8,8 @@
         color 0.3s ease;
     "
   >
-    <div v-if="isLoading" class="flex items-center justify-center h-64">
-      <div class="animate-spin rounded-full h-8 w-8 border-b-2 border-primary"></div>
+    <div v-if="isLoading" class="p-4">
+      <UiSkeletonLoader pattern="grid" :count="1" :grid-config="{ cols: 4, rows: 2 }" />
     </div>
 
     <div v-else class="space-y-6">
@@ -437,10 +437,14 @@ import {
   Target,
   Users,
 } from "lucide-vue-next";
-import type { AniversarianteItem, Atendente, AtendenteItem } from "./types/dashboard.types";
+
+import { dataAtualPrimeiroDiaMes, dataAtualUltimoDiaMes } from "~/utils/utils";
+
 import { useDashboardCharts } from "../composables/useDashboardCharts";
 import { useDashboardStore } from "../stores/dashboard";
-import { dataAtualPrimeiroDiaMes, dataAtualUltimoDiaMes } from "~/utils/utils";
+
+import type { AniversarianteItem, Atendente, AtendenteItem } from "../types/dashboard.types";
+
 
 definePageMeta({
   layout: "default",

@@ -115,8 +115,9 @@
 
 <script setup lang="ts">
 import { MapPin } from "lucide-vue-next";
-import UiBadge from "~/components/ui/UiBadge.vue";
+
 import type { Checkin } from "../types/checkin.types";
+import { type Variant } from "~/components/ui/UiBadge.vue";
 
 defineProps<{
   checkins: Checkin[];
@@ -140,7 +141,8 @@ const STATUS_ICON_CLASSES: Record<string, string> = {
   inativo: "bg-red-500/10 text-red-500",
 };
 
-const getVariant = (status: string): string => resolveStatusVariant(status, STATUS_VARIANTS);
+const getVariant = (status: string): Variant =>
+  resolveStatusVariant(status, STATUS_VARIANTS) as Variant;
 
 const getIconClass = (status?: string): string =>
   resolveStatusIconClass(status, STATUS_ICON_CLASSES);

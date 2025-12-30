@@ -1,13 +1,16 @@
-import type { Map, Polyline } from "leaflet";
 import L from "leaflet";
-import type { MapaPonto, RotaPolylineConfig } from "./maps.types";
+
+import { toNumber } from "~/utils/coerce";
+import { areValidCoordinates } from "~/utils/mapTypeGuards";
 import {
   decodePolyline,
   filterValidCoordinates,
   getBoundsCenter,
   normalizePolylineString,
 } from "~/utils/polyline";
-import { toNumber } from "~/utils/coerce";
+
+import type { MapaPonto, RotaPolylineConfig } from "./maps.types";
+import type { Map, Polyline } from "leaflet";
 
 /**
  * Composable para gerenciar polylines em um mapa Leaflet.
@@ -59,9 +62,13 @@ export function useMapPolyline() {
         for (const ponto of options.pontos) {
           const lat = toNumber(ponto.latitude);
           const lng = toNumber(ponto.longitude);
-          if (lat !== null && lng !== null) {
-            referenceCoords.push([lat, lng]);
+
+          if (!areValidCoordinates(lat, lng)) {
+            continue;
           }
+
+          // Type assertion: after areValidCoordinates check, lat and lng are guaranteed to be number
+          referenceCoords.push([lat as number, lng as number]);
         }
       }
 
@@ -102,9 +109,13 @@ export function useMapPolyline() {
       for (const ponto of sortedPontos) {
         const lat = toNumber(ponto.latitude);
         const lng = toNumber(ponto.longitude);
-        if (lat !== null && lng !== null) {
-          fallbackCoords.push([lat, lng]);
+
+        if (!areValidCoordinates(lat, lng)) {
+          continue;
         }
+
+        // Type assertion: after areValidCoordinates check, lat and lng are guaranteed to be number
+        fallbackCoords.push([lat as number, lng as number]);
       }
 
       if (fallbackCoords.length >= 2) {

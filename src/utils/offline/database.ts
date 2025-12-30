@@ -1,3 +1,5 @@
+import { logger } from "~/utils/logger";
+
 import type { OfflineCacheEntry, OfflinePendingOperation } from "~/types/offline";
 
 export const OFFLINE_DB_NAME = "srm_offline";
@@ -66,7 +68,7 @@ export const getOfflineDb = async (): Promise<IDBDatabase> => {
     };
 
     request.onblocked = () => {
-      console.warn("[offline] IndexedDB open bloqueado (outra aba pode estar usando a versão antiga).");
+      logger.warn("[offline] IndexedDB open bloqueado (outra aba pode estar usando a versão antiga).");
     };
   });
 
