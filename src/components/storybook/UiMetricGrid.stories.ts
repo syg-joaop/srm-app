@@ -1,14 +1,15 @@
-import type { Meta, StoryObj } from '@storybook/vue3';
-import UiMetricGrid from '../ui/UiMetricGrid.vue';
+import UiMetricGrid from "../ui/UiMetricGrid.vue";
+
+import type { Meta, StoryObj } from "@storybook/vue3";
 
 const meta: Meta<typeof UiMetricGrid> = {
-  title: 'UI/UiMetricGrid',
+  title: "UI/UiMetricGrid",
   component: UiMetricGrid,
-  tags: ['autodocs'],
+  tags: ["autodocs"],
   argTypes: {
     items: {
-      control: 'object',
-      description: 'Array de métricas',
+      control: "object",
+      description: "Array de métricas",
     },
   },
 };
@@ -17,21 +18,19 @@ export default meta;
 type Story = StoryObj<typeof UiMetricGrid>;
 
 const sampleItems = [
-  { label: 'Vendas', value: 'R$ 45.230' },
-  { label: 'Pedidos', value: '234' },
-  { label: 'Clientes', value: '156' },
-  { label: 'Ticket Médio', value: 'R$ 193,25' },
+  { label: "Vendas", value: "R$ 45.230" },
+  { label: "Pedidos", value: "234" },
+  { label: "Clientes", value: "156" },
+  { label: "Ticket Médio", value: "R$ 193,25" },
 ];
 
 export const Default: Story = {
   args: {
     items: sampleItems,
   },
-  render: (args) => ({
+  render: (args: InstanceType<typeof UiMetricGrid>) => ({
     components: { UiMetricGrid },
-    setup() {
-      return { args };
-    },
+    setup: () => ({ args }),
     template: '<UiMetricGrid v-bind="args" />',
   }),
 };
@@ -39,8 +38,8 @@ export const Default: Story = {
 export const Minimal: Story = {
   args: {
     items: [
-      { label: 'Ativos', value: '45' },
-      { label: 'Inativos', value: '12' },
+      { label: "Ativos", value: "45" },
+      { label: "Inativos", value: "12" },
     ],
   },
 };
@@ -48,12 +47,12 @@ export const Minimal: Story = {
 export const ManyMetrics: Story = {
   args: {
     items: [
-      { label: 'Vendas', value: 'R$ 45.230' },
-      { label: 'Pedidos', value: '234' },
-      { label: 'Clientes', value: '156' },
-      { label: 'Ticket Médio', value: 'R$ 193,25' },
-      { label: 'Conversão', value: '12,5%' },
-      { label: 'Cancelamentos', value: '8' },
+      { label: "Vendas", value: "R$ 45.230" },
+      { label: "Pedidos", value: "234" },
+      { label: "Clientes", value: "156" },
+      { label: "Ticket Médio", value: "R$ 193,25" },
+      { label: "Conversão", value: "12,5%" },
+      { label: "Cancelamentos", value: "8" },
     ],
   },
 };
@@ -61,10 +60,10 @@ export const ManyMetrics: Story = {
 export const FinancialMetrics: Story = {
   args: {
     items: [
-      { label: 'Receita Bruta', value: 'R$ 125.430' },
-      { label: 'Custos', value: 'R$ 45.200' },
-      { label: 'Lucro', value: 'R$ 80.230' },
-      { label: 'Margem', value: '64%' },
+      { label: "Receita Bruta", value: "R$ 125.430" },
+      { label: "Custos", value: "R$ 45.200" },
+      { label: "Lucro", value: "R$ 80.230" },
+      { label: "Margem", value: "64%" },
     ],
   },
 };
@@ -72,10 +71,10 @@ export const FinancialMetrics: Story = {
 export const OperationalMetrics: Story = {
   args: {
     items: [
-      { label: 'Pedidos/Hora', value: '23' },
-      { label: 'Tempo Médio', value: '15min' },
-      { label: 'Eficiência', value: '94%' },
-      { label: 'Erro', value: '0,5%' },
+      { label: "Pedidos/Hora", value: "23" },
+      { label: "Tempo Médio", value: "15min" },
+      { label: "Eficiência", value: "94%" },
+      { label: "Erro", value: "0,5%" },
     ],
   },
 };
@@ -83,10 +82,10 @@ export const OperationalMetrics: Story = {
 export const Percentages: Story = {
   args: {
     items: [
-      { label: 'Conversão', value: '12,5%' },
-      { label: 'Retenção', value: '68,3%' },
-      { label: 'Churn', value: '4,2%' },
-      { label: 'Satisfação', value: '92,7%' },
+      { label: "Conversão", value: "12,5%" },
+      { label: "Retenção", value: "68,3%" },
+      { label: "Churn", value: "4,2%" },
+      { label: "Satisfação", value: "92,7%" },
     ],
   },
 };
@@ -94,10 +93,10 @@ export const Percentages: Story = {
 export const LargeNumbers: Story = {
   args: {
     items: [
-      { label: 'Usuários Totais', value: '1.234.567' },
-      { label: 'Usuários Ativos', value: '856.432' },
-      { label: 'Novos (Mês)', value: '45.678' },
-      { label: 'Cancelamentos', value: '2.345' },
+      { label: "Usuários Totais", value: "1.234.567" },
+      { label: "Usuários Ativos", value: "856.432" },
+      { label: "Novos (Mês)", value: "45.678" },
+      { label: "Cancelamentos", value: "2.345" },
     ],
   },
 };

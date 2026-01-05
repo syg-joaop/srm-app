@@ -1,7 +1,6 @@
 import UiBadge from "../ui/UiBadge.vue";
 
 import type { Meta, StoryObj } from "@storybook/vue3";
-import { ref } from "vue";
 
 /**
  * Meta configuração do componente UiBadge
@@ -44,11 +43,9 @@ export const Default: Story = {
   args: {
     variant: "default",
   },
-  render: (args) => ({
+  render: (args: InstanceType<typeof UiBadge>) => ({
     components: { UiBadge },
-    setup() {
-      return { args };
-    },
+    setup: () => ({ args }),
     template: '<UiBadge v-bind="args">Badge Default</UiBadge>',
   }),
 };
