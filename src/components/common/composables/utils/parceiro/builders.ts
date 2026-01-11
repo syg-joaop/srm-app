@@ -4,30 +4,22 @@
  */
 
 import {
-  buildSubtitleSpecial,
   buildListDetails,
   buildStandardDetails,
+  buildSubtitleSpecial,
   getExcludedKeys,
-} from "../carga-helpers";
-
+} from "./carga-helpers";
 import {
-  TAB_FIELD_CONFIG,
-  CADASTRO_FIELDS,
-  CONTATO_FIELDS,
-  CARGA_FIELDS,
   ALL_TABS,
+  CADASTRO_FIELDS,
+  CARGA_FIELDS,
+  CONTATO_FIELDS,
+  TAB_FIELD_CONFIG,
 } from "./config";
-import { normalize, formatDetailValue, toLabel } from "./normalizers";
+import { formatDetailValue, normalize, toLabel } from "./normalizers";
 
 import type { Carga } from "~/server/schemas/carga.schema";
-import type {
-  DetailPair,
-  EnhancedDetail,
-  FieldMapping,
-  TabId,
-  TabItem,
-} from "~/types/parceiro";
-
+import type { DetailPair, EnhancedDetail, FieldMapping, TabId, TabItem } from "~/types/parceiro";
 
 // IMPORT ESM (substituindo require())
 
@@ -37,7 +29,10 @@ import type {
  * @param fields - Lista de campos a tentar (em ordem de prioridade)
  * @returns Objeto com chave e valor encontrados
  */
-const pickField = (record: Record<string, unknown>, fields: string[]): { key: string; value: string } => {
+const pickField = (
+  record: Record<string, unknown>,
+  fields: string[],
+): { key: string; value: string } => {
   for (const field of fields) {
     const value = record[field];
     if (value) {
@@ -47,7 +42,7 @@ const pickField = (record: Record<string, unknown>, fields: string[]): { key: st
       }
     }
   }
-  return { key: '', value: '' };
+  return { key: "", value: "" };
 };
 
 /**
@@ -56,7 +51,10 @@ const pickField = (record: Record<string, unknown>, fields: string[]): { key: st
  * @param tabId - Identificador da tab
  * @returns Objeto com chave e valor do título
  */
-const getTitle = (record: Record<string, unknown>, tabId: TabId): { key: string; value: string } => {
+const getTitle = (
+  record: Record<string, unknown>,
+  tabId: TabId,
+): { key: string; value: string } => {
   const config = TAB_FIELD_CONFIG[tabId];
   return pickField(record, config.title);
 };
@@ -71,10 +69,10 @@ const getTitle = (record: Record<string, unknown>, tabId: TabId): { key: string;
 const getSubtitle = (
   record: Record<string, unknown>,
   tabId: TabId,
-  titleKey: string
+  titleKey: string,
 ): { key: string; value: string } => {
   // Tratamento especial para cargas usando helper importado
-  if (tabId === 'cargas') {
+  if (tabId === "cargas") {
     const cargaSubtitle = buildSubtitleSpecial(record);
     if (cargaSubtitle.value) return cargaSubtitle;
   }
@@ -84,7 +82,7 @@ const getSubtitle = (
 
   // Evita duplicar o título no subtítulo
   if (result.key === titleKey) {
-    return { key: '', value: '' };
+    return { key: "", value: "" };
   }
 
   return result;
@@ -98,7 +96,7 @@ const getSubtitle = (
  */
 const getStatus = (record: Record<string, unknown>, tabId: TabId): string => {
   const config = TAB_FIELD_CONFIG[tabId];
-  if (!config.status) return '';
+  if (!config.status) return "";
 
   const result = pickField(record, config.status);
   return result.value;
@@ -127,24 +125,17 @@ export const buildDetailsFromFields = (
  * @returns Array com um TabItem ou array vazio se não houver dados
  */
 export const buildCadastro = (record: Record<string, unknown>): TabItem[] => {
-  const enderecoCompleto = [
-    normalize(record.ende),
-    normalize(record.comp),
-  ]
+  const enderecoCompleto = [normalize(record.ende), normalize(record.comp)]
     .filter(Boolean)
     .join(", ");
   const enriched = { ...record, enderecoCompleto } as Record<string, unknown>;
   const details = buildDetailsFromFields(enriched, CADASTRO_FIELDS);
   const title = pickValue(enriched, ["name", "fornecedor", "nome", "titulo"]).value;
-  const subtitle = pickValue(enriched, ["fanta", "fantasia", "location", "cidade"])
-    .value;
+  const subtitle = pickValue(enriched, ["fanta", "fantasia", "location", "cidade"]).value;
   const status = pickValue(enriched, ["status", "situacao"]).value;
   const hasAny = details.length || title || subtitle || status;
   if (!hasAny) return [];
-  const id =
-    normalize(enriched.codfor) ||
-    normalize(enriched.id) ||
-    "cadastro";
+  const id = normalize(enriched.codfor) || normalize(enriched.id) || "cadastro";
   return [
     {
       id: `cadastro-${id}`,
@@ -187,8 +178,7 @@ export const buildCargaFallback = (record: Record<string, unknown>): TabItem[] =
   const details = buildDetailsFromFields(record, CARGA_FIELDS);
   const hasAny = details.length;
   if (!hasAny) return [];
-  const id =
-    normalize(record.codfor) || normalize(record.id) || "cargas";
+  const id = normalize(record.codfor) || normalize(record.id) || "cargas";
   return [
     {
       id: `cargas-${id}`,
@@ -219,11 +209,11 @@ export const buildCargas = (items: Carga[]): TabItem[] => {
 const buildCargaItem = (item: Carga, idx: number): TabItem | null => {
   const record = item as Record<string, unknown>;
 
-  if (!record || typeof record !== 'object') {
+  if (!record || typeof record !== "object") {
     return createFallback(idx);
   }
 
-  const title = getTitle(record, 'cargas');
+  const title = getTitle(record, "cargas");
   const isBatch = hasMultipleProducts(record);
 
   const details = buildDetailsForCarga(record, title.key, isBatch);
@@ -236,7 +226,7 @@ const buildCargaItem = (item: Carga, idx: number): TabItem | null => {
     subtitle: subtitle || undefined,
     rightLabel: normalize(record.data_peso),
     details: details.slice(0, 8),
-    detailsLayout: isBatch ? 'list' : 'grid' as const,
+    detailsLayout: isBatch ? "list" : ("grid" as const),
   };
 };
 
@@ -260,9 +250,9 @@ const hasMultipleProducts = (record: Record<string, unknown>): boolean => {
   const countVal = record.count;
   let count = 0;
 
-  if (typeof countVal === 'number') {
+  if (typeof countVal === "number") {
     count = countVal;
-  } else if (typeof countVal === 'string') {
+  } else if (typeof countVal === "string") {
     const parsed = parseInt(countVal);
     count = !isNaN(parsed) ? parsed : 0;
   }
@@ -280,7 +270,7 @@ const hasMultipleProducts = (record: Record<string, unknown>): boolean => {
 const buildDetailsForCarga = (
   record: Record<string, unknown>,
   titleKey: string,
-  isBatch: boolean
+  isBatch: boolean,
 ): EnhancedDetail[] => {
   // Usando helpers importados (ESM)
   if (isBatch) {
@@ -297,17 +287,14 @@ const buildDetailsForCarga = (
  * @param isBatch - Se é um lote com múltiplos produtos
  * @returns Subtítulo formatado
  */
-const buildSubtitleForCarga = (
-  record: Record<string, unknown>,
-  isBatch: boolean
-): string => {
+const buildSubtitleForCarga = (record: Record<string, unknown>, isBatch: boolean): string => {
   if (isBatch) {
     const countVal = record.count;
     let count = 0;
 
-    if (typeof countVal === 'number') {
+    if (typeof countVal === "number") {
       count = countVal;
-    } else if (typeof countVal === 'string') {
+    } else if (typeof countVal === "string") {
       const parsed = parseInt(countVal);
       count = !isNaN(parsed) ? parsed : 0;
     }
@@ -320,7 +307,7 @@ const buildSubtitleForCarga = (
     return normalize(produtos[0]);
   }
 
-  return '';
+  return "";
 };
 
 /**

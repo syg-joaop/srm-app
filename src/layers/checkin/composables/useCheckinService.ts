@@ -1,5 +1,5 @@
-﻿import { schemaPaginatedCheckinResponse } from "../schemas/checkin.schema";
-import { buildPagedBody } from "~/utils/apiPayload";
+import { schemaPaginatedCheckinResponse } from "../schemas/checkin.schema";
+import { buildPagedBody } from "~/utils/pagination";
 
 import type { CheckinFilters, PaginatedCheckinResponse } from "../schemas/checkin.schema";
 

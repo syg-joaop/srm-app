@@ -5,26 +5,12 @@
 import { ALL_TABS } from "./config";
 
 import type { ParceiroData, ParceiroTabOption, ParceiroVariant, TabId } from "~/types/parceiro";
-
-// Re-export do utilitário consolidado de status para backward compatibility
-export {
-  getStatusBadgeClass,
-  getStatusVariant,
-  getVariant,
-  getStatusColor,
-  getStatusLabel,
-  getStatusBgClass,
-  getStatusDotClass,
-} from "~/utils/status-helpers";
-
 /**
  * Filtra as tabs disponíveis baseado na variante do parceiro.
  * @param variant - Variante do parceiro
  * @returns Array de opções de tabs filtradas
  */
-export const filterTabs = (
-  variant: ParceiroVariant,
-): ParceiroTabOption[] => {
+export const filterTabs = (variant: ParceiroVariant): ParceiroTabOption[] => {
   if (variant === "atendente" || variant === "time") {
     return ALL_TABS.filter((t) => ["agendamentos", "atendimentos", "checkins"].includes(t.id));
   }
@@ -69,3 +55,5 @@ export const getTabLabel = (tabId: TabId): string => {
 export const getCountLabel = (count: number): string => {
   return count === 1 ? "1 item" : `${count} itens`;
 };
+
+

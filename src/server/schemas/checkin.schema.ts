@@ -19,7 +19,6 @@ export const schemaCheckin = z
     status: z.string().optional(),
     latitude: z.number().optional(),
     longitude: z.number().optional(),
-    // Campos adicionais do tipo antigo (para compatibilidade)
     sr_recno: z.string().optional(),
     local: z.string().optional(),
     endereco: z.string().optional(),
@@ -48,18 +47,14 @@ export const schemaCheckinFilters = z
 /**
  * Schema para resposta paginada de check-ins
  */
-export const schemaPaginatedCheckinResponse = createPaginatedSchema(
-  schemaCheckin
-);
+export const schemaPaginatedCheckinResponse = createPaginatedSchema(schemaCheckin);
 
 /**
  * Tipos inferidos
  */
 export type Checkin = z.infer<typeof schemaCheckin>;
 export type CheckinFilters = z.infer<typeof schemaCheckinFilters>;
-export type PaginatedCheckinResponse = z.infer<
-  typeof schemaPaginatedCheckinResponse
->;
+export type PaginatedCheckinResponse = z.infer<typeof schemaPaginatedCheckinResponse>;
 
 /**
  * Check-in com campos adicionais para UI

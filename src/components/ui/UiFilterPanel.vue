@@ -153,7 +153,7 @@
 <script setup lang="ts">
 import { Filter, X } from "lucide-vue-next";
 
-import { getActiveCount, type FilterConfig } from "~/utils/filterPanel";
+import { getActiveCount, type FilterConfig } from "~/components/ui/utils/filterPanel";
 
 interface Props {
   modelValue: Record<string, string>;

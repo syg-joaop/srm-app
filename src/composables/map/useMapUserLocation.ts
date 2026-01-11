@@ -1,7 +1,7 @@
 import L from "leaflet";
 
 import { toNumber } from "~/utils/coerce";
-import { areValidCoordinates } from "~/utils/mapTypeGuards";
+import { areValidCoordinates } from "~/composables/map/utils/typeGuards";
 
 import type { UserLocation } from "./maps.types";
 import type { Map, CircleMarker, Polyline } from "leaflet";

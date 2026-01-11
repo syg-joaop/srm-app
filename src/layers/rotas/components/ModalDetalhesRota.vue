@@ -1,4 +1,4 @@
-ï»¿<template>
+<template>
   <UiModal v-model="isOpen" size="large" :show-close="true">
     <template #title>
       <div class="flex items-center gap-3">
@@ -69,7 +69,7 @@
             <div class="font-bold" style="color: var(--color-success)">
               {{ rota.progresso.concluidos }}
             </div>
-            <div style="color: var(--color-text-muted)">ConcluÃ­dos</div>
+            <div style="color: var(--color-text-muted)">Concluídos</div>
           </div>
           <div>
             <div class="font-bold" style="color: var(--color-warning)">
@@ -95,7 +95,7 @@
         :hide-labels-on-mobile="false"
       />
 
-      <!-- ConteÃºdo das abas -->
+      <!-- Conteúdo das abas -->
       <div class="min-h-[300px]">
         <!-- ABA MAPA -->
         <RotaAbaMapa
@@ -141,9 +141,9 @@
 <script setup lang="ts">
 import { Calendar, Info, List, Map as MapIcon, User } from "lucide-vue-next";
 
-import { getStatusColor, getStatusLabel, getStatusVariant } from "~/utils/status-helpers";
+import { getStatusColor, getStatusLabel, getStatusVariant } from "~/components/ui/utils/status";
 import { logger } from "~/utils/logger";
-import { formatarIntervaloDatas } from "~/utils/utils";
+import { formatarIntervaloDatas } from "~/utils/formatters/date";
 
 import RotaAbaDados from "./detalhes/RotaAbaDados.vue";
 import RotaAbaMapa from "./detalhes/RotaAbaMapa.vue";
@@ -189,13 +189,13 @@ const originalOrder = ref<number[]>([]);
 // Service
 const rotaService = useRotaService();
 
-// Computed para sequÃªncia mÃ¡xima
+// Computed para sequência máxima
 const maxSequencia = computed(() => {
   if (roteiros.value.length === 0) return 0;
   return Math.max(...roteiros.value.map((r) => r.sequencia || 0));
 });
 
-// Roteiros ordenados por sequÃªncia
+// Roteiros ordenados por sequência
 const roteirosOrdenados = computed(() =>
   [...roteiros.value].sort((a, b) => (a.sequencia || 0) - (b.sequencia || 0)),
 );
@@ -289,7 +289,7 @@ watch(
   },
 );
 
-// Watch para mudanÃ§a de rota
+// Watch para mudança de rota
 watch(
   () => props.rota?.id,
   () => {
@@ -300,7 +300,7 @@ watch(
 );
 
 /**
- * Handler quando roteiro Ã© adicionado
+ * Handler quando roteiro é adicionado
  */
 const handleRoteiroAdded = async () => {
   await carregarDados();

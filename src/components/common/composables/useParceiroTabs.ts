@@ -1,30 +1,42 @@
 import {
-  ALL_TABS,
-  EMPTY_STATE_COPY,
+  build,
   buildCadastro,
   buildCargaFallback,
   buildCargas,
   buildContato,
-  build,
+} from "~/components/common/composables/utils/parceiro/builders";
+import { ALL_TABS, EMPTY_STATE_COPY } from "~/components/common/composables/utils/parceiro/config";
+import {
   filterTabs,
   getCountLabel,
   getInitialTab,
   getTabLabel,
   isParceiroInactive,
-} from "~/utils/helpers/parceiro/index";
+} from "~/components/common/composables/utils/parceiro/utils";
 
-import type { DetailPair, ParceiroData, ParceiroTabOption, ParceiroVariant, TabId, TabItem } from "~/types/parceiro";
+import type {
+  DetailPair,
+  ParceiroData,
+  ParceiroTabOption,
+  ParceiroVariant,
+  TabId,
+  TabItem,
+} from "~/types/parceiro";
 
 /**
  * Composable para gerenciar tabs do modal de detalhes do parceiro.
  */
 export function useParceiroTabs(
-  propsRef: ComputedRef<{ modelValue: boolean; parceiro?: ParceiroData | null; variant?: ParceiroVariant }>,
+  propsRef: ComputedRef<{
+    modelValue: boolean;
+    parceiro?: ParceiroData | null;
+    variant?: ParceiroVariant;
+  }>,
 ) {
-  const activeTab = ref<TabId>(getInitialTab(propsRef.value.variant ?? 'parceiro'));
+  const activeTab = ref<TabId>(getInitialTab(propsRef.value.variant ?? "parceiro"));
   const tabButtonRefs = ref<HTMLElement[]>([]);
 
-  const tabs = computed(() => filterTabs(propsRef.value.variant ?? 'parceiro'));
+  const tabs = computed(() => filterTabs(propsRef.value.variant ?? "parceiro"));
 
   const isInactive = computed(() => isParceiroInactive(propsRef.value.parceiro ?? null));
 
@@ -105,7 +117,7 @@ export function useParceiroTabs(
   watch(
     () => propsRef.value.variant,
     (newVariant) => {
-      activeTab.value = getInitialTab(newVariant ?? 'parceiro');
+      activeTab.value = getInitialTab(newVariant ?? "parceiro");
     },
   );
 
@@ -134,11 +146,17 @@ export const CADASTRO_FIELD_CATEGORIES = {
  */
 export const filterCadastroFields = {
   getIdentification: (details: DetailPair[]) =>
-    details.filter((d) => (CADASTRO_FIELD_CATEGORIES.IDENTIFICATION as readonly string[]).includes(d.label)),
+    details.filter((d) =>
+      (CADASTRO_FIELD_CATEGORIES.IDENTIFICATION as readonly string[]).includes(d.label),
+    ),
 
   getLocation: (details: DetailPair[]) =>
-    details.filter((d) => (CADASTRO_FIELD_CATEGORIES.LOCATION as readonly string[]).includes(d.label)),
+    details.filter((d) =>
+      (CADASTRO_FIELD_CATEGORIES.LOCATION as readonly string[]).includes(d.label),
+    ),
 
   getAdditional: (details: DetailPair[]) =>
-    details.filter((d) => (CADASTRO_FIELD_CATEGORIES.ADDITIONAL as readonly string[]).includes(d.label)),
+    details.filter((d) =>
+      (CADASTRO_FIELD_CATEGORIES.ADDITIONAL as readonly string[]).includes(d.label),
+    ),
 };

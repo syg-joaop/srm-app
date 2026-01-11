@@ -1,5 +1,5 @@
-﻿import { schemaPaginatedOcorrenciaResponse } from "~/server/schemas/ocorrencias.schema";
-import { buildPagedBody } from "~/utils/apiPayload";
+import { schemaPaginatedOcorrenciaResponse } from "~/server/schemas/ocorrencias.schema";
+import { buildPagedBody } from "~/utils/pagination";
 
 import type { OcorrenciaFilters, PaginatedOcorrenciaResponse } from "~/server/schemas/ocorrencias.schema";
 

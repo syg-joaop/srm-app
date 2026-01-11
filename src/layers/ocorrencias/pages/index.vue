@@ -1,4 +1,4 @@
-ï»¿<template>
+<template>
   <div
     class="min-h-screen p-4 sm:p-6 pb-20 transition-colors"
     style="background-color: var(--color-background); color: var(--color-text)"
@@ -9,7 +9,7 @@
       <div class="flex items-center gap-2 w-full md:max-w-xl">
         <UiButton variant="primary" size="medium" class="whitespace-nowrap hidden sm:flex">
           <Plus class="w-4 h-4" />
-          Nova OcorrÃªncia
+          Nova Ocorrência
         </UiButton>
 
         <div class="relative flex-1">
@@ -79,7 +79,7 @@
           />
           <UiSelect
             v-model="filters.situacao"
-            label="SituaÃ§Ã£o"
+            label="Situação"
             :options="situacaoOptions"
             placeholder="Todos"
           />
@@ -129,7 +129,7 @@
             <div class="col-span-2">Data Cadastro</div>
             <div class="col-span-2">Atendente</div>
             <div class="col-span-3">Titulo</div>
-            <div class="col-span-1 text-center">AÃ§Ãµes</div>
+            <div class="col-span-1 text-center">Ações</div>
           </div>
 
           <div class="flex flex-col gap-1.5 md:gap-0">
@@ -175,7 +175,7 @@
 
                 <div class="col-span-3 flex items-center">
                   <span class="text-sm text-[var(--color-text-muted)] truncate">
-                    {{ item.titulo || "Sem descriÃ§Ã£o" }}
+                    {{ item.titulo || "Sem descrição" }}
                   </span>
                 </div>
 
@@ -205,7 +205,7 @@
                         {{ item.fornecedor }}
                       </span>
                       <span class="text-[11px] text-[var(--color-text-muted)] truncate">
-                        {{ item.titulo || "Sem descriÃ§Ã£o" }}
+                        {{ item.titulo || "Sem descrição" }}
                       </span>
                     </div>
                   </div>
@@ -226,8 +226,8 @@
 
         <UiEmptyState
           v-else
-          title="Nenhuma ocorrÃªncia encontrada"
-          description="NÃ£o hÃ¡ ocorrÃªncias cadastradas ou que correspondam aos filtros aplicados."
+          title="Nenhuma ocorrência encontrada"
+          description="Não há ocorrências cadastradas ou que correspondam aos filtros aplicados."
         >
           <template #icon>
             <MessageSquare class="w-12 h-12" />
@@ -235,7 +235,7 @@
           <template #action>
             <UiButton variant="primary">
               <Plus class="w-4 h-4" />
-              Nova OcorrÃªncia
+              Nova Ocorrência
             </UiButton>
           </template>
         </UiEmptyState>
@@ -260,9 +260,9 @@
 <script setup lang="ts">
 import { ChevronRight, Eye, Filter, MessageSquare, Plus, Search, X } from "lucide-vue-next";
 
-import { normalizeOcorrencias } from "~/utils/ocorrencias";
-import { getStatusVariant, type StatusVariant } from "~/utils/status-helpers";
-import { formatarData } from "~/utils/utils";
+import { normalizeOcorrencias } from "~/layers/ocorrencias/utils/normalizers";
+import { getStatusVariant, type StatusVariant } from "~/components/ui/utils/status";
+import { formatarData } from "~/utils/formatters/date";
 
 import ModalDetalhesOcorrencia from "../components/ModalDetalhesOcorrencia.vue";
 
@@ -365,8 +365,8 @@ const statusOptions = [
 ];
 
 const ordenarPorOptions = [
-  { label: "Data da OcorrÃªncia", value: "data_ocorrencia" },
-  { label: "Data do PrÃ³x. Atendimento", value: "data_proximo" },
+  { label: "Data da Ocorrência", value: "data_ocorrencia" },
+  { label: "Data do Próx. Atendimento", value: "data_proximo" },
   { label: "Data de cadastro", value: "data_cadastro" },
 ];
 

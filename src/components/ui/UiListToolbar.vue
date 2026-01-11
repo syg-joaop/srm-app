@@ -55,7 +55,7 @@
 
     <UiFilterPanel
       v-if="hasFilters"
-      v-model="filtersProxy as Record<string, string>"
+      v-model="filtersProxy"
       :filters="filterItems"
       :columns="filterColumns"
       :input-columns="inputColumns"
@@ -70,11 +70,9 @@
 <script setup lang="ts">
 import { Filter, Search } from "lucide-vue-next";
 
-import { getActiveCount, type FilterConfig } from "~/utils/filterPanel";
+import { getActiveCount, type FilterConfig } from "~/components/ui/utils/filterPanel";
 
-interface FilterValues {
-  [key: string]: string | number | boolean | string[] | undefined;
-}
+type FilterValues = Record<string, string>;
 
 interface Props {
   search: string;
@@ -114,3 +112,4 @@ const activeFiltersCount = computed(() =>
   getActiveCount(props.filterItems, props.filters),
 );
 </script>
+

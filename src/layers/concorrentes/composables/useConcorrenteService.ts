@@ -1,5 +1,5 @@
-﻿import { schemaPaginatedConcorrenteResponse } from "../schemas/concorrentes.schema";
-import { buildPagedBody } from "~/utils/apiPayload";
+import { schemaPaginatedConcorrenteResponse } from "../schemas/concorrentes.schema";
+import { buildPagedBody } from "~/utils/pagination";
 
 import type { ConcorrenteFilters, PaginatedConcorrenteResponse } from "../schemas/concorrentes.schema";
 

@@ -1,13 +1,13 @@
 import L from "leaflet";
 
 import { toNumber } from "~/utils/coerce";
-import { areValidCoordinates } from "~/utils/mapTypeGuards";
+import { areValidCoordinates } from "~/composables/map/utils/typeGuards";
+import { filterValidCoordinates } from "~/utils/geo/coordinateUtils";
 import {
   decodePolyline,
-  filterValidCoordinates,
   getBoundsCenter,
   normalizePolylineString,
-} from "~/utils/polyline";
+} from "~/composables/map/utils/polyline";
 
 import type { MapaPonto, RotaPolylineConfig } from "./maps.types";
 import type { Map, Polyline } from "leaflet";
@@ -166,3 +166,5 @@ export function useMapPolyline() {
     getPolyline,
   };
 }
+
+

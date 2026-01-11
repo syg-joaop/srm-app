@@ -1,6 +1,6 @@
-﻿import { useAuthStore } from "~/stores/auth";
+import { useAuthStore } from "~/stores/auth";
 import { logger } from "~/utils/logger";
-import { getOfflineCacheTtl, stableStringify } from "~/utils/offline/helpers";
+import { getOfflineCacheTtl, stableStringify } from "~/composables/offline/helpers";
 
 import type { ZodTypeAny } from "zod";
 

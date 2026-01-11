@@ -4,7 +4,7 @@ import {
   getPremiumTooltip,
   premiumTooltipStyle,
   type TooltipParam,
-} from "~/utils/formatters/chart";
+} from "~/layers/painel/utils/chartTooltip";
 import { formatarKg, formatarMoeda } from "~/utils/formatters/formatadores";
 
 import type { ChartData } from "../schemas/dashboard.schema";

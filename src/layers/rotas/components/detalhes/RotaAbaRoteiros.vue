@@ -1,4 +1,4 @@
-ï»¿<template>
+<template>
   <div>
     <!-- Actions -->
     <div class="flex items-center justify-between mb-4 flex-wrap gap-2">
@@ -7,7 +7,7 @@
           {{ roteiros.length }} pontos
         </span>
         <UiBadge v-if="hasChanges" variant="warning" size="small" :dot="true">
-          AlteraÃ§Ãµes nÃ£o salvas
+          Alterações não salvas
         </UiBadge>
       </div>
       <div class="flex gap-2">
@@ -76,7 +76,7 @@
           <GripVertical class="w-4 h-4" />
         </div>
 
-        <!-- NÃºmero -->
+        <!-- Número -->
         <div
           class="w-7 h-7 rounded-lg flex items-center justify-center text-xs font-bold text-white flex-shrink-0"
           :style="{ backgroundColor: getStatusColor(getUltimoStatus(roteiro)) }"
@@ -129,7 +129,7 @@ import {
   Trash2,
 } from "lucide-vue-next";
 
-import { getStatusColor, getStatusLabel, getStatusVariant } from "~/utils/status-helpers";
+import { getStatusColor, getStatusLabel, getStatusVariant } from "~/components/ui/utils/status";
 
 import type { Roteiro } from "../../schemas/rotas.schema";
 
@@ -187,21 +187,21 @@ const handleDrop = (event: DragEvent, targetIndex: number) => {
 };
 
 // Utils (duplicados do pai por enquanto, idealmente em composable ou utils compartilhado)
-// Para evitar duplicaÃ§Ã£o, vou apenas usar funÃ§Ãµes locais simples ou props se fosse complexo.
-// Mas aqui Ã© formataÃ§Ã£o simples.
+// Para evitar duplicação, vou apenas usar funções locais simples ou props se fosse complexo.
+// Mas aqui é formatação simples.
 
 const getUltimoStatus = (roteiro: Roteiro): string => {
   return roteiro.srm_status_roteiro?.[0]?.status?.toLowerCase() || "aguardando";
 };
 
 const formatEndereco = (endereco?: Roteiro["endereco"]): string => {
-  if (!endereco) return "EndereÃ§o nÃ£o disponÃ­vel";
+  if (!endereco) return "Endereço não disponível";
   const parts = [
     endereco.rua,
     endereco.numero,
     endereco.bairro,
     endereco.cidade,
   ].filter(Boolean);
-  return parts.length > 0 ? parts.join(", ") : "EndereÃ§o nÃ£o disponÃ­vel";
+  return parts.length > 0 ? parts.join(", ") : "Endereço não disponível";
 };
 </script>

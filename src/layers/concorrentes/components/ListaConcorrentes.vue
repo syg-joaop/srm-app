@@ -1,4 +1,4 @@
-﻿<template>
+<template>
   <div>
     <div
       class="hidden md:grid grid-cols-12 gap-4 px-5 py-3 bg-[var(--color-background)] rounded-t-lg border border-[var(--color-border)] text-xs font-semibold text-[var(--color-text-muted)] uppercase tracking-wider"
@@ -128,7 +128,7 @@ import {
   COMMON_STATUS_VARIANTS,
   resolveStatusIconClass,
   resolveStatusVariant,
-} from "~/utils/status";
+} from "~/components/ui/utils/status";
 
 import type { Concorrente } from "../schemas/concorrentes.schema";
 

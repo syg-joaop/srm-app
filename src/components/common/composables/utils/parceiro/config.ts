@@ -2,60 +2,58 @@
  * Configurações e constantes para processamento de dados de parceiros.
  */
 
-import type {
-  EmptyStateCopy,
-  FieldMapping,
-  ParceiroTabOption,
-  TabId,
-} from "~/types/parceiro";
+import type { EmptyStateCopy, FieldMapping, ParceiroTabOption, TabId } from "~/types/parceiro";
 
 /**
  * Configuração simples de campos por tab.
  * Define diretamente quais campos usar para título, subtítulo e status.
  * Simples, direto, sem "adivinhação".
  */
-export const TAB_FIELD_CONFIG: Record<TabId, { title: string[]; subtitle: string[]; status?: string[] }> = {
+export const TAB_FIELD_CONFIG: Record<
+  TabId,
+  { title: string[]; subtitle: string[]; status?: string[] }
+> = {
   cadastro: {
-    title: ['fornecedor', 'name', 'nome'],
-    subtitle: ['cidade', 'location', 'uf'],
+    title: ["fornecedor", "name", "nome"],
+    subtitle: ["cidade", "location", "uf"],
   },
   contatos: {
-    title: ['nome', 'name', 'contato'],
-    subtitle: ['cargo', 'funcao', 'email', 'telefone'],
-    status: ['tipo', 'principal'],
+    title: ["nome", "name", "contato"],
+    subtitle: ["cargo", "funcao", "email", "telefone"],
+    status: ["tipo", "principal"],
   },
   cargas: {
-    title: ['boleto', 'numero', 'id'],
-    subtitle: ['data_peso', 'data_carga', 'data'],
-    status: ['situacao', 'status'],
+    title: ["boleto", "numero", "id"],
+    subtitle: ["data_peso", "data_carga", "data"],
+    status: ["situacao", "status"],
   },
   agendamentos: {
-    title: ['tipo', 'titulo', 'assunto'],
-    subtitle: ['data', 'data_agend', 'hora'],
-    status: ['situacao', 'confirmado'],
+    title: ["tipo", "titulo", "assunto"],
+    subtitle: ["data", "data_agend", "hora"],
+    status: ["situacao", "confirmado"],
   },
   atendimentos: {
-    title: ['tipo', 'titulo', 'assunto', 'sintoma'],
-    subtitle: ['data', 'data_atend', 'atendente'],
-    status: ['situacao', 'resultado'],
+    title: ["tipo", "titulo", "assunto", "sintoma"],
+    subtitle: ["data", "data_atend", "atendente"],
+    status: ["situacao", "resultado"],
   },
   coletas: {
-    title: ['numero', 'id', 'romaneio'],
-    subtitle: ['data', 'cidade', 'peso'],
-    status: ['situacao', 'coletado'],
+    title: ["numero", "id", "romaneio"],
+    subtitle: ["data", "cidade", "peso"],
+    status: ["situacao", "coletado"],
   },
   precos: {
-    title: ['produto', 'descricao'],
-    subtitle: ['valor', 'preco'],
+    title: ["produto", "descricao"],
+    subtitle: ["valor", "preco"],
   },
   checkins: {
-    title: ['local', 'endereco'],
-    subtitle: ['data', 'hora'],
-    status: ['situacao'],
+    title: ["local", "endereco"],
+    subtitle: ["data", "hora"],
+    status: ["situacao"],
   },
   favorecidos: {
-    title: ['nome', 'name', 'favorecido'],
-    subtitle: ['tipo', 'documento'],
+    title: ["nome", "name", "favorecido"],
+    subtitle: ["tipo", "documento"],
   },
 };
 

@@ -232,7 +232,7 @@ import { useBreakpoint } from "~/composables/useBreakpoint";
 
 import { useParceiroDetalhesData } from "./composables/useParceiroDetalhesData";
 import { useParceiroModalData } from "./composables/useParceiroModalData";
-import { getVariant } from "~/utils/status-helpers";
+import { getVariant } from "~/components/ui/utils/status";
 import { useParceiroTabs } from "./composables/useParceiroTabs";
 
 import type { ParceiroData, ParceiroVariant, TabId } from "~/types/parceiro";

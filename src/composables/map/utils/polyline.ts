@@ -1,8 +1,3 @@
-import { filterValidCoordinates } from "~/utils/geo/coordinateUtils";
-
-// Re-export for convenience/backward compatibility with useMapPolyline
-export { filterValidCoordinates };
-
 /**
  * Decodifica uma string de polyline codificada (Google Encoded Polyline Algorithm Format).
  * Suporta precisão de 5 (padrão) ou 6 casas decimais.
@@ -105,3 +100,4 @@ export function normalizePolylineString(polyline: unknown): string | null {
 
   return clean;
 }
+

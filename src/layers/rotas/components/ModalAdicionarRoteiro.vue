@@ -155,7 +155,7 @@
 import { Building2, Check, MapPin, MapPinOff, Plus, Search } from "lucide-vue-next";
 
 import { logger } from "~/utils/logger";
-import { isValidCoordinate } from "~/utils/validators/geo";
+import { isValidCoordinate } from "~/utils/geo/coordinateUtils";
 
 import type { Fornecedor, FornecedorFilters } from "../../fornecedores/schemas/fornecedores.schema";
 import type { Rota } from "../schemas/rotas.schema";

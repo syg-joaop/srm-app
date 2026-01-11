@@ -129,7 +129,7 @@ import {
   COMMON_STATUS_VARIANTS,
   resolveStatusIconClass,
   resolveStatusVariant,
-} from "~/utils/status";
+} from "~/components/ui/utils/status";
 
 import type { Prospecto } from "../schemas/prospectos.schema";
 

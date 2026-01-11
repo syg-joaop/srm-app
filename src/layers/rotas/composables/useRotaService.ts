@@ -1,4 +1,4 @@
-import { toNumber as parseNumber } from "~/utils/geo/coordinateUtils";
+import { toNumberOrNull as parseNumber } from "~/utils/geo/coordinateUtils";
 import { logger } from "~/utils/logger";
 
 import { RotaApiService } from "./services/rotaApi.service";

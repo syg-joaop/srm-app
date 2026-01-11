@@ -6,15 +6,24 @@
 
  */
 
-import { isValidCoordinate } from "~/utils/validators/geo";
+/**
+ * Valida se uma coordenada (lat, lng) está dentro dos limites geográficos válidos.
+ */
+export function isValidCoordinate(lat: number | string, lng: number | string): boolean {
+  const latNum = typeof lat === "string" ? parseFloat(lat) : lat;
+  const lngNum = typeof lng === "string" ? parseFloat(lng) : lng;
 
-
-
-// Re-exportar para conveniência
-
-export { isValidCoordinate };
-
-
+  return (
+    !isNaN(latNum) &&
+    !isNaN(lngNum) &&
+    latNum !== 0 &&
+    lngNum !== 0 &&
+    latNum >= -90 &&
+    latNum <= 90 &&
+    lngNum >= -180 &&
+    lngNum <= 180
+  );
+}
 
 /**
 
@@ -23,14 +32,10 @@ export { isValidCoordinate };
  */
 
 export type ValidCoordinate = {
-
   latitude: number;
 
   longitude: number;
-
 };
-
-
 
 /**
 
@@ -39,8 +44,6 @@ export type ValidCoordinate = {
  */
 
 export type LatLngTuple = [number, number];
-
-
 
 /**
 
@@ -56,23 +59,15 @@ export type LatLngTuple = [number, number];
 
  */
 
-export function toNumber(value: number | string | null | undefined): number | null {
-
+export function toNumberOrNull(value: number | string | null | undefined): number | null {
   if (value === null || value === undefined) {
-
     return null;
-
   }
-
-
 
   const num = typeof value === "number" ? value : Number(value);
 
   return Number.isFinite(num) ? num : null;
-
 }
-
-
 
 /**
 
@@ -88,37 +83,21 @@ export function toNumber(value: number | string | null | undefined): number | nu
 
  */
 
-export function extractValidCoordinates(
+export function extractValidCoordinates(item: {
+  latitude?: number | string | null | undefined;
 
-  item: {
+  longitude?: number | string | null | undefined;
+}): LatLngTuple | null {
+  const lat = toNumberOrNull(item.latitude);
 
-    latitude?: number | string | null | undefined;
-
-    longitude?: number | string | null | undefined;
-
-  },
-
-): LatLngTuple | null {
-
-  const lat = toNumber(item.latitude);
-
-  const lng = toNumber(item.longitude);
-
-
+  const lng = toNumberOrNull(item.longitude);
 
   if (lat === null || lng === null) {
-
     return null;
-
   }
 
-
-
   return isValidCoordinate(lat, lng) ? [lat, lng] : null;
-
 }
-
-
 
 /**
 
@@ -132,25 +111,15 @@ export function extractValidCoordinates(
 
  */
 
-export function extractValidCoordinateObject(
+export function extractValidCoordinateObject(item: {
+  latitude?: number | string | null | undefined;
 
-  item: {
-
-    latitude?: number | string | null | undefined;
-
-    longitude?: number | string | null | undefined;
-
-  },
-
-): ValidCoordinate | null {
-
+  longitude?: number | string | null | undefined;
+}): ValidCoordinate | null {
   const coords = extractValidCoordinates(item);
 
   return coords ? { latitude: coords[0], longitude: coords[1] } : null;
-
 }
-
-
 
 /**
 
@@ -165,12 +134,8 @@ export function extractValidCoordinateObject(
  */
 
 export function filterValidCoordinates(coords: LatLngTuple[]): LatLngTuple[] {
-
   return coords.filter(([lat, lng]) => isValidCoordinate(lat, lng));
-
 }
-
-
 
 /**
 
@@ -186,23 +151,13 @@ export function filterValidCoordinates(coords: LatLngTuple[]): LatLngTuple[] {
 
  */
 
-export function parseCoordinates(
+export function parseCoordinates(item: {
+  latitude?: number | string | null | undefined;
 
-  item: {
-
-    latitude?: number | string | null | undefined;
-
-    longitude?: number | string | null | undefined;
-
-  },
-
-): ValidCoordinate | null {
-
+  longitude?: number | string | null | undefined;
+}): ValidCoordinate | null {
   return extractValidCoordinateObject(item);
-
 }
-
-
 
 /**
 
@@ -216,19 +171,11 @@ export function parseCoordinates(
 
  */
 
-export function hasValidCoordinates(
+export function hasValidCoordinates(item: {
+  latitude?: number | string | null | undefined;
 
-  item: {
-
-    latitude?: number | string | null | undefined;
-
-    longitude?: number | string | null | undefined;
-
-  },
-
-): boolean {
-
+  longitude?: number | string | null | undefined;
+}): boolean {
   return extractValidCoordinates(item) !== null;
-
 }
 

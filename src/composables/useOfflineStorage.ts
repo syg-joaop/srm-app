@@ -8,7 +8,7 @@ import {
   openStore,
   requestToPromise,
   transactionToPromise,
-} from "~/utils/offline/database";
+} from "~/composables/offline/database";
 
 import type { GetOfflineCacheOptions, OfflineCacheEntry, OfflinePendingOperation } from "~/types/offline";
 

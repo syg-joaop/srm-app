@@ -1,4 +1,4 @@
-ï»¿<template>
+<template>
   <div
     class="group/item relative bg-[var(--color-surface)] md:rounded-none first:md:rounded-t-none last:md:rounded-b-lg rounded-lg border border-[var(--color-border-subtle)] md:border-[var(--color-border)] md:border-t-0 first:md:border-t hover:border-[var(--color-primary-border)] hover:bg-[var(--color-primary-soft)] transition-all duration-300 ease-out hover:shadow-sm px-3 py-2.5 md:px-6 md:py-3 cursor-pointer"
     @click="$emit('click', rota)"
@@ -8,7 +8,7 @@
     ></div>
 
     <div class="flex md:grid md:grid-cols-12 gap-2.5 md:gap-4 items-center">
-      <!-- DescriÃ§Ã£o -->
+      <!-- Descrição -->
       <div class="col-span-5 flex items-center gap-2.5 md:gap-3 flex-1 min-w-0">
         <div
           class="flex-shrink-0 w-8 h-8 md:w-9 md:h-9 rounded-full bg-[var(--color-primary-soft)] flex items-center justify-center text-[var(--color-primary)] group-hover/item:scale-105 transition-transform duration-200"
@@ -43,7 +43,7 @@
             {{ rota.progresso.percentual_conclusao }}%
           </span>
         </div>
-        <span v-else class="text-xs text-[var(--color-text-muted)]">â€”</span>
+        <span v-else class="text-xs text-[var(--color-text-muted)]">—</span>
       </div>
 
       <!-- Status -->
@@ -53,7 +53,7 @@
         </UiBadge>
       </div>
 
-      <!-- AÃ§Ãµes -->
+      <!-- Ações -->
       <div class="col-span-3 flex items-center justify-end gap-1.5 md:gap-2">
         <UiButton
           variant="primary"
@@ -62,7 +62,7 @@
           @click.stop="$emit('adicaoRapida', rota)"
         >
           <Plus class="w-3 h-3" />
-          AdiÃ§Ã£o rÃ¡pida
+          Adição rápida
         </UiButton>
 
         <UiButton
@@ -82,8 +82,8 @@
 <script setup lang="ts">
 import { Eye, Plus, Route as RouteIcon } from "lucide-vue-next";
 
-import { getStatusLabel, getStatusVariant } from "~/utils/status-helpers";
-import { formatarIntervaloDatas } from "~/utils/utils";
+import { getStatusLabel, getStatusVariant } from "~/components/ui/utils/status";
+import { formatarIntervaloDatas } from "~/utils/formatters/date";
 
 import type { Rota } from "../schemas/rotas.schema";
 
