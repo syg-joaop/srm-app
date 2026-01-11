@@ -260,7 +260,8 @@
 <script setup lang="ts">
 import { ChevronRight, Eye, Filter, MessageSquare, Plus, Search, X } from "lucide-vue-next";
 
-import { normalizeOcorrencias, getStatusConfig } from "~/utils/ocorrencias";
+import { normalizeOcorrencias } from "~/utils/ocorrencias";
+import { getStatusVariant, type StatusVariant } from "~/utils/status-helpers";
 import { formatarData } from "~/utils/utils";
 
 import ModalDetalhesOcorrencia from "../components/ModalDetalhesOcorrencia.vue";
@@ -389,15 +390,21 @@ const clearFilters = () => {
   };
 };
 
-const getStatusIconClass = (status: string): string => {
-  const config = getStatusConfig(status as OcorrenciaStatus);
-  const colorMap: Record<string, string> = {
-    "#f59e0b": "bg-[var(--color-danger-soft)] text-[var(--color-danger)]",
-    "#3b82f6": "bg-[var(--color-warning-soft)] text-[var(--color-warning)]",
-    "#10b981": "bg-[var(--color-success-soft)] text-[var(--color-success)]",
-  };
-  return colorMap[config.color] || colorMap["#f59e0b"];
+const STATUS_ICON_CLASSES: Record<StatusVariant, string> = {
+  success: "bg-[var(--color-success-soft)] text-[var(--color-success)]",
+  warning: "bg-[var(--color-warning-soft)] text-[var(--color-warning)]",
+  danger: "bg-[var(--color-danger-soft)] text-[var(--color-danger)]",
+  primary: "bg-[var(--color-primary-soft)] text-[var(--color-primary)]",
+  info: "bg-[var(--color-info-soft)] text-[var(--color-info)]",
+  neutral: "bg-[var(--color-hover)] text-[var(--color-text-muted)]",
+  default: "bg-[var(--color-hover)] text-[var(--color-text-muted)]",
 };
+
+const getStatusIconClass = (status: string): string => {
+  const variant = getStatusVariant(status);
+  return STATUS_ICON_CLASSES[variant] || STATUS_ICON_CLASSES.default;
+};
+
 
 const abrirDetalhes = (ocorrencia: Ocorrencia) => {
   ocorrenciaSelecionada.value = ocorrencia;

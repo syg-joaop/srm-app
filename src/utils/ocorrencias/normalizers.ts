@@ -1,8 +1,30 @@
 import { toNumber, toStringValue } from "~/utils/coerce";
+import type { Ocorrencia, OcorrenciaStatus } from "~/server/schemas/ocorrencias.schema";
 
-import { mapStatus } from "./status-mapper";
+const mapStatus = (statusValue: string | unknown): OcorrenciaStatus => {
+  const normalized = (statusValue ?? "").toString().toLowerCase().trim();
 
-import type { Ocorrencia } from "~/server/schemas/ocorrencias.schema";
+  if (["acompanhamento", "em acompanhamento", "andamento", "em andamento"].includes(normalized)) {
+    return "acompanhamento";
+  }
+
+  if (
+    [
+      "concluida",
+      "concluído",
+      "ok",
+      "finalizada",
+      "finalizado",
+      "concluido",
+      "resolvida",
+      "resolvido",
+    ].includes(normalized)
+  ) {
+    return "concluida";
+  }
+
+  return "pendente";
+};
 
 /**
  * Extrai um campo de um objeto tentando múltiplas chaves possíveis.

@@ -22,9 +22,9 @@
         </div>
         <div
           class="text-lg font-medium"
-          :style="{ color: getRotaStatusColor(rota?.status) }"
+          :style="{ color: getStatusColor(rota?.status) }"
         >
-          {{ getRotaStatusLabel(rota?.status) }}
+          {{ getStatusLabel(rota?.status) }}
         </div>
       </UiCard>
 
@@ -123,10 +123,7 @@
 <script setup lang="ts">
 import { User, Calendar, TrendingUp } from "lucide-vue-next";
 
-import {
-  getRotaStatusColor,
-  getRotaStatusLabel,
-} from "~/utils/helpers/status-rota";
+import { getStatusColor, getStatusLabel } from "~/utils/status-helpers";
 import { formatarIntervaloDatas } from "~/utils/utils";
 
 import type { Rota, VrpSummary } from "../../schemas/rotas.schema";

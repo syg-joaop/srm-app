@@ -214,6 +214,8 @@ export function getStatusLabel(status: string | undefined | null): string {
   const labelMap: Record<string, string> = {
     aguardando: "Aguardando",
     pendente: "Pendente",
+    acompanhamento: "Em Acompanhamento",
+    "em acompanhamento": "Em Acompanhamento",
     em_andamento: "Em Andamento",
     "em andamento": "Em Andamento",
     concluida: "Concluída",

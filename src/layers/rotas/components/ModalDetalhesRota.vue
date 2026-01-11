@@ -9,8 +9,8 @@
           <div
             class="w-3 h-3 rounded-full"
             :style="{
-              backgroundColor: getRotaStatusColor(rota?.status),
-              boxShadow: `0 0 8px ${getRotaStatusColor(rota?.status)}`,
+              backgroundColor: getStatusColor(rota?.status),
+              boxShadow: `0 0 8px ${getStatusColor(rota?.status)}`,
             }"
           />
         </div>
@@ -19,8 +19,8 @@
             <h2 class="text-lg font-bold truncate" style="color: var(--color-text)">
               Rota #{{ rota?.codigo || rota?.id }}
             </h2>
-            <UiBadge :variant="getRotaStatusVariant(rota?.status)" size="small">
-              {{ getRotaStatusLabel(rota?.status) }}
+            <UiBadge :variant="getStatusVariant(rota?.status)" size="small">
+              {{ getStatusLabel(rota?.status) }}
             </UiBadge>
           </div>
           <div
@@ -141,11 +141,7 @@
 <script setup lang="ts">
 import { Calendar, Info, List, Map as MapIcon, User } from "lucide-vue-next";
 
-import {
-  getRotaStatusColor,
-  getRotaStatusVariant,
-  getRotaStatusLabel,
-} from "~/utils/helpers/status-rota";
+import { getStatusColor, getStatusLabel, getStatusVariant } from "~/utils/status-helpers";
 import { logger } from "~/utils/logger";
 import { formatarIntervaloDatas } from "~/utils/utils";
 

@@ -149,7 +149,7 @@
 <script setup lang="ts">
 import { Route, Building2, Plus, Check } from "lucide-vue-next";
 
-import { getRotaStatusLabel, getRotaStatusColor, getRotaStatusVariant } from "~/utils/helpers/status-rota";
+import { getStatusColor, getStatusLabel, getStatusVariant } from "~/utils/status-helpers";
 import { logger } from "~/utils/logger";
 import { isValidCoordinate } from "~/utils/validators/geo";
 
@@ -193,23 +193,22 @@ const hasValidCoordinates = computed(() => {
 /**
  * Helpers para status
  */
-const getStatusLabel = (status?: string) => getRotaStatusLabel(status);
-
 const getStatusBgClass = (status?: string) => {
-  const color = getRotaStatusColor(status);
-  return { backgroundColor: color };
+  return { backgroundColor: getStatusColor(status) };
 };
 
 const getStatusBadgeClass = (status?: string) => {
-  const variant = getRotaStatusVariant(status);
-  const variantClasses: Record<typeof variant, string> = {
+  const variant = getStatusVariant(status);
+  const variantClasses: Record<string, string> = {
     default: "bg-gray-100 text-gray-700 dark:bg-gray-800 dark:text-gray-300",
+    neutral: "bg-gray-100 text-gray-700 dark:bg-gray-800 dark:text-gray-300",
     primary: "bg-blue-100 text-blue-700 dark:bg-blue-900 dark:text-blue-300",
+    info: "bg-blue-100 text-blue-700 dark:bg-blue-900 dark:text-blue-300",
     success: "bg-green-100 text-green-700 dark:bg-green-900 dark:text-green-300",
     warning: "bg-yellow-100 text-yellow-700 dark:bg-yellow-900 dark:text-yellow-300",
     danger: "bg-red-100 text-red-700 dark:bg-red-900 dark:text-red-300",
   };
-  return variantClasses[variant];
+  return variantClasses[variant] || variantClasses.default;
 };
 
 /**

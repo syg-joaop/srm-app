@@ -79,7 +79,7 @@
         <!-- Número -->
         <div
           class="w-7 h-7 rounded-lg flex items-center justify-center text-xs font-bold text-white flex-shrink-0"
-          :style="{ backgroundColor: getRotaStatusColor(getUltimoStatus(roteiro)) }"
+          :style="{ backgroundColor: getStatusColor(getUltimoStatus(roteiro)) }"
         >
           {{ index + 1 }}
         </div>
@@ -102,10 +102,10 @@
         <!-- Badge status (desktop) -->
         <UiBadge
           class="hidden sm:flex"
-          :variant="getRotaStatusVariant(getUltimoStatus(roteiro))"
+          :variant="getStatusVariant(getUltimoStatus(roteiro))"
           size="small"
         >
-          {{ getRotaStatusLabel(getUltimoStatus(roteiro)) }}
+          {{ getStatusLabel(getUltimoStatus(roteiro)) }}
         </UiBadge>
 
         <!-- Remover -->
@@ -129,11 +129,7 @@ import {
   Trash2,
 } from "lucide-vue-next";
 
-import {
-  getRotaStatusColor,
-  getRotaStatusVariant,
-  getRotaStatusLabel,
-} from "~/utils/helpers/status-rota";
+import { getStatusColor, getStatusLabel, getStatusVariant } from "~/utils/status-helpers";
 
 import type { Roteiro } from "../../schemas/rotas.schema";
 

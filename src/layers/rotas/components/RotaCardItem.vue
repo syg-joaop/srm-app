@@ -48,8 +48,8 @@
 
       <!-- Status -->
       <div class="hidden md:flex col-span-2 justify-center">
-        <UiBadge :variant="getRotaStatusVariant(rota.status)" :dot="true" size="small">
-          {{ getRotaStatusLabel(rota.status) }}
+        <UiBadge :variant="getStatusVariant(rota.status)" :dot="true" size="small">
+          {{ getStatusLabel(rota.status) }}
         </UiBadge>
       </div>
 
@@ -82,10 +82,7 @@
 <script setup lang="ts">
 import { Eye, Plus, Route as RouteIcon } from "lucide-vue-next";
 
-import {
-  getRotaStatusVariant,
-  getRotaStatusLabel,
-} from "~/utils/helpers/status-rota";
+import { getStatusLabel, getStatusVariant } from "~/utils/status-helpers";
 import { formatarIntervaloDatas } from "~/utils/utils";
 
 import type { Rota } from "../schemas/rotas.schema";

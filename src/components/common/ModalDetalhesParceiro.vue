@@ -232,7 +232,7 @@ import { useBreakpoint } from "~/composables/useBreakpoint";
 
 import { useParceiroDetalhesData } from "./composables/useParceiroDetalhesData";
 import { useParceiroModalData } from "./composables/useParceiroModalData";
-import { useParceiroStatus } from "./composables/useParceiroStatus";
+import { getVariant } from "~/utils/status-helpers";
 import { useParceiroTabs } from "./composables/useParceiroTabs";
 
 import type { ParceiroData, ParceiroVariant, TabId } from "~/types/parceiro";
@@ -254,7 +254,6 @@ defineEmits<{
 // State management usando composables
 const { isDesktop } = useBreakpoint();
 const { isLoading, error, loadData: loadModalData, reset: resetModalData } = useParceiroModalData();
-const { getVariant } = useParceiroStatus();
 
 // Composables específicos do parceiro
 const { loadDetalhes, clearDetalhes, enrichParceiroWithDetalhes } = useParceiroDetalhesData(
