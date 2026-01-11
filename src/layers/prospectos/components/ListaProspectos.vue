@@ -131,7 +131,7 @@ import {
   resolveStatusVariant,
 } from "~/utils/status";
 
-import type { Prospecto } from "../types/prospecto.types";
+import type { Prospecto } from "../schemas/prospectos.schema";
 
 defineProps<{
   prospectos: Prospecto[];
@@ -152,9 +152,9 @@ const STATUS_ICON_CLASSES: Record<string, string> = {
   novo: "bg-blue-500/10 text-blue-500",
 };
 
-const getVariant = (status: string): Variant =>
+const getVariant = (status?: string): Variant =>
   resolveStatusVariant(status, STATUS_VARIANTS) as Variant;
 
-const getIconClass = (status: string): string =>
+const getIconClass = (status?: string): string =>
   resolveStatusIconClass(status, STATUS_ICON_CLASSES);
 </script>

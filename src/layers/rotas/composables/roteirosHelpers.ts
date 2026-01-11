@@ -1,8 +1,8 @@
 import { parseCoordinates, hasValidCoordinates } from "~/utils/geo/coordinateUtils";
 import { logger } from "~/utils/logger";
 
-import type { VrpTask, VrpVehicle } from "../types/rotas.types";
-import type { Roteiro } from "~/server/schemas/rotas.schema";
+import type { VrpTask, VrpVehicle } from "../schemas/rotas.schema";
+import type { Roteiro } from "../schemas/rotas.schema";
 
 const VRP_TASK_DURATION = "00:10";
 const VRP_VEHICLE_ID = 1;

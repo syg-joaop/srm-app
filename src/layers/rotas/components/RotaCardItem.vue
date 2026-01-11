@@ -88,7 +88,7 @@ import {
 } from "~/utils/helpers/status-rota";
 import { formatarIntervaloDatas } from "~/utils/utils";
 
-import type { Rota } from "../types/rotas.types";
+import type { Rota } from "../schemas/rotas.schema";
 
 defineProps<{
   rota: Rota;

@@ -11,14 +11,14 @@ import type {
   CreateRoteiroPayload,
   RotaFilters,
   VrpSummary,
-} from "../types/rotas.types";
+} from "../schemas/rotas.schema";
 import type {
   Rota,
   RotaResponse,
   Roteiro,
   RoteiroFilters,
   RoteiroResponse,
-} from "~/server/schemas/rotas.schema";
+} from "../schemas/rotas.schema";
 
 const LOG_PREFIX = "[useRotaService]";
 

@@ -8,7 +8,7 @@
 </template>
 
 <script setup lang="ts">
-import type { FornecedorMapItem } from "../types/fornecedores.types";
+import type { FornecedorMapItem } from "../schemas/fornecedores.schema";
 import type { UiMapaPonto, UiMapaStatusConfig } from "~/components/ui/maps.types";
 
 const statusConfig: UiMapaStatusConfig = { ...COMMON_MAP_STATUS_CONFIG };

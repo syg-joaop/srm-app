@@ -97,7 +97,7 @@
 </template>
 
 <script setup lang="ts">
-import { DollarSign, CalendarClock, TrendingUp, TrendingDown } from "lucide-vue-next";
+import { CalendarClock, DollarSign, TrendingDown, TrendingUp } from "lucide-vue-next";
 
 interface Metric {
   label: string;

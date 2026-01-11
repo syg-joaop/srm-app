@@ -8,7 +8,7 @@
 </template>
 
 <script setup lang="ts">
-import type { ProspectoMapItem } from "../types/prospecto.types";
+import type { ProspectoMapItem } from "../schemas/prospectos.schema";
 import type { UiMapaPonto, UiMapaStatusConfig } from "~/components/ui/maps.types";
 
 const statusConfig: UiMapaStatusConfig = {

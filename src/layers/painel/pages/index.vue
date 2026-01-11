@@ -8,8 +8,9 @@
         color 0.3s ease;
     "
   >
-    <div v-if="isLoading" class="p-4">
-      <UiSkeletonLoader pattern="grid" :count="1" :grid-config="{ cols: 4, rows: 2 }" />
+    <!-- centralizar no meio da tela -->
+    <div v-if="isLoading" class="flex justify-center items-center h-screen">
+      <UiSpinner size="large" />
     </div>
 
     <div v-else class="space-y-6">
@@ -443,8 +444,7 @@ import { dataAtualPrimeiroDiaMes, dataAtualUltimoDiaMes } from "~/utils/utils";
 import { useDashboardCharts } from "../composables/useDashboardCharts";
 import { useDashboardStore } from "../stores/dashboard";
 
-import type { AniversarianteItem, Atendente, AtendenteItem } from "../types/dashboard.types";
-
+import type { AniversarianteItem, Atendente, AtendenteItem } from "../schemas/dashboard.schema";
 
 definePageMeta({
   layout: "default",
@@ -462,8 +462,14 @@ const filters = ref({
   mes_grafico: "atual",
 });
 
-const { data, status } = fetchDashboard(filters);
+const { data, status, error } = fetchDashboard(filters);
 const isLoading = computed(() => status.value === "pending");
+
+watch(error, (newError) => {
+  if (newError) {
+    console.error("Erro ao carregar dashboard (index.vue):", newError);
+  }
+});
 
 const dashboardStore = useDashboardStore();
 const {
@@ -518,11 +524,16 @@ const mapResumoMetrics = (items: { label: string; value: string | number }[]) =>
   }));
 
 const comprasMetricsMes = computed(() => mapResumoMetrics(comprasMes.value));
-const comprasMetricsMesAnterior = computed(() => mapResumoMetrics(comprasMesAnterior.value));
-
-const { lineChartRef, barChartRef, discountChartRef, initCharts } = useDashboardCharts(
-  chartData,
+const comprasMetricsMesAnterior = computed(() =>
+  mapResumoMetrics(
+    comprasMesAnterior.value.map((item) => ({
+      label: item.label,
+      value: formatarMoeda(item.value),
+    })),
+  ),
 );
+
+const { lineChartRef, barChartRef, discountChartRef, initCharts } = useDashboardCharts(chartData);
 
 watch(
   data,
@@ -533,10 +544,10 @@ watch(
         initCharts();
       });
     }
+    // usar spinner do ui para indicar que está carregando
   },
   { immediate: true },
 );
-
 </script>
 
 <style scoped></style>

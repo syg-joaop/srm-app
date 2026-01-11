@@ -1,6 +1,6 @@
 import { logger } from "~/utils/logger";
 
-import type { PolylineCache, VrpSummary } from "../types/rotas.types";
+import type { PolylineCache, VrpSummary } from "../schemas/rotas.schema";
 
 const LOG_PREFIX = "[usePolylineCache]";
 const CACHE_PREFIX = "polyline:";

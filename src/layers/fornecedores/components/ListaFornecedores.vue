@@ -119,7 +119,7 @@ import {
   resolveStatusVariant,
 } from "~/utils/status";
 
-import type { Fornecedor } from "../types/fornecedores.types";
+import type { Fornecedor } from "../schemas/fornecedores.schema";
 
 defineProps<{
   fornecedores: Fornecedor[];
@@ -130,9 +130,9 @@ defineEmits<{
   (e: "add-route", fornecedor: Fornecedor): void;
 }>();
 
-const getVariant = (status: string): Variant =>
+const getVariant = (status?: string): Variant =>
   resolveStatusVariant(status, COMMON_STATUS_VARIANTS) as Variant;
 
-const getIconClass = (status: string): string =>
+const getIconClass = (status?: string): string =>
   resolveStatusIconClass(status, COMMON_STATUS_ICON_CLASSES);
 </script>

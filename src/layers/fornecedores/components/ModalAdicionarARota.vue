@@ -153,8 +153,8 @@ import { getRotaStatusLabel, getRotaStatusColor, getRotaStatusVariant } from "~/
 import { logger } from "~/utils/logger";
 import { isValidCoordinate } from "~/utils/validators/geo";
 
-import type { Rota } from "../../rotas/types/rotas.types";
-import type { Fornecedor } from "../types/fornecedores.types";
+import type { Rota } from "../../rotas/schemas/rotas.schema";
+import type { Fornecedor } from "../schemas/fornecedores.schema";
 
 const props = defineProps<{
   modelValue: boolean;
@@ -185,8 +185,8 @@ const rotaService = useRotaService();
 // Verifica se fornecedor tem coordenadas válidas
 const hasValidCoordinates = computed(() => {
   if (!props.fornecedor) return false;
-  const lat = parseFloat(props.fornecedor.latitude);
-  const lng = parseFloat(props.fornecedor.longitude);
+  const lat = Number(props.fornecedor.latitude ?? 0);
+  const lng = Number(props.fornecedor.longitude ?? 0);
   return isValidCoordinate(lat, lng);
 });
 
@@ -243,8 +243,8 @@ const handleAdd = async () => {
 
   try {
     const fornecedor = props.fornecedor;
-    const lat = parseFloat(fornecedor.latitude) || 0;
-    const lng = parseFloat(fornecedor.longitude) || 0;
+    const lat = Number(fornecedor.latitude ?? 0);
+    const lng = Number(fornecedor.longitude ?? 0);
 
     // Busca quantidade atual de roteiros para definir sequência
     const roteirosResponse = await rotaService.fetchRoteiros(selectedRota.value.id);
@@ -253,7 +253,7 @@ const handleAdd = async () => {
     const result = await rotaService.createRoteiro({
       nome: fornecedor.fanta || fornecedor.fornecedor,
       id_rota: selectedRota.value.id,
-      codigo: parseInt(fornecedor.codfor) || 0,
+      codigo: Number(fornecedor.codfor ?? 0) || 0,
       endereco: {
         latitude: lat,
         longitude: lng,

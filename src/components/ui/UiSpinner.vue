@@ -52,8 +52,8 @@ defineOptions({ name: "UiSpinner" });
 }
 
 .size-large .spinner {
-  width: 48px;
-  height: 48px;
+  width: 120px;
+  height: 120px;
   border-width: 4px;
 }
 

@@ -1,9 +1,9 @@
 ﻿<template>
-    <div
-      class="min-h-screen p-4 sm:p-6 pb-20 transition-colors"
-      style="background-color: var(--color-background); color: var(--color-text)"
-    >
-      <h1 class="text-xl sm:text-2xl font-bold mb-4 sm:mb-6">Fornecedores</h1>
+  <div
+    class="min-h-screen p-4 sm:p-6 pb-20 transition-colors"
+    style="background-color: var(--color-background); color: var(--color-text)"
+  >
+    <h1 class="text-xl sm:text-2xl font-bold mb-4 sm:mb-6">Fornecedores</h1>
     <UiListToolbar
       v-model:search="search"
       v-model:filters="filters"
@@ -61,8 +61,8 @@ import ListaFornecedores from "../components/ListaFornecedores.vue";
 import MapaFornecedores from "../components/MapaFornecedores.vue";
 import ModalAdicionarARota from "../components/ModalAdicionarARota.vue";
 
-import type { Rota } from "../../rotas/types/rotas.types";
-import type { Fornecedor } from "../types/fornecedores.types";
+import type { Rota } from "../../rotas/schemas/rotas.schema";
+import type { Fornecedor } from "../schemas/fornecedores.schema";
 
 const viewMode = ref<"list" | "map">("list");
 const currentPage = ref(1);
@@ -150,7 +150,7 @@ watch(currentPage, () => {
   window.scrollTo({ top: 0, behavior: "smooth" });
 });
 
-const { data: fornecedores } = fetchFornecedor(
+const { data: fornecedores, status } = fetchFornecedor(
   currentPage,
   itemsPerPage,
   fornecedorFilters,
@@ -158,6 +158,7 @@ const { data: fornecedores } = fetchFornecedor(
 
 const paginatedFornecedores = computed(() => fornecedores.value?.data.items ?? []);
 
+const isLoading = computed(() => status.value === "pending");
 const showModal = ref(false);
 const selectedFornecedor = ref<Fornecedor | null>(null);
 

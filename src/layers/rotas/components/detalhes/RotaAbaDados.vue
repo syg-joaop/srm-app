@@ -129,7 +129,7 @@ import {
 } from "~/utils/helpers/status-rota";
 import { formatarIntervaloDatas } from "~/utils/utils";
 
-import type { Rota, VrpSummary } from "../../types/rotas.types";
+import type { Rota, VrpSummary } from "../../schemas/rotas.schema";
 
 defineProps<{
   rota: Rota | null;

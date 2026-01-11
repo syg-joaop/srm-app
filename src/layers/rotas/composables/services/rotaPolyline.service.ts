@@ -3,8 +3,8 @@ import { logger } from "~/utils/logger";
 import { getRoteirosWithCoords } from "../roteirosHelpers";
 
 import type { RotaApiService } from "./rotaApi.service";
-import type { VrpSummary } from "../../types/rotas.types";
-import type { Rota, Roteiro } from "~/server/schemas/rotas.schema";
+import type { VrpSummary } from "../../schemas/rotas.schema";
+import type { Rota, Roteiro } from "../../schemas/rotas.schema";
 
 const LOG_PREFIX = "[RotaPolylineService]";
 const DEFAULT_ROTEIROS_PAGE_SIZE = 100;

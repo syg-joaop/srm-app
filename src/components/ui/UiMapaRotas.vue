@@ -10,12 +10,7 @@
       title="Minha localização"
       @click="locateUser"
     >
-      <svg
-        v-if="!isLocating"
-        class="w-5 h-5 text-gray-700"
-        fill="currentColor"
-        viewBox="0 0 24 24"
-      >
+      <svg v-if="!isLocating" class="w-5 h-5 text-gray-700" fill="currentColor" viewBox="0 0 24 24">
         <path
           d="M12 8c-2.21 0-4 1.79-4 4s1.79 4 4 4 4-1.79 4-4-1.79-4-4-4zm8.94 3A8.994 8.994 0 0013 3.06V1h-2v2.06A8.994 8.994 0 003.06 11H1v2h2.06A8.994 8.994 0 0011 20.94V23h2v-2.06A8.994 8.994 0 0020.94 13H23v-2h-2.06zM12 19c-3.87 0-7-3.13-7-7s3.13-7 7-7 7 3.13 7 7-3.13 7-7 7z"
         />
@@ -38,16 +33,16 @@
 import L from "leaflet";
 
 import "leaflet/dist/leaflet.css";
-import {
-  useMapMarkers,
-  useMapPolyline,
-  useMapUserLocation,
-  useMapBounds,
-} from "~/composables/map";
+import { useMapBounds, useMapMarkers, useMapPolyline, useMapUserLocation } from "~/composables/map";
 import { logger } from "~/utils/logger";
 
+import type {
+  MapaPonto,
+  MapaStatusConfig,
+  RotaPolylineConfig,
+  UserLocation,
+} from "~/composables/map";
 import type { UiMapaStatusConfig } from "./maps.types";
-import type { MapaPonto, MapaStatusConfig, RotaPolylineConfig, UserLocation } from "~/composables/map";
 
 export interface RotaPonto {
   id: number | string;
@@ -306,14 +301,17 @@ watch(
 );
 
 // Watch para mudanças no tipo de mapa
-watch(() => props.mapType, () => {
-  if (!map || !mapTileLayer) return;
+watch(
+  () => props.mapType,
+  () => {
+    if (!map || !mapTileLayer) return;
 
-  const tileConfig = getTileConfig(props.mapType);
-  mapTileLayer.setUrl(tileConfig.url);
-  // Note: setAttribution não existe no TileLayer do Leaflet
-  // Para alterar attribution, seria necessário remover e recriar a camada
-});
+    const tileConfig = getTileConfig(props.mapType);
+    mapTileLayer.setUrl(tileConfig.url);
+    // Note: setAttribution não existe no TileLayer do Leaflet
+    // Para alterar attribution, seria necessário remover e recriar a camada
+  },
+);
 
 // Inicializa o mapa quando o componente for montado
 onMounted(() => {

@@ -7,7 +7,7 @@ import {
 } from "~/utils/formatters/chart";
 import { formatarKg, formatarMoeda } from "~/utils/formatters/formatadores";
 
-import type { ChartData } from "../types/dashboard.types";
+import type { ChartData } from "../schemas/dashboard.schema";
 
 const clamp = (value: number, min: number, max: number) => Math.min(Math.max(value, min), max);
 

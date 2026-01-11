@@ -172,8 +172,8 @@ import {
 
 import { logger } from "~/utils/logger";
 
-import type { Roteiro } from "~/server/schemas/rotas.schema";
-import type { VrpSummary } from "../types/rotas.types";
+import type { Roteiro } from "../schemas/rotas.schema";
+import type { VrpSummary } from "../schemas/rotas.schema";
 import type { UiMapaStatusConfig } from "~/components/ui/maps.types";
 import type { RotaPonto } from "~/components/ui/UiMapaRotas.vue";
 

@@ -1,5 +1,6 @@
 ﻿import { useAuthStore } from "~/stores/auth";
 import { logger } from "~/utils/logger";
+import { getOfflineCacheTtl, stableStringify } from "~/utils/offline/helpers";
 
 import type { ZodTypeAny } from "zod";
 
@@ -64,7 +65,7 @@ export const useOfflineAsyncData = <Response, Filters>(config: UseOfflineAsyncDa
     const isFromCache = ref(false);
     const isCacheStale = ref(false);
     const lastCacheError = ref<string | null>(null);
-
+    
     const execute = async (): Promise<Response | null> => {
       const userKey = authStore.userEmail ? `user:${authStore.userEmail}` : "user:anon";
       const cacheKey = buildCacheKey(userKey, config.key, page.value, size.value, filters.value);

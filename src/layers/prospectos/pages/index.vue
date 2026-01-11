@@ -52,7 +52,7 @@ import ModalDetalhesParceiro from "~/components/common/ModalDetalhesParceiro.vue
 import ListaProspectos from "../components/ListaProspectos.vue";
 import MapaProspectos from "../components/MapaProspectos.vue";
 
-import type { Prospecto } from "../types/prospecto.types";
+import type { Prospecto } from "../schemas/prospectos.schema";
 
 const viewMode = ref<"list" | "map">("list");
 const currentPage = ref(1);

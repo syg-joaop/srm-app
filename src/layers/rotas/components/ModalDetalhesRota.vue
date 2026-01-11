@@ -154,7 +154,7 @@ import RotaAbaMapa from "./detalhes/RotaAbaMapa.vue";
 import RotaAbaRoteiros from "./detalhes/RotaAbaRoteiros.vue";
 import ModalAdicionarRoteiro from "./ModalAdicionarRoteiro.vue";
 
-import type { Rota, Roteiro, VrpSummary } from "../types/rotas.types";
+import type { Rota, Roteiro, VrpSummary } from "../schemas/rotas.schema";
 
 const props = defineProps<{
   modelValue: boolean;

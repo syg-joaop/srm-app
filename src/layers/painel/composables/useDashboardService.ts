@@ -2,7 +2,7 @@
 
 import { schemaDashboardApiResponse } from "../schemas/dashboard.schema";
 
-import type { DashboardApiResponse } from "~/layers/painel/types/dashboard.types";
+import type { DashboardApiResponse } from "~/layers/painel/schemas/dashboard.schema";
 
 type ApiDataWrapper<T> = { data: T };
 
@@ -56,6 +56,7 @@ const validateDashboardResponse = (response: unknown): DashboardApiResponse => {
   const result = schemaDashboardApiResponse.safeParse(response);
 
   if (!result.success) {
+    console.error("Erro de validação do Dashboard:", result.error.format());
     const errorMessage = result.error.errors
       .map((err) => `${err.path.join(".")}: ${err.message}`)
       .join(", ");

@@ -49,7 +49,7 @@ import { Route as RouteIcon, Plus } from "lucide-vue-next";
 import FormularioRota from "./FormularioRota.vue";
 import ListaFornecedoresRota from "./ListaFornecedoresRota.vue";
 
-import type { FornecedorRotaSimples } from "../types/rotas.types";
+import type { FornecedorRotaSimples } from "../schemas/rotas.schema";
 import type { UiMapaPonto } from "~/components/ui/maps.types";
 
 const props = defineProps<{

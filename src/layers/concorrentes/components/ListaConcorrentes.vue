@@ -130,7 +130,7 @@ import {
   resolveStatusVariant,
 } from "~/utils/status";
 
-import type { Concorrente } from "../types/concorrentes.types";
+import type { Concorrente } from "../schemas/concorrentes.schema";
 
 defineProps<{
   concorrentes: Concorrente[];
@@ -140,7 +140,7 @@ defineEmits<{
   (e: "select", concorrente: Concorrente): void;
 }>();
 
-const getVariant = (status: string): string =>
+const getVariant = (status?: string): string =>
   resolveStatusVariant(status, COMMON_STATUS_VARIANTS);
 
 const getIconClass = (status?: string): string =>

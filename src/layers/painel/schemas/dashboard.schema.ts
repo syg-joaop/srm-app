@@ -23,29 +23,29 @@ const dashboardIndicatorResponseSchema = dashboardApiResponseSchemaBase.extend({
 
 // Schema para Atendente
 const atendenteSchema = z.object({
-  num: z.string(),
-  codcli: z.string(),
-  codfor: z.string(),
-  nome: z.string(),
-  data_oco: z.string(),
-  atendente: z.string(),
-  tipo_ate: z.string(),
-  situacao: z.string(),
-  status: z.string(),
-  data_pro: z.string(),
-  oco: z.string(),
-  solucao: z.string(),
-  usuario: z.string(),
-  data: z.string(),
-  hora: z.string(),
-  empresa: z.string(),
-  sr_recno: z.string(),
-  hora_oco: z.string(),
-  apelido: z.string(),
-  atendente_enc: z.string(),
-  user_diagnostico: z.string(),
-  latitude: z.string(),
-  longitude: z.string(),
+  num: z.coerce.string(),
+  codcli: z.coerce.string(),
+  codfor: z.coerce.string(),
+  nome: z.coerce.string(),
+  data_oco: z.coerce.string(),
+  atendente: z.coerce.string(),
+  tipo_ate: z.coerce.string(),
+  situacao: z.coerce.string(),
+  status: z.coerce.string(),
+  data_pro: z.coerce.string(),
+  oco: z.coerce.string(),
+  solucao: z.coerce.string(),
+  usuario: z.coerce.string(),
+  data: z.coerce.string(),
+  hora: z.coerce.string(),
+  empresa: z.coerce.string(),
+  sr_recno: z.coerce.string(),
+  hora_oco: z.coerce.string(),
+  apelido: z.coerce.string(),
+  atendente_enc: z.coerce.string(),
+  user_diagnostico: z.coerce.string(),
+  latitude: z.coerce.string().optional().nullable(),
+  longitude: z.coerce.string().optional().nullable(),
   problema: z.string().nullable().optional(),
 });
 
@@ -101,54 +101,54 @@ const supplierBirthdaySchema = z.object({
 
 // Schema para StaffPerformance
 const staffPerformanceSchema = z.object({
-  setor: z.string(),
-  nomefun: z.string(),
-  sr_recno: z.string(),
+  setor: z.coerce.string(),
+  nomefun: z.coerce.string(),
+  sr_recno: z.coerce.string(),
   email: z.boolean(),
-  iduser: z.string(),
-  codven: z.string(),
-  codcom: z.string(),
-  codcla: z.string(),
-  codcatfor: z.string(),
-  atendimento_geral: z.string(),
-  atendimento_periodo: z.string(),
-  atendimento_ok: z.string(),
-  atendimento_acompanhamento: z.string(),
-  atendimento_pendente: z.string(),
-  atendimento_vencido: z.string(),
+  iduser: z.coerce.string(),
+  codven: z.coerce.string(),
+  codcom: z.coerce.string(),
+  codcla: z.coerce.string(),
+  codcatfor: z.coerce.string(),
+  atendimento_geral: z.coerce.string(),
+  atendimento_periodo: z.coerce.string(),
+  atendimento_ok: z.coerce.string(),
+  atendimento_acompanhamento: z.coerce.string(),
+  atendimento_pendente: z.coerce.string(),
+  atendimento_vencido: z.coerce.string(),
 });
 
 // Schema para DailyGoal
 const dailyGoalSchema = z.object({
   data: z.string(),
-  peso: z.string(),
+  peso: z.coerce.string(),
 });
 
 // Schema para PurchasingStats
 const purchasingStatsSchema = z.object({
-  total: z.string(),
-  liquido: z.string(),
-  preco_medio: z.string(),
-  desconto: z.string(),
-  media_diaria: z.string(),
-  preco_sem_icms: z.string(),
-  icms: z.string(),
-  totaldiasuteis: z.string(),
-  totalsabados: z.string(),
+  total: z.coerce.string(),
+  liquido: z.coerce.string(),
+  preco_medio: z.coerce.string(),
+  desconto: z.coerce.string(),
+  media_diaria: z.coerce.string(),
+  preco_sem_icms: z.coerce.string(),
+  icms: z.coerce.string(),
+  totaldiasuteis: z.coerce.string(),
+  totalsabados: z.coerce.string(),
 });
 
 // Schema para BuyerPerformance
 const buyerPerformanceSchema = z.object({
   nome: z.string().nullable(),
-  atual: z.string(),
-  ant: z.string(),
+  atual: z.coerce.string(),
+  ant: z.coerce.string(),
 });
 
 // Schema para TopProduct
 const topProductSchema = z.object({
   produto: z.string().nullable(),
-  mes_atual: z.string(),
-  mes_anterior: z.string(),
+  mes_atual: z.coerce.string(),
+  mes_anterior: z.coerce.string(),
 });
 
 // Schema para desconto mensal
@@ -185,7 +185,7 @@ export const schemaDashboardApiResponse = z
       data: z.array(supplierBirthdaySchema),
     }),
     aniversariantesContatos: dashboardApiResponseSchemaBase.extend({
-      data: z.array(atendenteSchema),
+      data: z.array(z.any()),
     }),
     atendentes: dashboardApiResponseSchemaBase.extend({
       data: z.array(staffPerformanceSchema),
@@ -211,4 +211,108 @@ export const schemaDashboardApiResponse = z
   })
   .passthrough();
 
-export type DashboardApiResponseValidation = z.infer<typeof schemaDashboardApiResponse>;
+export type DashboardCount = z.infer<typeof dashboardCountSchema>;
+export type DashboardIndicatorResponse = z.infer<
+  typeof dashboardIndicatorResponseSchema
+>;
+export type Atendente = z.infer<typeof atendenteSchema>;
+export type AtendenteResponse = z.infer<typeof atendenteResponseSchema>;
+export type OccurrenceStat = z.infer<typeof occurrenceStatSchema>;
+export type OccurrenceHistory = z.infer<typeof occurrenceHistorySchema>;
+export type SupplierBirthday = z.infer<typeof supplierBirthdaySchema>;
+export type StaffPerformance = z.infer<typeof staffPerformanceSchema>;
+export type DailyGoal = z.infer<typeof dailyGoalSchema>;
+export type PurchasingStats = z.infer<typeof purchasingStatsSchema>;
+export type BuyerPerformance = z.infer<typeof buyerPerformanceSchema>;
+export type TopProduct = z.infer<typeof topProductSchema>;
+export type DashboardApiResponse = z.infer<typeof schemaDashboardApiResponse>;
+export type DashboardApiResponseValidation = DashboardApiResponse;
+
+export const schemaStatItem = z.object({
+  label: z.string(),
+  value: z.union([z.string(), z.number()]),
+  icon: z.string(),
+  color: z.string(),
+});
+
+export const schemaSummaryItem = z.object({
+  label: z.string(),
+  value: z.union([z.string(), z.number()]),
+});
+
+export const schemaTableItem = z.object({
+  name: z.string(),
+  current: z.string(),
+  previous: z.string(),
+});
+
+export const schemaAniversarianteItem = z.object({
+  name: z.string(),
+  location: z.string(),
+  status: z.string().optional(),
+  date: z.string().optional(),
+});
+
+export const schemaStatusBadgeItem = z.object({
+  value: z.union([z.string(), z.number()]),
+  label: z.string().optional(),
+  color: z.enum(["red", "green", "yellow", "blue", "purple", "gray", "dark-red"]),
+  icon: z.string().optional(),
+});
+
+export const schemaAtendenteItem = z.object({
+  role: z.string(),
+  geral: z.number(),
+  periodo: z.number(),
+  concluidos: z.number(),
+  pendentes: z.number(),
+  statuses: z.array(schemaStatusBadgeItem),
+});
+
+export const schemaChartData = z.object({
+  ocorrenciasPie: z.array(
+    z.object({
+      value: z.number(),
+      name: z.string(),
+      itemStyle: z.object({ color: z.string() }).optional(),
+    }),
+  ),
+  ocorrenciasLine: z.object({
+    months: z.array(z.string()),
+    values: z.array(z.number()),
+  }),
+  metaDiaria: z.object({
+    days: z.array(z.string()),
+    values: z.array(z.number()),
+  }),
+  descontos: z.object({
+    months: z.array(z.string()),
+    values: z.array(z.number()),
+  }),
+  produtosBar: z.object({
+    names: z.array(z.string()),
+    current: z.array(z.number()),
+    previous: z.array(z.number()),
+  }),
+});
+
+export const schemaDashboardData = z.object({
+  stats: z.array(schemaStatItem),
+  chartData: schemaChartData,
+  comprasMes: z.array(schemaSummaryItem),
+  comprasMesAnterior: z.array(schemaSummaryItem),
+  compradorItems: z.array(schemaTableItem),
+  produtosItems: z.array(schemaTableItem),
+  aniversariantesItems: z.array(schemaAniversarianteItem),
+  atendentesItems: z.array(schemaAtendenteItem),
+});
+
+export type StatItem = z.infer<typeof schemaStatItem>;
+export type SummaryItem = z.infer<typeof schemaSummaryItem>;
+export type TableItem = z.infer<typeof schemaTableItem>;
+export type AniversarianteItem = z.infer<typeof schemaAniversarianteItem>;
+export type StatusBadgeItem = z.infer<typeof schemaStatusBadgeItem>;
+export type AtendenteItem = z.infer<typeof schemaAtendenteItem>;
+export type AtendimentosVencidos = Atendente;
+export type ChartData = z.infer<typeof schemaChartData>;
+export type DashboardData = z.infer<typeof schemaDashboardData>;

@@ -131,7 +131,7 @@
 </template>
 
 <script setup lang="ts">
-import type { Checkin } from "../types/checkin.types";
+import type { Checkin } from "../schemas/checkin.schema";
 import type { Variant } from "~/components/ui/UiBadge.vue";
 
 const props = defineProps<{
@@ -166,7 +166,7 @@ const getStatusBarColor = (status?: string): string => {
   return resolveStatusVariant(status, STATUS_BAR_CLASSES, "bg-[var(--color-primary)]");
 };
 
-const getVariant = (status: string): Variant => {
+const getVariant = (status?: string): Variant => {
   return resolveStatusVariant(status, STATUS_VARIANTS) as Variant;
 };
 </script>

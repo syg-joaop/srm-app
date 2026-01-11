@@ -90,3 +90,7 @@ export const stableStringify = (value: unknown): string => {
   }
 };
 
+export const getOfflineCacheTtl = (key: string, override?: number): number | undefined => {
+  return override;
+};
+

@@ -93,7 +93,7 @@ const menuItems = [
   { label: "Prospectos", path: "/prospectos", icon: HeartHandshake },
   { label: "Ocorrências", path: "/ocorrencias", icon: MessageSquare },
   { label: "Check-in", path: "/checkin", icon: MapPin },
-  { label: "Rota", path: "/rotas", icon: Route },
+  { label: "Rotas", path: "/rotas", icon: Route },
   { label: "Concorrentes", path: "/concorrentes", icon: Crosshair },
   { label: "Time", path: "/equipe", icon: Users },
 ];

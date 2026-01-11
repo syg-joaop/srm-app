@@ -5,20 +5,20 @@ import {
   schemaRotaResponse,
   schemaRoteiro,
   schemaRoteiroResponse,
-} from "~/server/schemas/rotas.schema";
+} from "../../schemas/rotas.schema";
 import { logger } from "~/utils/logger";
 
 import type {
   CreateRoteiroPayload,
   RotaFilters,
   RoteiroFilters,
-} from "../../types/rotas.types";
+} from "../../schemas/rotas.schema";
 import type {
   Rota,
   RotaResponse,
   Roteiro,
   RoteiroResponse,
-} from "~/server/schemas/rotas.schema";
+} from "../../schemas/rotas.schema";
 
 const LOG_PREFIX = "[RotaApiService]";
 const ROTAS_ENDPOINT = "/srm/rotas";

@@ -54,7 +54,7 @@ import ListaCheckins from "../components/ListaCheckins.vue";
 import ModalDetalhesCheckin from "../components/ModalDetalhesCheckin.vue";
 import { toNumber, toStringValue } from "~/utils/coerce";
 
-import type { Checkin, CheckinFilters } from "../types/checkin.types";
+import type { Checkin, CheckinFilters } from "../schemas/checkin.schema";
 
 definePageMeta({ layout: "default" });
 

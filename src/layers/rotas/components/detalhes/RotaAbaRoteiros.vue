@@ -135,7 +135,7 @@ import {
   getRotaStatusLabel,
 } from "~/utils/helpers/status-rota";
 
-import type { Roteiro } from "../../types/rotas.types";
+import type { Roteiro } from "../../schemas/rotas.schema";
 
 const props = defineProps<{
   roteiros: Roteiro[];

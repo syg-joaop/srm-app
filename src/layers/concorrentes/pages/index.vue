@@ -53,7 +53,7 @@ import { toNumber, toStringValue } from "~/utils/coerce";
 
 import ListaConcorrentes from "../components/ListaConcorrentes.vue";
 
-import type { Concorrente, ConcorrenteFilters } from "../types/concorrentes.types";
+import type { Concorrente, ConcorrenteFilters } from "../schemas/concorrentes.schema";
 
 definePageMeta({ layout: "default" });
 

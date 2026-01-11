@@ -28,7 +28,10 @@
       </div>
 
       <!-- Resultados -->
-      <div v-else-if="fornecedores.length > 0" class="flex flex-col gap-2 max-h-[400px] overflow-y-auto">
+      <div
+        v-else-if="fornecedores.length > 0"
+        class="flex flex-col gap-2 max-h-[400px] overflow-y-auto"
+      >
         <div
           v-for="fornecedor in fornecedores"
           :key="fornecedor.codfor"
@@ -149,13 +152,13 @@
 </template>
 
 <script setup lang="ts">
-import { Plus, Search, MapPin, MapPinOff, Building2, Check } from "lucide-vue-next";
+import { Building2, Check, MapPin, MapPinOff, Plus, Search } from "lucide-vue-next";
 
 import { logger } from "~/utils/logger";
 import { isValidCoordinate } from "~/utils/validators/geo";
 
-import type { Fornecedor, FornecedorFilters } from "../../fornecedores/types/fornecedores.types";
-import type { Rota, FornecedorParaRoteiro } from "../types/rotas.types";
+import type { Fornecedor, FornecedorFilters } from "../../fornecedores/schemas/fornecedores.schema";
+import type { Rota } from "../schemas/rotas.schema";
 
 const props = defineProps<{
   modelValue: boolean;
@@ -196,8 +199,8 @@ const rotaService = useRotaService();
  */
 const hasValidCoordinates = (fornecedor: Fornecedor): boolean => {
   if (!fornecedor.latitude || !fornecedor.longitude) return false;
-  const lat = parseFloat(fornecedor.latitude);
-  const lng = parseFloat(fornecedor.longitude);
+  const lat = Number(fornecedor.latitude ?? 0);
+  const lng = Number(fornecedor.longitude ?? 0);
   return isValidCoordinate(lat, lng);
 };
 
@@ -219,7 +222,7 @@ const buscarFornecedores = async () => {
     const fornecedoresResponse = await fornecedorService.fetchFornecedor(
       fornecedorPage,
       fornecedorSize,
-      fornecedorFilters
+      fornecedorFilters,
     );
 
     // Acessa .value pois data é um Ref, depois acessa .data.items da response
@@ -257,13 +260,13 @@ const handleAdd = async () => {
 
   try {
     const fornecedor = selectedFornecedor.value;
-    const lat = parseFloat(fornecedor.latitude) || 0;
-    const lng = parseFloat(fornecedor.longitude) || 0;
+    const lat = Number(fornecedor.latitude ?? 0);
+    const lng = Number(fornecedor.longitude ?? 0);
 
     const result = await rotaService.createRoteiro({
       nome: fornecedor.fanta || fornecedor.fornecedor,
       id_rota: props.rota.id,
-      codigo: parseInt(fornecedor.codfor) || 0,
+      codigo: Number(fornecedor.codfor ?? 0) || 0,
       endereco: {
         latitude: lat,
         longitude: lng,
@@ -314,6 +317,6 @@ watch(
     if (!newVal) {
       resetForm();
     }
-  }
+  },
 );
 </script>

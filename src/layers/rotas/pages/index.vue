@@ -123,7 +123,7 @@ import ModalDetalhesRota from "../components/ModalDetalhesRota.vue";
 import ModalNovaRota from "../components/ModalNovaRota.vue";
 import RotaCardItem from "../components/RotaCardItem.vue";
 
-import type { Rota, RotaFilters } from "../types/rotas.types";
+import type { Rota, RotaFilters } from "../schemas/rotas.schema";
 
 definePageMeta({
   layout: "default",

@@ -26,7 +26,7 @@ import type {
   SupplierBirthday,
   TableItem,
   TopProduct,
-} from "~/layers/painel/types/dashboard.types";
+} from "~/layers/painel/schemas/dashboard.schema";
 
 export const useDashboardStore = defineStore("dashboard", () => {
   const rawData = ref<DashboardApiResponse | null>(null);
@@ -73,6 +73,13 @@ export const useDashboardStore = defineStore("dashboard", () => {
 
   const comprasMesAnterior = computed<SummaryItem[]>(() => {
     const data = rawData.value?.comprasMesAnterior?.data?.[0];
+    if (!data)
+      return [
+        { label: "Total Mês", value: 0 },
+        { label: "Preço Médio", value: 0 },
+        { label: "Média Diária", value: 0 },
+        { label: "Descontos", value: "0" },
+      ] as SummaryItem[];
     return formatarResumoCompras(data);
   });
 
@@ -98,7 +105,9 @@ export const useDashboardStore = defineStore("dashboard", () => {
     const data = rawData.value?.aniversariantesFornecedores?.data ?? [];
     return data.map((aniversariante: SupplierBirthday) => ({
       name: aniversariante.fornecedor,
-      location: aniversariante.uf ? `${aniversariante.cidade}/${aniversariante.uf}` : aniversariante.cidade,
+      location: aniversariante.uf
+        ? `${aniversariante.cidade}/${aniversariante.uf}`
+        : aniversariante.cidade,
       status: aniversariante.status,
       date: aniversariante.dat_nasc,
     }));
@@ -169,7 +178,8 @@ export const useDashboardStore = defineStore("dashboard", () => {
     const data = chartData.value.produtosBar;
     return (
       data.names.length === 0 ||
-      (data.current.every((value: number) => value === 0) && data.previous.every((value: number) => value === 0))
+      (data.current.every((value: number) => value === 0) &&
+        data.previous.every((value: number) => value === 0))
     );
   });
 
