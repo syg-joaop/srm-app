@@ -57,6 +57,7 @@ export default defineNuxtConfig({
     apiV2Url: process.env.API_URL,
     apiV2UrlHomol: process.env.API_URL_HOMOL,
     public: {
+      ambiente: process.env.NUXT_PUBLIC_AMBIENTE ?? "PROD",
       apiBaseUrl: process.env.API_LOGIN ?? "",
       apiSecret: process.env.NUXT_PUBLIC_API_SECRET ?? "",
       apiV2Url: process.env.API_URL ?? "",

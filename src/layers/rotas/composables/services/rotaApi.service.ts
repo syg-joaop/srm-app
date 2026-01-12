@@ -1,22 +1,21 @@
 import { z } from "zod";
 
+import { logger } from "~/utils/logger";
+
 import {
   schemaRota,
   schemaRotaResponse,
   schemaRoteiro,
   schemaRoteiroResponse,
 } from "../../schemas/rotas.schema";
-import { logger } from "~/utils/logger";
 
 import type {
   CreateRoteiroPayload,
-  RotaFilters,
-  RoteiroFilters,
-} from "../../schemas/rotas.schema";
-import type {
   Rota,
+  RotaFilters,
   RotaResponse,
   Roteiro,
+  RoteiroFilters,
   RoteiroResponse,
 } from "../../schemas/rotas.schema";
 
@@ -56,11 +55,7 @@ const createDataWrapperSchema = <T>(itemSchema: z.ZodSchema<T>) => {
 /**
  * Adiciona query parameter se valor for válido.
  */
-const appendQueryParam = (
-  params: URLSearchParams,
-  key: string,
-  value?: string | number | null,
-) => {
+const appendQueryParam = (params: URLSearchParams, key: string, value?: string | number | null) => {
   if (value === undefined || value === null || value === "") return;
   params.append(key, String(value));
 };

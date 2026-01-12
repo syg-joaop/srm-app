@@ -1,16 +1,10 @@
 import * as echarts from "echarts";
-import { z } from "zod";
 
-import {
-  getPremiumTooltip,
-  premiumTooltipStyle,
-  type TooltipParam,
-} from "~/layers/painel/utils/chartTooltip";
 import { formatarKg, formatarMoeda } from "~/utils/formatters/formatadores";
 
-import { chartDataSchema } from "../schemas/dashboard.schema";
+import { getPremiumTooltip, premiumTooltipStyle, type TooltipParam } from "../utils/chartTooltip";
 
-type ChartData = z.infer<typeof chartDataSchema>;
+import type { ChartData } from "../schemas/ui.schema";
 
 const clamp = (value: number, min: number, max: number) => Math.min(Math.max(value, min), max);
 

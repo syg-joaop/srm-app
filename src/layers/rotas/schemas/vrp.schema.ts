@@ -52,7 +52,15 @@ export const schemaVrpTask = z.object({
   id: z.number(),
   type: z.enum(["catch-only", "delivery-only", "pickup-delivery"]),
   description: z.string(),
+  preparation: z.string().optional(),
   duration: z.string(),
+  loadVolumes: z.number().optional(),
+  skills: z.array(z.string()).optional(),
+  priority: z.number().optional(),
+  window: z.object({
+    start: z.string(),
+    end: z.string(),
+  }).optional(),
   location: schemaVrpLocation,
 });
 
@@ -60,7 +68,19 @@ export const schemaVrpVehicle = z.object({
   id: z.number(),
   description: z.string(),
   maxJobs: z.number(),
+  maxVolumes: z.number().optional(),
+  maxSpeed: z.number().optional(),
   avgSpeed: z.number(),
+  skills: z.array(z.string()).optional(),
+  costs: z.object({
+    fuelType: z.enum(["gasoline", "diesel", "ethanol"]).optional(),
+    axes: z.number().optional(),
+    avgCostsPerHour: z.number().optional(),
+    avgCostsPerKm: z.number().optional(),
+    avgLiterPerKm: z.number().optional(),
+    tankCapacityLiters: z.number().optional(),
+    tankCurrentLiters: z.number().optional(),
+  }).optional(),
   location: z.object({
     start: schemaVrpLocation,
     end: schemaVrpLocation,

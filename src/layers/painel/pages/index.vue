@@ -438,28 +438,41 @@ import {
   Target,
   Users,
 } from "lucide-vue-next";
-import { z } from "zod";
 
 import { dataAtualPrimeiroDiaMes, dataAtualUltimoDiaMes } from "~/utils/formatters/date";
 
+import { useDashboard } from "../composables/useDashboard";
 import { useDashboardCharts } from "../composables/useDashboardCharts";
-import {
-  aniversarianteItemSchema,
-  atendenteItemSchema,
-  atendimentoSchema,
-} from "../schemas/dashboard.schema";
-import { useDashboardStore } from "../stores/dashboard";
 
-type AniversarianteItem = z.infer<typeof aniversarianteItemSchema>;
-type Atendente = z.infer<typeof atendimentoSchema>;
-type AtendenteItem = z.infer<typeof atendenteItemSchema>;
+import type { Atendimento } from "~/schemas/domain/dashboard";
+
+// Tipos de UI (transformados)
+interface AniversarianteItem {
+  name: string;
+  location: string;
+  status?: string;
+  date?: string;
+}
+
+interface AtendenteItem {
+  role: string;
+  geral: number;
+  periodo: number;
+  concluidos: number;
+  pendentes: number;
+  statuses: Array<{
+    value: string | number;
+    label?: string;
+    color: string;
+    icon?: string;
+  }>;
+}
 
 definePageMeta({
   layout: "default",
 });
 
-const { fetchDashboard } = useDashboardService();
-
+// Filtros do dashboard
 const filters = ref({
   data_inicial: dataAtualPrimeiroDiaMes(),
   data_final: dataAtualUltimoDiaMes(),
@@ -470,21 +483,16 @@ const filters = ref({
   mes_grafico: "atual",
 });
 
-const { data, status, error } = fetchDashboard(filters);
-const isLoading = computed(() => status.value === "pending");
-
-watch(error, (newError) => {
-  if (newError) {
-    console.error("Erro ao carregar dashboard (index.vue):", newError);
-  }
-});
-
-const dashboardStore = useDashboardStore();
+// Composable de dashboard (agora retorna tudo)
 const {
+  fetchDashboard,
+  isLoading,
+  error,
   stats,
   comprasMes,
   comprasMesAnterior,
   compradorItems,
+  produtosItems,
   aniversariantesItems,
   atendentesItems,
   chartData,
@@ -494,7 +502,28 @@ const {
   isMetaDiariaEmpty,
   isDescontosEmpty,
   isProdutosBarEmpty,
-} = storeToRefs(dashboardStore);
+} = useDashboard();
+
+// Busca dados ao montar
+onMounted(async () => {
+  await fetchDashboard(filters.value);
+});
+
+// Reage a mudanças nos filtros
+watch(
+  filters,
+  async (newFilters) => {
+    await fetchDashboard(newFilters);
+  },
+  { deep: true },
+);
+
+// Monitora erros
+watch(error, (newError) => {
+  if (newError) {
+    console.error("Erro ao carregar dashboard:", newError);
+  }
+});
 
 const showParceiroModal = ref(false);
 const parceiroSelecionado = ref<AniversarianteItem | (AtendenteItem & { name: string }) | null>(
@@ -503,9 +532,9 @@ const parceiroSelecionado = ref<AniversarianteItem | (AtendenteItem & { name: st
 const modalVariant = ref<"parceiro" | "atendente" | "time">("parceiro");
 
 const showAtendimentoModal = ref(false);
-const atendimentoSelecionado = ref<Atendente | null>(null);
+const atendimentoSelecionado = ref<Atendimento | null>(null);
 
-const handleOpenAtendimentoModal = (atendimento: Atendente) => {
+const handleOpenAtendimentoModal = (atendimento: Atendimento) => {
   atendimentoSelecionado.value = atendimento;
   showAtendimentoModal.value = true;
 };
@@ -543,18 +572,17 @@ const comprasMetricsMesAnterior = computed(() =>
 
 const { lineChartRef, barChartRef, discountChartRef, initCharts } = useDashboardCharts(chartData);
 
+// Inicializa gráficos quando dados mudam
 watch(
-  data,
+  chartData,
   (newData) => {
     if (newData) {
-      dashboardStore.setDashboardData(newData);
       nextTick(() => {
         initCharts();
       });
     }
-    // usar spinner do ui para indicar que está carregando
   },
-  { immediate: true },
+  { deep: true, immediate: true },
 );
 </script>
 

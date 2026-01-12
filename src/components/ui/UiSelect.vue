@@ -177,7 +177,7 @@ const updateDropdownPosition = () => {
     top: `${top}px`,
     left: `${left}px`,
     width: `${width}px`,
-    zIndex: "9999",
+    zIndex: "9998",
   };
 };
 

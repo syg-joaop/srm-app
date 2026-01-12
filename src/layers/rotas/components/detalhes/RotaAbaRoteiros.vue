@@ -3,9 +3,7 @@
     <!-- Actions -->
     <div class="flex items-center justify-between mb-4 flex-wrap gap-2">
       <div class="flex items-center gap-2">
-        <span class="text-sm text-[var(--color-text-muted)]">
-          {{ roteiros.length }} pontos
-        </span>
+        <span class="text-sm text-[var(--color-text-muted)]"> {{ roteiros.length }} pontos </span>
         <UiBadge v-if="hasChanges" variant="warning" size="small" :dot="true">
           Alterações não salvas
         </UiBadge>
@@ -48,10 +46,7 @@
         v-for="(roteiro, index) in roteiros"
         :key="roteiro.id"
         class="flex items-center gap-3 p-3 rounded border transition-all select-none"
-        style="
-          background-color: var(--color-surface);
-          border-color: var(--color-border);
-        "
+        style="background-color: var(--color-surface); border-color: var(--color-border)"
         :class="{
           'opacity-50': draggedIndex === index,
           'border-t-2': dropTargetIndex === index && draggedIndex !== index,
@@ -69,9 +64,7 @@
         @drop="handleDrop($event, index)"
       >
         <!-- Drag handle -->
-        <div
-          class="cursor-grab active:cursor-grabbing text-[var(--color-text-muted)]"
-        >
+        <div class="cursor-grab active:cursor-grabbing text-[var(--color-text-muted)]">
           <GripVertical class="w-4 h-4" />
         </div>
 
@@ -85,9 +78,7 @@
 
         <!-- Info -->
         <div class="flex-1 min-w-0">
-          <div
-            class="font-semibold text-sm truncate text-[var(--color-text)]"
-          >
+          <div class="font-semibold text-sm truncate text-[var(--color-text)]">
             {{ roteiro.nome || `Ponto ${roteiro.sequencia}` }}
           </div>
           <div
@@ -120,13 +111,7 @@
 </template>
 
 <script setup lang="ts">
-import {
-  Check,
-  Plus,
-  MapPin,
-  GripVertical,
-  Trash2,
-} from "lucide-vue-next";
+import { Check, GripVertical, MapPin, Plus, Trash2 } from "lucide-vue-next";
 
 import { getStatusColor, getStatusLabel, getStatusVariant } from "~/components/ui/utils/status";
 
@@ -195,12 +180,9 @@ const getUltimoStatus = (roteiro: Roteiro): string => {
 
 const formatEndereco = (endereco?: Roteiro["endereco"]): string => {
   if (!endereco) return "Endereço não disponível";
-  const parts = [
-    endereco.rua,
-    endereco.numero,
-    endereco.bairro,
-    endereco.cidade,
-  ].filter((part) => part !== null && part !== undefined && part !== "");
+  const parts = [endereco.rua, endereco.numero, endereco.bairro, endereco.cidade].filter(
+    (part) => part !== null && part !== undefined && part !== "",
+  );
   return parts.length > 0 ? parts.join(", ") : "Endereço não disponível";
 };
 </script>

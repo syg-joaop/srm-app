@@ -6,22 +6,20 @@
  * ou prospecto baseado na propriedade 'codfor' ou 'codpros' do parceiro.
  */
 
-import { logger } from "~/utils/logger";
 import { z } from "zod";
 
-import type { Carga } from "~/server/schemas/carga.schema";
 import { checkinSchema } from "~/layers/checkin/schemas/checkin.schema";
+import { logger } from "~/utils/logger";
+
+import type { Carga } from "~/server/schemas/carga.schema";
 import type { Coleta } from "~/server/schemas/coleta.schema";
 import type { Contato } from "~/server/schemas/contato.schema";
-import type { ParceiroData } from "~/types/parceiro";
 import type { Preco } from "~/server/schemas/preco.schema";
+import type { ParceiroData } from "~/types/parceiro";
 
 type Checkin = z.infer<typeof checkinSchema>;
 
-
-export const useParceiroDetalhesData = (
-  parceiroFn: () => ParceiroData | null,
-) => {
+export const useParceiroDetalhesData = (parceiroFn: () => ParceiroData | null) => {
   const isLoading = ref(false);
   const error = ref<string | null>(null);
   const detalhesData = ref<{
@@ -37,7 +35,7 @@ export const useParceiroDetalhesData = (
 
   // Verifica se é prospecto baseado no campo tf (começa com "PRO")
   const isProspecto = computed(() => {
-    return typeof parceiro.value?.tf === 'string' && parceiro.value.tf.startsWith("PRO");
+    return typeof parceiro.value?.tf === "string" && parceiro.value.tf.startsWith("PRO");
   });
 
   // Fornecedor tem codfor E não é prospecto
@@ -75,12 +73,12 @@ export const useParceiroDetalhesData = (
         const data = await service.fetchAllDetalhes(codforOrCodpros.value);
 
         detalhesData.value = {
-          contatos: data.contatos?.data.items as Contato[] || [],
-          cargas: data.cargas?.data.items as Carga[] || [],
-          atendimentos: data.atendimentos?.data.items as Atendimento[] || [],
-          coletas: data.coletas?.data.items as Coleta[] || [],
-          precos: data.precos?.data.items as Preco[] || [],
-          checkins: data.checkins?.data.items as Checkin[] || [],
+          contatos: (data.contatos?.data.items as Contato[]) || [],
+          cargas: (data.cargas?.data.items as Carga[]) || [],
+          atendimentos: (data.atendimentos?.data.items as Atendimento[]) || [],
+          coletas: (data.coletas?.data.items as Coleta[]) || [],
+          precos: (data.precos?.data.items as Preco[]) || [],
+          checkins: (data.checkins?.data.items as Checkin[]) || [],
         };
       } else if (isProspecto.value) {
         const { useProspectoDetalhesService } = await import(
@@ -91,12 +89,12 @@ export const useParceiroDetalhesData = (
         const data = await service.fetchAllDetalhes(codforOrCodpros.value);
 
         detalhesData.value = {
-          contatos: data.contatos?.data.items as Contato[] || [],
-          cargas: data.cargas?.data.items as Carga[] || [],
-          atendimentos: data.atendimentos?.data.items as Atendimento[] || [],
-          coletas: data.coletas?.data.items as Coleta[] || [],
-          precos: data.precos?.data.items as Preco[] || [],
-          checkins: data.checkins?.data.items as Checkin[] || [],
+          contatos: (data.contatos?.data.items as Contato[]) || [],
+          cargas: (data.cargas?.data.items as Carga[]) || [],
+          atendimentos: (data.atendimentos?.data.items as Atendimento[]) || [],
+          coletas: (data.coletas?.data.items as Coleta[]) || [],
+          precos: (data.precos?.data.items as Preco[]) || [],
+          checkins: (data.checkins?.data.items as Checkin[]) || [],
         };
       } else {
         error.value = "Tipo de parceiro não reconhecido";
@@ -122,9 +120,7 @@ export const useParceiroDetalhesData = (
    * Enriquece o objeto parceiro com os dados detalhados carregados.
    * Isso permite que o modal acesse os dados via parceiro.contatos, etc.
    */
-  const enrichParceiroWithDetalhes = (
-    parceiroData: ParceiroData | null,
-  ): ParceiroData | null => {
+  const enrichParceiroWithDetalhes = (parceiroData: ParceiroData | null): ParceiroData | null => {
     if (!parceiroData) return null;
 
     return {

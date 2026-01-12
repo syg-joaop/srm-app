@@ -2,12 +2,15 @@ import { logger } from "~/utils/logger";
 
 import { validateVrpResponse } from "../schemas/vrp.schema";
 
-import { roteirosToVrpTasks, createVirtualVehicle, getRoteirosWithCoords } from "./roteirosHelpers";
+import { createVirtualVehicle, roteirosToVrpTasks } from "./roteirosHelpers";
 import { usePolylineCache } from "./usePolylineCache";
 
-import type { VrpRouteRequest, VrpRouteResponse, VrpSummary } from "../schemas/rotas.schema";
-import type { Roteiro } from "../schemas/rotas.schema";
-
+import type {
+  Roteiro,
+  VrpRouteRequest,
+  VrpRouteResponse,
+  VrpSummary,
+} from "../schemas/rotas.schema";
 
 const LOG_PREFIX = "[useVrpService]";
 
@@ -16,6 +19,7 @@ const VRP_TIMEZONE = "America/Sao_Paulo";
 const VRP_MIN_TASKS_WITH_USER = 1;
 const VRP_MIN_TASKS_WITHOUT_USER = 2;
 const VRP_MAX_DAYS_WORKING = 1;
+const VRP_MAX_DAYS_WORKING_WITH_USER = 3; // Permite rotas longas com localização do usuário
 const VRP_LOCATION_PRECISION = 4;
 
 const logDebug = (...args: unknown[]) => logger.debug(LOG_PREFIX, ...args);
@@ -65,9 +69,7 @@ export function useVrpService() {
     const responseData = response as unknown as VrpApiResponseShape;
     const vrpData = (responseData.response as VrpApiResponseShape | undefined) ?? responseData;
 
-    const unassignedTasks = Array.isArray(vrpData.unassignedTasks)
-      ? vrpData.unassignedTasks
-      : [];
+    const unassignedTasks = Array.isArray(vrpData.unassignedTasks) ? vrpData.unassignedTasks : [];
     const plan = vrpData.workDays?.[0]?.plans?.[0];
     const polyline = plan?.route?.polyline;
     const summaryData = plan?.summary || vrpData.summary;
@@ -109,27 +111,48 @@ export function useVrpService() {
       return null;
     }
 
+    const maxDaysWorking = location ? VRP_MAX_DAYS_WORKING_WITH_USER : VRP_MAX_DAYS_WORKING;
+
     const request: VrpRouteRequest = {
       timezone: VRP_TIMEZONE,
-      maxDaysWorking: VRP_MAX_DAYS_WORKING,
+      maxDaysWorking,
       vehicles: [vehicle],
       tasks,
     };
 
     logDebug("Chamando API VRP:", request);
 
-    const response = await $fetch(VRP_API_URL + "/route", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-        Accept: "application/json",
-        "x-api-key": VRP_API_KEY,
-      },
-      body: request,
-    });
+    let response;
+    try {
+      response = await $fetch(VRP_API_URL + "/route", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Accept: "application/json",
+          "x-api-key": VRP_API_KEY,
+        },
+        body: request,
+      });
+    } catch (fetchError: any) {
+      logError("Erro ao chamar API VRP:", fetchError);
+      logError("Detalhes do erro:", fetchError?.data || fetchError?.message || fetchError);
+      throw fetchError;
+    }
 
     logDebug("Resposta API VRP:", response);
     logDebug("Tipo da resposta:", typeof response);
+
+    // Verifica se há erro ou mensagem na resposta
+    if (response && typeof response === "object") {
+      const anyResponse = response as any;
+      if (anyResponse.error || anyResponse.message || anyResponse.errors) {
+        logError("API VRP retornou erro:", {
+          error: anyResponse.error,
+          message: anyResponse.message,
+          errors: anyResponse.errors,
+        });
+      }
+    }
 
     // Se a resposta for string, tenta fazer parse
     let parsedResponse = response;
@@ -147,7 +170,21 @@ export function useVrpService() {
     const validatedResponse = validateVrpResponse(parsedResponse);
 
     const parsed = parseVrpResponse(validatedResponse);
+
+    // Se houve tarefas não atribuídas, loga warning
+    if (parsed.unassignedCount > 0) {
+      logWarn(
+        `VRP retornou ${parsed.unassignedCount} tarefas nao atribuidas:`,
+        parsed.unassignedTasks,
+      );
+    }
+
     if (!parsed.polyline || typeof parsed.polyline !== "string") {
+      if (location) {
+        logWarn("VRP nao conseguiu gerar polyline com localizacao do usuario");
+      } else {
+        logWarn("VRP nao conseguiu gerar polyline mesmo sem localizacao do usuario");
+      }
       return null;
     }
 
@@ -155,14 +192,6 @@ export function useVrpService() {
 
     // Salva no cache
     cache.savePolylineToCache(cacheKey, result.polyline, result.summary);
-
-    // Se houve tarefas não atribuídas, loga warning
-    if (parsed.unassignedCount > 0 && location) {
-      logWarn(
-        "VRP retornou tarefas nao atribuidas ao usar localizacao do usuario; usando fallback sem localizacao.",
-        parsed.unassignedTasks,
-      );
-    }
 
     return result;
   };

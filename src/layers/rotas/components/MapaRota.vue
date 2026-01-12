@@ -170,14 +170,13 @@ import {
   TrendingUp,
 } from "lucide-vue-next";
 
-import { logger } from "~/utils/logger";
-import { isValidCoordinate } from "~/utils/geo/coordinateUtils";
 import { formatarDistancia, formatarDuracao } from "~/utils/formatters/formatadores";
+import { isValidCoordinate } from "~/utils/geo/coordinateUtils";
+import { logger } from "~/utils/logger";
 
-import type { Roteiro } from "../schemas/rotas.schema";
-import type { VrpSummary } from "../schemas/rotas.schema";
 import type { UiMapaStatusConfig } from "~/components/ui/maps.types";
 import type { RotaPonto } from "~/components/ui/UiMapaRotas.vue";
+import type { Roteiro, VrpSummary } from "../schemas/rotas.schema";
 
 const props = defineProps<{
   roteiros?: Roteiro[];
@@ -231,7 +230,7 @@ const userLocation = computed(() => {
   };
 });
 
-// GeolocalizaÃ§Ã£o do usuÃ¡rio
+// Geolocalização do usuário
 
 // Estado local
 const isLoading = ref(false);
@@ -242,7 +241,7 @@ const polyline = ref<string | null>(null);
 const summary = ref<VrpSummary | null>(null);
 const roteirosCarregados = ref<Roteiro[]>([]);
 
-// LocalizaÃ§Ã£o do usuÃ¡rio para o mapa
+// Localização do usuário para o mapa
 // Service (auto-imported by Nuxt)
 // eslint-disable-next-line no-undef
 const rotaService = useRotaService();
@@ -263,7 +262,7 @@ const pontos = computed<RotaPonto[]>(() => {
   const source = props.roteiros || roteirosCarregados.value;
 
   const validRoteiros = source.filter((r) => {
-    // Filtra apenas roteiros com coordenadas vÃ¡lidas
+    // Filtra apenas roteiros com coordenadas válidas
     if (!r.endereco) return false;
     return isValidCoordinate(r.endereco.latitude, r.endereco.longitude);
   });
@@ -273,10 +272,10 @@ const pontos = computed<RotaPonto[]>(() => {
   for (const r of validRoteiros.sort((a, b) => (a.sequencia || 0) - (b.sequencia || 0))) {
     if (!r.endereco) continue;
 
-    // Pega o Ãºltimo status do roteiro
+    // Pega o último status do roteiro
     const ultimoStatus = r.srm_status_roteiro?.[0]?.status?.toLowerCase() || "aguardando";
 
-    // Converte coordenadas para nÃºmero
+    // Converte coordenadas para número
     const lat =
       typeof r.endereco.latitude === "string"
         ? parseFloat(r.endereco.latitude)
@@ -307,7 +306,7 @@ const pontos = computed<RotaPonto[]>(() => {
 });
 
 /**
- * Roteiros sem coordenadas vÃ¡lidas (para exibir aviso)
+ * Roteiros sem coordenadas válidas (para exibir aviso)
  */
 const roteirosInvalidos = computed(() => {
   const source = props.roteiros || roteirosCarregados.value;
@@ -318,7 +317,7 @@ const roteirosInvalidos = computed(() => {
 });
 
 /**
- * Carrega roteiros e calcula polyline para exibiÃ§Ã£o no mapa
+ * Carrega roteiros e calcula polyline para exibição no mapa
  */
 const getRoteirosValidosParaCalculo = () => {
   const source = props.roteiros || roteirosCarregados.value;
@@ -375,7 +374,7 @@ const recalcularApartirDeMim = async () => {
   error.value = null;
 
   try {
-    loadingMessage.value = "Obtendo sua localizaÃ§Ã£o...";
+    loadingMessage.value = "Obtendo sua localização...";
     const pos = await getCurrentPosition();
     if (!pos) return;
 
@@ -394,7 +393,7 @@ const recalcularApartirDeMim = async () => {
     routeWarning.value = result
       ? null
       : rotaService.error.value ||
-        "NÃ†o foi possÂ¡vel calcular a rota. Exibindo linha reta entre os pontos.";
+        "Não foi possível calcular a rota. Exibindo linha reta entre os pontos.";
 
     emit("loaded", { polyline: polyline.value, summary: summary.value });
   } catch (err) {
@@ -459,7 +458,7 @@ const handleMarkerClick = (ponto: RotaPonto) => {
 };
 
 /**
- * ForÃ§a resize do mapa (Ãºtil quando o container muda de tamanho)
+ * Força resize do mapa (útil quando o container muda de tamanho)
  */
 const invalidateSize = () => {
   if (mapaRef.value && typeof mapaRef.value.invalidateSize === "function") {

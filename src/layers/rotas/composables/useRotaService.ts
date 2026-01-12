@@ -10,14 +10,8 @@ import { useVrpService } from "./useVrpService";
 import type {
   CreateRoteiroPayload,
   RotaFilters,
-  VrpSummary,
-} from "../schemas/rotas.schema";
-import type {
-  Rota,
-  RotaResponse,
   Roteiro,
   RoteiroFilters,
-  RoteiroResponse,
 } from "../schemas/rotas.schema";
 
 const LOG_PREFIX = "[useRotaService]";
@@ -76,8 +70,7 @@ export const useRotaService = () => {
   const fetchRoteiros = (idRota: number, filters?: RoteiroFilters) =>
     withErrorHandling(() => apiService.fetchRoteiros(idRota, filters));
 
-  const fetchRotaById = (id: number) =>
-    withErrorHandling(() => apiService.fetchRotaById(id));
+  const fetchRotaById = (id: number) => withErrorHandling(() => apiService.fetchRotaById(id));
 
   const createRota = (data: {
     tipo?: string;
@@ -99,7 +92,9 @@ export const useRotaService = () => {
   };
 
   const updateRoteiroSequencia = async (id: number, sequencia: number) => {
-    const result = await withErrorHandlingBool(() => apiService.updateRoteiroSequencia(id, sequencia));
+    const result = await withErrorHandlingBool(() =>
+      apiService.updateRoteiroSequencia(id, sequencia),
+    );
     if (result) clearPolylineCache();
     return result;
   };
@@ -137,9 +132,12 @@ export const useRotaService = () => {
     idRota: number,
     userLocation?: { latitude: number; longitude: number } | null,
   ) =>
-    withErrorHandling(() =>
-      polylineService.fetchRotaComPolyline(idRota, userLocation),
-    ) ?? { rota: null, roteiros: [], polyline: null, summary: null };
+    withErrorHandling(() => polylineService.fetchRotaComPolyline(idRota, userLocation)) ?? {
+      rota: null,
+      roteiros: [],
+      polyline: null,
+      summary: null,
+    };
 
   const clearPolylineCache = () => polylineCache.clearPolylineCache();
 

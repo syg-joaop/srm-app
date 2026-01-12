@@ -1,16 +1,7 @@
-﻿import { z } from "zod";
+﻿import { formatarMoeda } from "~/utils/formatters/formatadores";
 
-import {
-  chartDataSchema,
-  comprasMesItemSchema,
-  dashboardApiResponseSchema,
-  summaryItemSchema,
-} from "./schemas/dashboard.schema";
-
-type ChartData = z.infer<typeof chartDataSchema>;
-type ComprasStats = z.infer<typeof comprasMesItemSchema>;
-type DashboardApiResponse = z.infer<typeof dashboardApiResponseSchema>;
-type SummaryItem = z.infer<typeof summaryItemSchema>;
+import type { ChartData, ComprasMesItem, SummaryItem } from "./schemas/ui.schema";
+import type { DashboardData } from "~/schemas/api/dashboard";
 
 export const EMPTY_CHART_DATA: ChartData = {
   ocorrenciasPie: [],
@@ -36,7 +27,7 @@ export function mapIcon(tipo: string): string {
   return key ? map[key] : "Info";
 }
 
-export function formatarResumoCompras(data: ComprasStats): SummaryItem[] {
+export function formatarResumoCompras(data: ComprasMesItem): SummaryItem[] {
   return [
     { label: "Total Mês", value: formatarMoeda(data.total) },
     { label: "Líquido", value: formatarMoeda(data.liquido) },
@@ -45,7 +36,7 @@ export function formatarResumoCompras(data: ComprasStats): SummaryItem[] {
   ];
 }
 
-export function transformPieData(apiData: DashboardApiResponse) {
+export function transformPieData(apiData: DashboardData) {
   const pieRaw = apiData.ocorrencias12Meses.data[0];
   return [
     {
@@ -67,7 +58,7 @@ export function transformPieData(apiData: DashboardApiResponse) {
   ];
 }
 
-export function transformLineData(apiData: DashboardApiResponse) {
+export function transformLineData(apiData: DashboardData) {
   const lineRaw = apiData.ocorrencias6Meses.data;
   return {
     months: lineRaw.map((i: { mes_ano: string }) => i.mes_ano),
@@ -75,7 +66,7 @@ export function transformLineData(apiData: DashboardApiResponse) {
   };
 }
 
-export function transformMetaData(apiData: DashboardApiResponse) {
+export function transformMetaData(apiData: DashboardData) {
   const metaRaw = apiData.metaDiaria.data;
   return {
     days: metaRaw.map((i: { data: string }) => {
@@ -87,7 +78,7 @@ export function transformMetaData(apiData: DashboardApiResponse) {
   };
 }
 
-export function transformDescData(apiData: DashboardApiResponse) {
+export function transformDescData(apiData: DashboardData) {
   const descRaw = apiData.totalDescontos.data;
   return {
     months: descRaw.map((i: { mes: string }) => i.mes),
@@ -95,7 +86,7 @@ export function transformDescData(apiData: DashboardApiResponse) {
   };
 }
 
-export function transformProdutosData(apiData: DashboardApiResponse) {
+export function transformProdutosData(apiData: DashboardData) {
   const raw = apiData.prodsMaisCompradosMes.data;
   return {
     names: raw.slice(0, 10).map((p: { produto: string | null }) => p.produto ?? "Produto Desc."),

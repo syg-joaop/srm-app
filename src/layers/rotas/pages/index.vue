@@ -1,131 +1,158 @@
-﻿<template>
-  <div class="min-h-screen p-4 sm:p-6 bg-[var(--color-background)]">
-    <div class="flex flex-col gap-4 mb-6 sm:mb-8">
-      <h1 class="text-xl sm:text-2xl font-bold text-[var(--color-text)]">Rotas cadastradas</h1>
-
-      <div class="flex flex-col sm:flex-row items-stretch sm:items-center gap-3 w-full sm:w-auto">
-        <UiButton
-          variant="primary"
-          size="medium"
-          class="whitespace-nowrap w-full sm:w-auto"
-          @click="showNovaRotaModal = true"
-          aria-label="Criar nova rota"
-        >
-          <Plus class="w-4 h-4" />
-          Nova Rota
-        </UiButton>
-
-        <UiCalendario
-          :range="true"
-          :start-date="filtroDataInicio"
-          :end-date="filtroDataFim"
-          placeholder="Filtrar período"
-          class="w-full sm:w-auto"
-          aria-label="Filtrar rotas por período"
-          @change="(value) => handleDateChange(value as { start: Date | null; end: Date | null })"
-        />
-
-        <UiButton
-          v-if="filtroDataInicio || filtroDataFim"
-          variant="ghost"
-          size="small"
-          @click="limparFiltros"
-          aria-label="Limpar filtros de data"
-        >
-          <X class="w-4 h-4" />
-          Limpar
-        </UiButton>
+<template>
+  <div class="min-h-screen p-6 sm:p-8 bg-[var(--color-background)]">
+    <!-- Header refinado com hierarquia clara -->
+    <header class="mb-8">
+      <div class="flex items-baseline justify-between mb-6">
+        <div>
+          <h1 class="text-[32px] font-semibold tracking-tight text-[var(--color-text)] mb-1">
+            Rotas
+          </h1>
+        </div>
       </div>
 
-      <!-- Indicador de localização do usuário -->
-      <Transition
-        enter-active-class="transition-all duration-200 ease-out"
-        enter-from-class="opacity-0 -translate-y-2"
-        enter-to-class="opacity-100 translate-y-0"
-        leave-active-class="transition-all duration-150 ease-in"
-        leave-from-class="opacity-100 translate-y-0"
-        leave-to-class="opacity-0 -translate-y-2"
-      >
+      <!-- Toolbar com controles isolados -->
+      <div class="sticky top-2 z-10">
         <div
-          v-if="userLocation"
-          class="flex items-center gap-2 text-xs bg-[var(--color-surface)] border border-[var(--color-border)] rounded px-3 py-2 w-fit"
+          class="bg-[var(--color-surface)] border border-[var(--color-border)] rounded-lg p-4 shadow-sm"
         >
-          <Icon icon="heroicons:map-pin-20-solid" class="w-3.5 h-3.5 text-[var(--color-primary)]" />
-          <span class="text-[var(--color-text-muted)]">
-            Localização obtida
-            <span class="font-medium font-mono tabular-nums text-[var(--color-text)] ml-1">
-              (±{{ Math.round(userLocation.accuracy) }}m)
-            </span>
-          </span>
-        </div>
-      </Transition>
+          <div class="flex flex-col sm:flex-row items-stretch sm:items-center gap-3">
+            <!-- Ação primária -->
+            <button
+              class="inline-flex items-center justify-center gap-2 px-4 h-10 bg-[var(--color-primary)] text-white font-medium text-sm rounded-md hover:bg-[var(--color-primary-dark)] active:scale-[0.98] transition-all duration-150"
+              @click="showNovaRotaModal = true"
+              aria-label="Criar nova rota"
+            >
+              <Plus class="w-4 h-4" />
+              <span>Nova Rota</span>
+            </button>
 
-      <!-- Erro de geolocalização -->
-      <Transition
-        enter-active-class="transition-all duration-200 ease-out"
-        enter-from-class="opacity-0 -translate-y-2"
-        enter-to-class="opacity-100 translate-y-0"
-        leave-active-class="transition-all duration-150 ease-in"
-        leave-from-class="opacity-100 translate-y-0"
-        leave-to-class="opacity-0 -translate-y-2"
-      >
-        <div
-          v-if="geoError && !userLocation"
-          class="flex items-center justify-between gap-3 text-xs bg-orange-50 dark:bg-orange-900/10 border border-orange-200 dark:border-orange-800 rounded px-3 py-2"
-        >
-          <div class="flex items-center gap-2">
-            <Icon icon="heroicons:exclamation-triangle" class="w-3.5 h-3.5 text-orange-600 dark:text-orange-400" />
-            <span class="text-orange-800 dark:text-orange-200">
-              Localização não disponível. Rotas serão otimizadas sem ponto de partida.
-            </span>
+            <div class="hidden sm:block w-px h-6 bg-[var(--color-border)]"></div>
+
+            <!-- Filtros -->
+            <div class="flex-1 flex flex-col sm:flex-row items-stretch sm:items-center gap-2">
+              <!-- Calendário -->
+              <div class="relative flex-1 min-w-0 z-[100]">
+                <UiCalendario
+                  :range="true"
+                  :start-date="filtroDataInicio"
+                  :end-date="filtroDataFim"
+                  placeholder="Selecionar período"
+                  class="w-full"
+                  aria-label="Filtrar rotas por período"
+                  @change="
+                    (value) => handleDateChange(value as { start: Date | null; end: Date | null })
+                  "
+                />
+              </div>
+
+              <!-- Status -->
+              <div class="w-full sm:w-auto sm:min-w-[180px] z-[50]">
+                <UiSelect
+                  :model-value="filtroStatusSelect"
+                  :options="statusFilterOptions"
+                  placeholder="Status"
+                  class="w-full"
+                  @update:model-value="handleStatusFilterChange"
+                />
+              </div>
+
+              <!-- Limpar filtros -->
+              <Transition
+                enter-active-class="transition-all duration-150"
+                enter-from-class="opacity-0 scale-90"
+                enter-to-class="opacity-100 scale-100"
+                leave-active-class="transition-all duration-150"
+                leave-from-class="opacity-100 scale-100"
+                leave-to-class="opacity-0 scale-90"
+              >
+                <button
+                  v-if="filtroDataInicio || filtroDataFim || filtroStatus"
+                  class="inline-flex items-center justify-center w-10 h-10 rounded-md border border-[var(--color-border)] bg-[var(--color-surface)] hover:bg-[var(--color-hover)] hover:border-[var(--color-danger)] active:scale-95 transition-all duration-150 group sm:self-center"
+                  @click="limparFiltros"
+                  aria-label="Limpar filtros"
+                  title="Limpar filtros"
+                >
+                  <X
+                    class="w-4 h-4 text-[var(--color-text-muted)] group-hover:text-[var(--color-danger)] transition-colors"
+                  />
+                </button>
+              </Transition>
+            </div>
           </div>
-          <button
-            class="text-orange-600 dark:text-orange-400 hover:text-orange-700 dark:hover:text-orange-300 font-medium"
-            @click="solicitarLocalizacao"
-          >
-            Tentar novamente
-          </button>
         </div>
-      </Transition>
-
-      <!-- Indicador de filtros ativos -->
-      <Transition
-        enter-active-class="transition-all duration-200 ease-out"
-        enter-from-class="opacity-0 -translate-y-2"
-        enter-to-class="opacity-100 translate-y-0"
-        leave-active-class="transition-all duration-150 ease-in"
-        leave-from-class="opacity-100 translate-y-0"
-        leave-to-class="opacity-0 -translate-y-2"
-      >
-        <div
-          v-if="filtroDataInicio || filtroDataFim"
-          class="flex items-center gap-2 text-xs text-[var(--color-text-muted)] bg-[var(--color-surface)] border border-[var(--color-border-subtle)] rounded px-3 py-2 w-fit"
-        >
-          <Icon icon="heroicons:funnel" class="w-3.5 h-3.5" />
-          <span>
-            Filtros ativos:
-            <span class="font-medium text-[var(--color-text)]">
-              {{ formatarFiltrosAtivos() }}
-            </span>
-          </span>
-        </div>
-      </Transition>
-    </div>
-
-    <!-- Loading state com skeleton -->
-    <div v-if="isLoading" class="flex flex-col gap-1.5 md:gap-0" aria-hidden="true">
-      <!-- Header da tabela skeleton -->
-      <div
-        class="hidden md:grid grid-cols-12 gap-4 px-6 py-3 bg-[var(--color-background)] rounded-t-lg border border-[var(--color-border)] text-xs font-semibold text-[var(--color-text-muted)] uppercase tracking-wider opacity-50"
-      >
-        <div class="col-span-5">Descrição</div>
-        <div class="col-span-2 text-center">Progresso</div>
-        <div class="col-span-2 text-center">Status</div>
-        <div class="col-span-3 text-end">Ações</div>
       </div>
 
-      <!-- Skeleton cards -->
-      <RotaCardSkeleton v-for="i in 5" :key="`skeleton-${i}`" />
+      <!-- Contador de rotas abaixo da toolbar -->
+      <div class="mt-4">
+        <p class="text-sm text-[var(--color-text-muted)] font-mono tabular-nums">
+          {{ totalItems }} {{ totalItems === 1 ? "rota" : "rotas" }}
+        </p>
+      </div>
+    </header>
+
+    <!-- Badges de filtros ativos -->
+    <Transition
+      enter-active-class="transition-all duration-200 ease-out"
+      enter-from-class="opacity-0 -translate-y-2"
+      enter-to-class="opacity-100 translate-y-0"
+      leave-active-class="transition-all duration-150 ease-in"
+      leave-from-class="opacity-100 translate-y-0"
+      leave-to-class="opacity-0 -translate-y-2"
+    >
+      <div
+        v-if="filtroDataInicio || filtroDataFim || filtroStatus"
+        class="flex items-center gap-2 mb-6"
+      >
+        <span class="text-xs font-medium text-[var(--color-text-muted)] uppercase tracking-wide">
+          Filtros ativos
+        </span>
+        <div class="flex items-center gap-2">
+          <span
+            v-if="filtroDataInicio"
+            class="inline-flex items-center gap-1.5 px-2.5 py-1 bg-[var(--color-surface)] border border-[var(--color-border)] rounded-md text-xs font-mono text-[var(--color-text)]"
+          >
+            Desde {{ formatarData(filtroDataInicio.toISOString()) }}
+          </span>
+          <span
+            v-if="filtroDataFim"
+            class="inline-flex items-center gap-1.5 px-2.5 py-1 bg-[var(--color-surface)] border border-[var(--color-border)] rounded-md text-xs font-mono text-[var(--color-text)]"
+          >
+            Até {{ formatarData(filtroDataFim.toISOString()) }}
+          </span>
+          <span
+            v-if="filtroStatus"
+            class="inline-flex items-center gap-1.5 px-2.5 py-1 bg-[var(--color-primary-soft)] border border-[var(--color-primary-border)] rounded-md text-xs font-medium text-[var(--color-primary)]"
+          >
+            {{ statusFilters.find((f) => f.value === filtroStatus)?.label }}
+          </span>
+        </div>
+      </div>
+    </Transition>
+
+    <!-- Loading state refinado -->
+    <div v-if="isLoading" class="space-y-2" aria-hidden="true">
+      <div
+        v-for="i in 5"
+        :key="`skeleton-${i}`"
+        class="bg-[var(--color-surface)] border border-[var(--color-border)] rounded-lg p-4"
+      >
+        <div class="grid grid-cols-12 gap-4 items-center">
+          <div class="col-span-5 space-y-2">
+            <div class="h-4 w-2/3 bg-[var(--color-hover)] rounded animate-pulse"></div>
+            <div class="h-3 w-1/2 bg-[var(--color-hover)] rounded animate-pulse"></div>
+          </div>
+          <div class="col-span-2 flex justify-center">
+            <div class="h-2 w-24 bg-[var(--color-hover)] rounded-full animate-pulse"></div>
+          </div>
+          <div class="col-span-2 flex justify-center">
+            <div class="h-5 w-16 bg-[var(--color-hover)] rounded-full animate-pulse"></div>
+          </div>
+          <div class="col-span-3 flex justify-end gap-2">
+            <div class="h-8 w-8 bg-[var(--color-hover)] rounded animate-pulse"></div>
+            <div class="h-8 w-8 bg-[var(--color-hover)] rounded animate-pulse"></div>
+          </div>
+        </div>
+      </div>
     </div>
 
     <!-- Error state -->
@@ -146,7 +173,7 @@
         aria-live="polite"
       >
         <template #icon>
-          <Icon icon="heroicons:exclamation-triangle" class="w-12 h-12 text-red-500" />
+          <TriangleAlert class="w-12 h-12 text-red-500" />
         </template>
         <template #action>
           <UiButton variant="primary" size="small" @click="recarregarRotas">
@@ -158,26 +185,101 @@
 
     <!-- Content -->
     <Transition
-      enter-active-class="transition-all duration-300 ease-out"
-      enter-from-class="opacity-0 translate-y-4"
+      enter-active-class="transition-all duration-250 ease-out"
+      enter-from-class="opacity-0 translate-y-2"
       enter-to-class="opacity-100 translate-y-0"
       leave-active-class="transition-all duration-200 ease-in"
       leave-from-class="opacity-100 translate-y-0"
-      leave-to-class="opacity-0 -translate-y-4"
+      leave-to-class="opacity-0 -translate-y-2"
     >
       <div v-if="!isLoading && !error">
+        <!-- Header da tabela com ordenação -->
         <div
           v-if="rotas.length > 0"
-          class="hidden md:grid grid-cols-12 gap-4 px-6 py-3 bg-[var(--color-background)] rounded-t-lg border border-[var(--color-border)] text-xs font-semibold text-[var(--color-text-muted)] uppercase tracking-wider"
+          class="hidden md:grid grid-cols-12 gap-4 px-4 py-2.5 mb-2 text-xs font-medium text-[var(--color-text-muted)] uppercase tracking-wide bg-[var(--color-surface)] border border-[var(--color-border)] rounded-t-lg"
           role="row"
         >
-          <div class="col-span-5" role="columnheader">Descrição</div>
-          <div class="col-span-2 text-center" role="columnheader">Progresso</div>
-          <div class="col-span-2 text-center" role="columnheader">Status</div>
-          <div class="col-span-3 text-end" role="columnheader">Ações</div>
+          <button
+            class="col-span-5 flex items-center gap-1.5 text-left hover:text-[var(--color-text)] transition-colors group"
+            @click="toggleSort('codigo')"
+            role="columnheader"
+          >
+            <span>Descrição</span>
+            <div
+              class="inline-flex flex-col -space-y-1 opacity-40 group-hover:opacity-100 transition-opacity"
+            >
+              <ChevronUp
+                class="w-3 h-3"
+                :class="
+                  sortField === 'codigo' && sortOrder === 'asc' ? 'text-[var(--color-primary)]' : ''
+                "
+              />
+              <ChevronDown
+                class="w-3 h-3"
+                :class="
+                  sortField === 'codigo' && sortOrder === 'desc'
+                    ? 'text-[var(--color-primary)]'
+                    : ''
+                "
+              />
+            </div>
+          </button>
+          <button
+            class="col-span-2 flex items-center justify-center gap-1.5 hover:text-[var(--color-text)] transition-colors group"
+            @click="toggleSort('progresso')"
+            role="columnheader"
+          >
+            <span>Progresso</span>
+            <div
+              class="inline-flex flex-col -space-y-1 opacity-40 group-hover:opacity-100 transition-opacity"
+            >
+              <ChevronUp
+                class="w-3 h-3"
+                :class="
+                  sortField === 'progresso' && sortOrder === 'asc'
+                    ? 'text-[var(--color-primary)]'
+                    : ''
+                "
+              />
+              <ChevronDown
+                class="w-3 h-3"
+                :class="
+                  sortField === 'progresso' && sortOrder === 'desc'
+                    ? 'text-[var(--color-primary)]'
+                    : ''
+                "
+              />
+            </div>
+          </button>
+          <button
+            class="col-span-2 flex items-center justify-center gap-1.5 hover:text-[var(--color-text)] transition-colors group"
+            @click="toggleSort('status')"
+            role="columnheader"
+          >
+            <span>Status</span>
+            <div
+              class="inline-flex flex-col -space-y-1 opacity-40 group-hover:opacity-100 transition-opacity"
+            >
+              <ChevronUp
+                class="w-3 h-3"
+                :class="
+                  sortField === 'status' && sortOrder === 'asc' ? 'text-[var(--color-primary)]' : ''
+                "
+              />
+              <ChevronDown
+                class="w-3 h-3"
+                :class="
+                  sortField === 'status' && sortOrder === 'desc'
+                    ? 'text-[var(--color-primary)]'
+                    : ''
+                "
+              />
+            </div>
+          </button>
+          <div class="col-span-3 text-right" role="columnheader">Ações</div>
         </div>
 
-        <div class="flex flex-col gap-1.5 md:gap-0" role="list">
+        <div class="flex flex-col gap-2 md:gap-0" role="list">
           <TransitionGroup name="list" tag="div" class="contents">
             <RotaCardItem
               v-for="rota in rotasPaginadas"
@@ -204,35 +306,69 @@
           />
         </Transition>
 
-        <UiEmptyState
-          v-if="rotas.length === 0"
-          title="Nenhuma rota encontrada"
-          :description="
-            filtroDataInicio || filtroDataFim
-              ? 'Tente ajustar os filtros de data para ver mais resultados.'
-              : 'Crie sua primeira rota para começar a organizar seus fornecedores.'
-          "
-          role="status"
-          aria-live="polite"
-        >
-          <template #icon>
-            <RouteIcon class="w-12 h-12" />
-          </template>
-          <template #action>
-            <UiButton
-              v-if="!filtroDataInicio && !filtroDataFim"
-              variant="primary"
-              @click="showNovaRotaModal = true"
+        <!-- Empty state refinado -->
+        <div v-if="rotas.length === 0" class="py-20 text-center">
+          <div class="max-w-md mx-auto">
+            <!-- Ícone -->
+            <div
+              class="inline-flex items-center justify-center w-16 h-16 mb-6 rounded-full bg-[var(--color-surface)] border border-[var(--color-border)]"
             >
-              <Plus class="w-4 h-4" />
-              Nova Rota
-            </UiButton>
-            <UiButton v-else variant="secondary" @click="limparFiltros">
-              <X class="w-4 h-4" />
-              Limpar filtros
-            </UiButton>
-          </template>
-        </UiEmptyState>
+              <svg
+                class="w-8 h-8 text-[var(--color-text-muted)]"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                stroke-width="1.5"
+              >
+                <path
+                  d="M12 2L2 7L12 12L22 7L12 2Z"
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                />
+                <path d="M2 17L12 22L22 17" stroke-linecap="round" stroke-linejoin="round" />
+                <path d="M2 12L12 17L22 12" stroke-linecap="round" stroke-linejoin="round" />
+              </svg>
+            </div>
+
+            <!-- Texto -->
+            <h3 class="text-lg font-semibold text-[var(--color-text)] mb-2">
+              {{
+                filtroDataInicio || filtroDataFim || filtroStatus
+                  ? "Nenhuma rota encontrada"
+                  : "Nenhuma rota criada"
+              }}
+            </h3>
+            <p class="text-sm text-[var(--color-text-muted)] mb-6">
+              {{
+                filtroDataInicio || filtroDataFim || filtroStatus
+                  ? "Tente ajustar os filtros ou limpar a seleção."
+                  : "Comece criando sua primeira rota para gerenciar suas entregas."
+              }}
+            </p>
+
+            <!-- Ação -->
+            <button
+              class="inline-flex items-center justify-center gap-2 px-4 h-10 bg-[var(--color-primary)] text-white font-medium text-sm rounded-md hover:bg-[var(--color-primary-dark)] active:scale-[0.98] transition-all duration-150"
+              @click="
+                filtroDataInicio || filtroDataFim || filtroStatus
+                  ? limparFiltros()
+                  : (showNovaRotaModal = true)
+              "
+            >
+              <component
+                :is="filtroDataInicio || filtroDataFim || filtroStatus ? X : Plus"
+                class="w-4 h-4"
+              />
+              <span>
+                {{
+                  filtroDataInicio || filtroDataFim || filtroStatus
+                    ? "Limpar Filtros"
+                    : "Criar Primeira Rota"
+                }}
+              </span>
+            </button>
+          </div>
+        </div>
       </div>
     </Transition>
 
@@ -247,7 +383,7 @@
 </template>
 
 <script setup lang="ts">
-import { Icon, Plus, Route as RouteIcon, X } from "lucide-vue-next";
+import { ChevronDown, ChevronUp, Plus, TriangleAlert, X } from "lucide-vue-next";
 
 import { formatarData } from "~/utils/formatters/date";
 import { logger } from "~/utils/logger";
@@ -255,7 +391,6 @@ import { logger } from "~/utils/logger";
 import ModalDetalhesRota from "../components/ModalDetalhesRota.vue";
 import ModalNovaRota from "../components/ModalNovaRota.vue";
 import RotaCardItem from "../components/RotaCardItem.vue";
-import RotaCardSkeleton from "../components/RotaCardSkeleton.vue";
 
 import type { Rota, RotaFilters } from "../schemas/rotas.schema";
 
@@ -263,25 +398,66 @@ definePageMeta({
   layout: "default",
 });
 
-// Estado
 const showNovaRotaModal = ref(false);
 const showDetalhesModal = ref(false);
 const rotaSelecionada = ref<Rota | null>(null);
 const filtroDataInicio = ref<Date | null>(null);
 const filtroDataFim = ref<Date | null>(null);
+const filtroStatus = ref<string | null>(null);
 const currentPage = ref(1);
 const itemsPerPage = 10;
+const sortField = ref<"codigo" | "progresso" | "status" | null>(null);
+const sortOrder = ref<"asc" | "desc">("asc");
 
-// Dados
 const rotas = ref<Rota[]>([]);
 const totalItems = ref(0);
 const isLoading = ref(false);
 const error = ref<string | null>(null);
 
-// Service
 const rotaService = useRotaService();
 
-// Geolocalização do usuário
+const statusFilters = [
+  {
+    label: "Todas",
+    value: "",
+    color: "var(--color-text-muted)",
+    activeClass: "bg-[var(--color-hover)] text-[var(--color-text)]",
+  },
+  {
+    label: "Pendente",
+    value: "pendente",
+    color: "var(--color-text-muted)",
+    activeClass: "bg-[var(--color-hover)] text-[var(--color-text)]",
+  },
+  {
+    label: "Em Andamento",
+    value: "em_andamento",
+    color: "var(--color-primary)",
+    activeClass:
+      "bg-[var(--color-primary-soft)] text-[var(--color-primary)] border-[var(--color-primary-border)]",
+  },
+  {
+    label: "Completa",
+    value: "completa",
+    color: "var(--color-status-finalizado)",
+    activeClass: "bg-[var(--color-success-soft)] text-[var(--color-success)]",
+  },
+];
+
+const statusFilterOptions = computed(() =>
+  statusFilters.map((filter) => ({
+    label: filter.label,
+    value: filter.value,
+  })),
+);
+
+const filtroStatusSelect = computed({
+  get: () => filtroStatus.value,
+  set: (value: string) => {
+    filtroStatus.value = value;
+  },
+});
+
 const {
   position: geoPosition,
   getCurrentPosition,
@@ -290,10 +466,9 @@ const {
 } = useGeolocation({
   enableHighAccuracy: false,
   timeout: 10000,
-  maximumAge: 300000, // Cache por 5 minutos
+  maximumAge: 300000,
 });
 
-// Computed
 const totalPages = computed(() => Math.ceil(totalItems.value / itemsPerPage) || 1);
 
 /**
@@ -309,9 +484,52 @@ const userLocation = computed(() => {
   };
 });
 
+/**
+ * Stats rápidas de rotas
+ */
+const rotasCompletas = computed(() => rotas.value.filter((r) => r.status === "completa").length);
+const rotasEmAndamento = computed(
+  () => rotas.value.filter((r) => r.status === "em_andamento").length,
+);
+
+/**
+ * Rotas paginadas com ordenação
+ */
 const rotasPaginadas = computed(() => {
-  // Se os dados já vêm paginados do backend, retorna direto
-  return rotas.value;
+  let rotasOrdenadas = [...rotas.value];
+
+  // Aplicar ordenação se houver
+  if (sortField.value) {
+    rotasOrdenadas.sort((a, b) => {
+      let valueA: number | string;
+      let valueB: number | string;
+
+      switch (sortField.value) {
+        case "codigo":
+          valueA = a.codigo || 0;
+          valueB = b.codigo || 0;
+          break;
+        case "progresso":
+          valueA = a.progresso?.percentual_conclusao || 0;
+          valueB = b.progresso?.percentual_conclusao || 0;
+          break;
+        case "status":
+          valueA = a.status || "";
+          valueB = b.status || "";
+          break;
+        default:
+          return 0;
+      }
+
+      if (sortOrder.value === "asc") {
+        return valueA > valueB ? 1 : -1;
+      } else {
+        return valueA < valueB ? 1 : -1;
+      }
+    });
+  }
+
+  return rotasOrdenadas;
 });
 
 const filtros = computed<RotaFilters>(() => {
@@ -325,6 +543,9 @@ const filtros = computed<RotaFilters>(() => {
   }
   if (filtroDataFim.value) {
     filters.data_fim = filtroDataFim.value.toISOString().split("T")[0];
+  }
+  if (filtroStatus.value) {
+    filters.status = filtroStatus.value;
   }
 
   return filters;
@@ -393,7 +614,35 @@ const handleDateChange = (value: { start: Date | null; end: Date | null }) => {
 const limparFiltros = () => {
   filtroDataInicio.value = null;
   filtroDataFim.value = null;
+  filtroStatus.value = null;
   currentPage.value = 1;
+};
+
+/**
+ * Handler para mudança de status no dropdown
+ * Mantém a lógica de toggle: se selecionar o mesmo valor, limpa o filtro
+ */
+const handleStatusFilterChange = (value: string | number | null | undefined) => {
+  const statusValue = value === "" || value === null || value === undefined ? null : String(value);
+  // Se selecionar o mesmo valor, limpa o filtro (toggle)
+  if (filtroStatus.value === statusValue) {
+    filtroStatus.value = null;
+  } else {
+    filtroStatus.value = statusValue;
+  }
+  currentPage.value = 1;
+};
+
+/**
+ * Toggle ordenação
+ */
+const toggleSort = (field: "codigo" | "progresso" | "status") => {
+  if (sortField.value === field) {
+    sortOrder.value = sortOrder.value === "asc" ? "desc" : "asc";
+  } else {
+    sortField.value = field;
+    sortOrder.value = "asc";
+  }
 };
 
 /**
@@ -418,13 +667,27 @@ const formatarFiltrosAtivos = () => {
     partes.push(`até ${formatarData(filtroDataFim.value.toISOString())}`);
   }
 
-  return partes.join(" ");
+  if (filtroStatus.value) {
+    const statusFilter = statusFilters.find((f) => f.value === filtroStatus.value);
+    if (statusFilter) {
+      partes.push(`status: ${statusFilter.label}`);
+    }
+  }
+
+  return partes.join(" • ");
 };
 
-// Watch para recarregar quando filtros mudam
-watch([() => currentPage.value, () => filtroDataInicio.value, () => filtroDataFim.value], () => {
-  carregarRotas();
-});
+watch(
+  [
+    () => currentPage.value,
+    () => filtroDataInicio.value,
+    () => filtroDataFim.value,
+    () => filtroStatus.value,
+  ],
+  () => {
+    carregarRotas();
+  },
+);
 
 /**
  * Solicita permissão de geolocalização
@@ -444,7 +707,6 @@ const solicitarLocalizacao = async () => {
   }
 };
 
-// Carrega dados iniciais e solicita localização
 onMounted(() => {
   carregarRotas();
   solicitarLocalizacao();
@@ -452,24 +714,28 @@ onMounted(() => {
 </script>
 
 <style scoped>
-/* Transições para lista de itens */
-.list-enter-active,
+/* Transições de lista */
+.list-enter-active {
+  transition: all 0.25s cubic-bezier(0.25, 1, 0.5, 1);
+}
+
 .list-leave-active {
-  transition: all 0.3s cubic-bezier(0.25, 1, 0.5, 1);
+  transition: all 0.2s cubic-bezier(0.25, 1, 0.5, 1);
+  position: absolute;
+  width: 100%;
 }
 
 .list-enter-from {
   opacity: 0;
-  transform: translateY(-10px);
+  transform: translateY(-8px);
 }
 
 .list-leave-to {
   opacity: 0;
-  transform: translateX(20px);
+  transform: translateX(16px);
 }
 
-/* Move transition para reordenação */
 .list-move {
-  transition: transform 0.3s cubic-bezier(0.25, 1, 0.5, 1);
+  transition: transform 0.25s cubic-bezier(0.25, 1, 0.5, 1);
 }
 </style>

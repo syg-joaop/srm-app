@@ -1,5 +1,5 @@
 ﻿<template>
-  <div class="relative inline-block" ref="wrapperRef">
+  <div class="relative inline-block z-[100]" ref="wrapperRef">
     <div class="cursor-pointer" @click="toggleCalendario">
       <slot name="trigger">
         <div
@@ -19,12 +19,12 @@
       <Transition
         enter-active-class="transition-all duration-200 ease-out"
         leave-active-class="transition-all duration-200 ease-in"
-        enter-from-class="opacity-0 -translate-y-2"
-        leave-to-class="opacity-0 -translate-y-2"
+        enter-from-class="opacity-0 scale-95"
+        leave-to-class="opacity-0 scale-95"
       >
         <div
           v-if="isOpen"
-          class="w-80 bg-[var(--color-surface)] border border-[var(--color-border)] rounded-lg shadow-xl overflow-hidden"
+          class="w-80 max-w-[calc(100vw-32px)] bg-[var(--color-surface)] border border-[var(--color-border)] rounded-lg shadow-xl overflow-hidden !z-[99999]"
           :style="dropdownStyle"
           ref="dropdownRef"
         >
@@ -386,22 +386,26 @@ function updateDropdownPosition() {
   const dropdownHeight = 380;
   const dropdownWidth = 320;
 
+  // Posiciona relativo ao trigger em todos os tamanhos de tela
+  // Sempre abre para baixo
   let top = rect.bottom + 8;
   let left = rect.left;
 
-  if (top + dropdownHeight > window.innerHeight) {
-    top = rect.top - dropdownHeight - 8;
-  }
-
+  // Ajusta se não couber à direita
   if (left + dropdownWidth > window.innerWidth) {
     left = window.innerWidth - dropdownWidth - 16;
+  }
+
+  // Garante que não fique fora da tela à esquerda
+  if (left < 16) {
+    left = 16;
   }
 
   dropdownStyle.value = {
     position: "fixed",
     top: `${top}px`,
     left: `${left}px`,
-    zIndex: "9999",
+    zIndex: "99999",
   };
 }
 

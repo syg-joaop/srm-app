@@ -62,6 +62,7 @@
         class="h-full flex flex-col items-center justify-center text-[var(--color-text-muted)] py-8"
       >
         <div
+          v-if="emptyIcon"
           class="w-12 h-12 rounded-full bg-[var(--color-hover)] flex items-center justify-center mb-3"
         >
           <component :is="emptyIcon" class="w-6 h-6 opacity-50" />
@@ -158,8 +159,12 @@ const props = withDefaults(
 
 const hasSubheader = () => {
   if (!slots.subheader) return false;
-  const content = slots.subheader();
-  return Array.isArray(content) && content.length > 0;
+  try {
+    const content = slots.subheader();
+    return Array.isArray(content) && content.length > 0 && content.some((vnode) => vnode !== null);
+  } catch {
+    return false;
+  }
 };
 
 const availableTabs = computed<TabOption[]>(() => {

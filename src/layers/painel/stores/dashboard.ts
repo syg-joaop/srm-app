@@ -1,5 +1,4 @@
 ﻿import { defineStore } from "pinia";
-import { z } from "zod";
 
 import {
   EMPTY_CHART_DATA,
@@ -12,39 +11,115 @@ import {
   transformPieData,
   transformProdutosData,
 } from "../dashboard.helpers";
-import {
-  aniversarianteFornecedorSchema,
-  aniversarianteItemSchema,
-  atendenteItemSchema,
-  atendentePerformanceSchema,
-  atendimentoSchema,
-  chartDataSchema,
-  compradorPerformanceSchema,
-  dashboardApiResponseSchema,
-  indicadorDashboardItemSchema,
-  produtoMaisCompradoSchema,
-  statusItemSchema,
-  summaryItemSchema,
-  tableItemSchema,
-} from "../schemas/dashboard.schema";
 
-type AniversarianteItem = z.infer<typeof aniversarianteItemSchema>;
-type Atendente = z.infer<typeof atendimentoSchema>;
-type AtendenteItem = z.infer<typeof atendenteItemSchema>;
-type Atendentes = z.infer<typeof atendentePerformanceSchema>;
-type ChartData = z.infer<typeof chartDataSchema>;
-type CompradorPerformance = z.infer<typeof compradorPerformanceSchema>;
-type DashboardApiResponse = z.infer<typeof dashboardApiResponseSchema>;
-type DashboardCount = z.infer<typeof indicadorDashboardItemSchema>;
-type StatusItem = z.infer<typeof statusItemSchema>;
-type SummaryItem = z.infer<typeof summaryItemSchema>;
-type SupplierBirthday = z.infer<typeof aniversarianteFornecedorSchema>;
-type TableItem = z.infer<typeof tableItemSchema>;
-type TopProduct = z.infer<typeof produtoMaisCompradoSchema>;
+import type { DashboardData } from "~/schemas/api/dashboard";
+import type {
+  AniversarianteFornecedor,
+  AtendentePerformance,
+  Atendimento,
+  CompradorPerformance,
+  IndicadorItem,
+  ProdutoMaisComprado,
+} from "~/schemas/domain/dashboard";
 
+/**
+ * Schema para item de status (UI)
+ */
+interface StatusItem {
+  label: string;
+  value: string | number;
+  icon: string;
+  color: string;
+}
+
+/**
+ * Schema para item de resumo (UI)
+ */
+interface SummaryItem {
+  label: string;
+  value: string | number;
+}
+
+/**
+ * Schema para item de tabela (UI)
+ */
+interface TableItem {
+  name: string;
+  current: string;
+  previous: string;
+}
+
+/**
+ * Schema para item de aniversariante (UI)
+ */
+interface AniversarianteItem {
+  name: string;
+  location: string;
+  status?: string;
+  date?: string;
+}
+
+/**
+ * Schema para badge de status (UI)
+ */
+interface StatusBadgeItem {
+  value: string | number;
+  label?: string;
+  color: "red" | "green" | "yellow" | "blue" | "purple" | "gray" | "dark-red";
+  icon?: string;
+}
+
+/**
+ * Schema para item de atendente (UI)
+ */
+interface AtendenteItem {
+  role: string;
+  geral: number;
+  periodo: number;
+  concluidos: number;
+  pendentes: number;
+  statuses: StatusBadgeItem[];
+}
+
+/**
+ * Schema para dados de gráficos (UI)
+ */
+interface ChartData {
+  ocorrenciasPie: Array<{
+    value: number;
+    name: string;
+    itemStyle?: { color: string };
+  }>;
+  ocorrenciasLine: {
+    months: string[];
+    values: number[];
+  };
+  metaDiaria: {
+    days: string[];
+    values: number[];
+  };
+  descontos: {
+    months: string[];
+    values: number[];
+  };
+  produtosBar: {
+    names: string[];
+    current: number[];
+    previous: number[];
+  };
+}
+
+/**
+ * Store do Dashboard
+ *
+ * Gerencia estado e transformações dos dados do dashboard.
+ * Recebe dados da API e os transforma para formato de UI.
+ */
 export const useDashboardStore = defineStore("dashboard", () => {
-  const response = ref<DashboardApiResponse | null>(null);
+  // Estado
+  const response = ref<DashboardData | null>(null);
 
+  // Stats padrão
   const defaultStats: StatusItem[] = [
     { label: "Fornecedores", value: 0, icon: "Building2", color: "bg-primary" },
     { label: "Prospectos", value: 0, icon: "UserPlus", color: "bg-primary" },
@@ -55,11 +130,12 @@ export const useDashboardStore = defineStore("dashboard", () => {
     { label: "Agendados", value: 0, icon: "Calendar", color: "bg-primary" },
   ];
 
+  // Computeds - Stats
   const stats = computed<StatusItem[]>(() => {
     const items = response.value?.indicadoresDashboard?.data ?? [];
     if (items.length === 0) return defaultStats;
 
-    return items.map((item: DashboardCount) => ({
+    return items.map((item: IndicadorItem) => ({
       label: formatarLabel(item.tipo),
       value: item.count ?? 0,
       icon: mapIcon(item.tipo),
@@ -67,6 +143,7 @@ export const useDashboardStore = defineStore("dashboard", () => {
     }));
   });
 
+  // Computeds - Chart Data
   const chartData = computed<ChartData>(() => {
     const apiData = response.value;
     if (!apiData) return EMPTY_CHART_DATA;
@@ -80,6 +157,7 @@ export const useDashboardStore = defineStore("dashboard", () => {
     };
   });
 
+  // Computeds - Compras
   const comprasMes = computed<SummaryItem[]>(() => {
     const data = response.value?.comprasMes?.data?.[0];
     if (!data) return [];
@@ -88,16 +166,18 @@ export const useDashboardStore = defineStore("dashboard", () => {
 
   const comprasMesAnterior = computed<SummaryItem[]>(() => {
     const data = response.value?.comprasMesAnterior?.data?.[0];
-    if (!data)
+    if (!data) {
       return [
         { label: "Total Mês", value: 0 },
         { label: "Preço Médio", value: 0 },
         { label: "Média Diária", value: 0 },
         { label: "Descontos", value: "0" },
-      ] as SummaryItem[];
+      ];
+    }
     return formatarResumoCompras(data);
   });
 
+  // Computeds - Tabelas
   const compradorItems = computed<TableItem[]>(() => {
     const data = response.value?.comprasComprador?.data ?? [];
     return data.map((comprador: CompradorPerformance) => ({
@@ -109,7 +189,7 @@ export const useDashboardStore = defineStore("dashboard", () => {
 
   const produtosItems = computed<TableItem[]>(() => {
     const data = response.value?.prodsMaisCompradosMes?.data ?? [];
-    return data.map((produto: TopProduct) => ({
+    return data.map((produto: ProdutoMaisComprado) => ({
       name: produto.produto ?? "Produto desc.",
       current: formatarMoeda(produto.mes_atual),
       previous: formatarMoeda(produto.mes_anterior),
@@ -118,7 +198,7 @@ export const useDashboardStore = defineStore("dashboard", () => {
 
   const aniversariantesItems = computed<AniversarianteItem[]>(() => {
     const data = response.value?.aniversariantesFornecedores?.data ?? [];
-    return data.map((aniversariante: SupplierBirthday) => ({
+    return data.map((aniversariante: AniversarianteFornecedor) => ({
       name: aniversariante.fornecedor,
       location: aniversariante.cidade,
       status: aniversariante.status,
@@ -128,7 +208,7 @@ export const useDashboardStore = defineStore("dashboard", () => {
 
   const atendentesItems = computed<AtendenteItem[]>(() => {
     const data = response.value?.atendentes?.data ?? [];
-    return data.map((atendente: Atendentes) => ({
+    return data.map((atendente: AtendentePerformance) => ({
       role: atendente.setor || "Geral",
       geral: Number(atendente.atendimento_geral),
       periodo: Number(atendente.atendimento_periodo),
@@ -163,46 +243,50 @@ export const useDashboardStore = defineStore("dashboard", () => {
     }));
   });
 
-  const atendimentosVencidos = computed<Atendente[]>(() => {
+  const atendimentosVencidos = computed<Atendimento[]>(() => {
     return response.value?.atendimentosVencidos?.data ?? [];
   });
 
   const isOcorrenciasPieEmpty = computed(() => {
     const list = chartData.value.ocorrenciasPie;
-    return list.length === 0 || list.every((item: { value: number }) => item.value === 0);
+    return list.length === 0 || list.every((item) => item.value === 0);
   });
 
   const isOcorrenciasLineEmpty = computed(() => {
     const values = chartData.value.ocorrenciasLine.values;
-    return values.length === 0 || values.every((value: number) => value === 0);
+    return values.length === 0 || values.every((value) => value === 0);
   });
 
   const isMetaDiariaEmpty = computed(() => {
     const values = chartData.value.metaDiaria.values;
-    return values.length === 0 || values.every((value: number) => value === 0);
+    return values.length === 0 || values.every((value) => value === 0);
   });
 
   const isDescontosEmpty = computed(() => {
     const values = chartData.value.descontos.values;
-    return values.length === 0 || values.every((value: number) => value === 0);
+    return values.length === 0 || values.every((value) => value === 0);
   });
 
   const isProdutosBarEmpty = computed(() => {
     const data = chartData.value.produtosBar;
     return (
       data.names.length === 0 ||
-      (data.current.every((value: number) => value === 0) &&
-        data.previous.every((value: number) => value === 0))
+      (data.current.every((value) => value === 0) && data.previous.every((value) => value === 0))
     );
   });
 
-  function setDashboardData(data: DashboardApiResponse | null) {
+  function setDashboardData(data: DashboardData | null) {
     response.value = data;
   }
 
   return {
+    // Estado
     response,
+
+    // Actions
     setDashboardData,
+
+    // Computeds
     stats,
     chartData,
     comprasMes,
@@ -212,6 +296,8 @@ export const useDashboardStore = defineStore("dashboard", () => {
     aniversariantesItems,
     atendentesItems,
     atendimentosVencidos,
+
+    // Verificações
     isOcorrenciasPieEmpty,
     isOcorrenciasLineEmpty,
     isMetaDiariaEmpty,
