@@ -1,10 +1,16 @@
 <template>
-  <div
+  <article
     class="group/item relative bg-[var(--color-surface)] md:rounded-none first:md:rounded-t-none last:md:rounded-b-lg rounded-lg border border-[var(--color-border-subtle)] md:border-[var(--color-border)] md:border-t-0 first:md:border-t hover:border-[var(--color-primary-border)] hover:bg-[var(--color-primary-soft)] transition-all duration-300 ease-out hover:shadow-sm px-3 py-2.5 md:px-6 md:py-3 cursor-pointer"
+    role="listitem"
+    :aria-label="`Rota ${rota.codigo || rota.id}, ${getStatusLabel(rota.status)}`"
+    tabindex="0"
     @click="$emit('click', rota)"
+    @keydown.enter="handleKeyPress"
+    @keydown.space.prevent="handleKeyPress"
   >
     <div
       class="absolute left-0 top-1/2 -translate-y-1/2 w-0.5 h-0 bg-[var(--color-primary)] rounded-r-full opacity-0 group-hover/item:h-6 group-hover/item:opacity-100 transition-all duration-300"
+      aria-hidden="true"
     ></div>
 
     <div class="flex md:grid md:grid-cols-12 gap-2.5 md:gap-4 items-center">
@@ -12,6 +18,7 @@
       <div class="col-span-5 flex items-center gap-2.5 md:gap-3 flex-1 min-w-0">
         <div
           class="flex-shrink-0 w-8 h-8 md:w-9 md:h-9 rounded-full bg-[var(--color-primary-soft)] flex items-center justify-center text-[var(--color-primary)] group-hover/item:scale-105 transition-transform duration-200"
+          aria-hidden="true"
         >
           <RouteIcon class="w-3.5 h-3.5 md:w-4 md:h-4" />
         </div>
@@ -32,23 +39,34 @@
 
       <!-- Progresso -->
       <div class="hidden md:flex col-span-2 justify-center">
-        <div v-if="rota.progresso" class="flex items-center gap-2">
-          <div class="w-16 h-1.5 bg-[var(--color-border)] rounded-full overflow-hidden">
+        <div v-if="rota.progresso" class="flex items-center gap-2" :aria-label="`Progresso: ${rota.progresso.percentual_conclusao}% concluído`">
+          <div
+            class="w-16 h-1.5 bg-[var(--color-border)] rounded-full overflow-hidden"
+            role="progressbar"
+            :aria-valuenow="rota.progresso.percentual_conclusao"
+            aria-valuemin="0"
+            aria-valuemax="100"
+          >
             <div
-              class="h-full bg-[var(--color-primary)] rounded-full"
+              class="h-full bg-[var(--color-primary)] rounded-full transition-all duration-500 ease-out"
               :style="{ width: `${rota.progresso.percentual_conclusao}%` }"
             />
           </div>
-          <span class="text-xs text-[var(--color-text-muted)]">
+          <span class="text-xs text-[var(--color-text-muted)] tabular-nums">
             {{ rota.progresso.percentual_conclusao }}%
           </span>
         </div>
-        <span v-else class="text-xs text-[var(--color-text-muted)]">-</span>
+        <span v-else class="text-xs text-[var(--color-text-muted)]" aria-label="Sem progresso">-</span>
       </div>
 
       <!-- Status -->
       <div class="hidden md:flex col-span-2 justify-center">
-        <UiBadge :variant="getStatusVariant(rota.status)" :dot="true" size="small">
+        <UiBadge
+          :variant="getStatusVariant(rota.status)"
+          :dot="true"
+          size="small"
+          :aria-label="`Status: ${getStatusLabel(rota.status)}`"
+        >
           {{ getStatusLabel(rota.status) }}
         </UiBadge>
       </div>
@@ -60,6 +78,7 @@
           size="small"
           class="hidden md:flex"
           @click.stop="$emit('adicaoRapida', rota)"
+          :aria-label="`Adição rápida para rota ${rota.codigo || rota.id}`"
         >
           <Plus class="w-3 h-3" />
           Adição rápida
@@ -70,13 +89,14 @@
           size="small"
           class="!px-1.5 !py-1.5 md:!px-2"
           @click.stop="$emit('click', rota)"
+          :aria-label="`Ver detalhes da rota ${rota.codigo || rota.id}`"
         >
           <Eye class="w-4 h-4" />
           <span class="hidden md:inline">Detalhes</span>
         </UiButton>
       </div>
     </div>
-  </div>
+  </article>
 </template>
 
 <script setup lang="ts">
@@ -91,8 +111,15 @@ defineProps<{
   rota: Rota;
 }>();
 
-defineEmits<{
+const emit = defineEmits<{
   (e: "click", rota: Rota): void;
   (e: "adicaoRapida", rota: Rota): void;
 }>();
+
+/**
+ * Handler para teclas de atalho (Enter e Space)
+ */
+const handleKeyPress = () => {
+  emit('click', rota);
+};
 </script>

@@ -1,5 +1,5 @@
 <template>
-  <div class="flex flex-col gap-3">
+  <div class="flex flex-col gap-3" :class="{ 'opacity-50 pointer-events-none': disabled }">
     <div class="flex items-center justify-between">
       <h4 class="text-sm font-bold text-[var(--color-text)]">Fornecedores</h4>
       <span class="text-xs font-medium text-[var(--color-text-muted)]">
@@ -25,15 +25,17 @@
         >
           <button
             type="button"
-            class="p-1.5 rounded-md text-[var(--color-primary)] hover:bg-[var(--color-primary-soft)] transition-colors"
+            class="p-1.5 rounded-md text-[var(--color-primary)] hover:bg-[var(--color-primary-soft)] transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
             title="Ver no mapa"
+            :disabled="disabled"
           >
             <MapPin class="w-3.5 h-3.5" />
           </button>
           <button
             type="button"
-            class="p-1.5 rounded-md text-[var(--color-danger)] hover:bg-[var(--color-danger-soft)] transition-colors"
+            class="p-1.5 rounded-md text-[var(--color-danger)] hover:bg-[var(--color-danger-soft)] transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
             title="Remover"
+            :disabled="disabled"
             @click="$emit('remove', index)"
           >
             <Trash2 class="w-3.5 h-3.5" />
@@ -51,13 +53,15 @@
         :model-value="novoFornecedor"
         placeholder="Nome do fornecedor"
         class="flex-1 !mb-0"
+        :disabled="disabled"
         @update:model-value="$emit('update:novoFornecedor', $event)"
-        @keyup.enter="$emit('add')"
+        @keyup.enter="!disabled && $emit('add')"
       />
       <button
         type="button"
-        class="flex-shrink-0 w-10 h-10 rounded-md bg-[var(--color-primary)] hover:bg-[var(--color-primary-dark)] text-white flex items-center justify-center transition-colors"
+        class="flex-shrink-0 w-10 h-10 rounded-md bg-[var(--color-primary)] hover:bg-[var(--color-primary-dark)] text-white flex items-center justify-center transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
         title="Adicionar fornecedor"
+        :disabled="disabled"
         @click="$emit('add')"
       >
         <Plus class="w-5 h-5" />
@@ -74,6 +78,7 @@ import type { FornecedorRotaSimples } from "../schemas/rotas.schema";
 defineProps<{
   modelValue: FornecedorRotaSimples[];
   novoFornecedor: string;
+  disabled?: boolean;
 }>();
 
 defineEmits<{
