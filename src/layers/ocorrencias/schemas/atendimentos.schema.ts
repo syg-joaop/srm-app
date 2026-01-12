@@ -1,5 +1,7 @@
 import { z } from "zod";
 
+import { createPaginatedSchema } from "~/server/schemas/common.schema";
+
 export const atendimentoSchema = z
   .object({
     num: z.string().optional(),
@@ -45,21 +47,7 @@ export const parceiroAtendimentoSchema = z
   })
   .passthrough();
 
-export const atendimentoResponseSchema = z
-  .object({
-    status: z.number().optional(),
-    code: z.number().optional(),
-    message: z.string().optional(),
-    suggestion: z.string().optional(),
-    data: z.object({
-      page: z.number().optional(),
-      size: z.number().optional(),
-      totalItems: z.number().optional(),
-      totalPages: z.number().optional(),
-      items: z.array(atendimentoSchema).default([]),
-    }),
-  })
-  .passthrough();
+export const atendimentoResponseSchema = createPaginatedSchema(atendimentoSchema);
 
 export const atendimentoFiltersSchema = z
   .object({

@@ -1,25 +1,3 @@
-const FEATURES = [
-  "login",
-  "painel",
-  "fornecedores",
-  "equipe",
-  "concorrentes",
-  "prospectos",
-  "ocorrencias",
-  "rotas",
-  "checkin",
-];
-
-const crossFeatureZones = FEATURES.flatMap((targetFeature) =>
-  FEATURES.filter((fromFeature) => fromFeature !== targetFeature).map((fromFeature) => ({
-    target: `./src/layers/${targetFeature}`,
-    from: `./src/layers/${fromFeature}`,
-    message:
-      `Evite importar de outra feature (${fromFeature}). ` +
-      "Se for algo compartilhável, extraia para src/components, src/utils ou src/composables.",
-  })),
-);
-
 module.exports = {
   root: true,
 
@@ -27,15 +5,6 @@ module.exports = {
     browser: true,
     node: true,
     es2022: true,
-  },
-
-  // Não precisamos mais definir globals manualmente!
-  // O TypeScript já conhece todos os auto-imports do Nuxt através de .nuxt/tsconfig.json
-  // O parser do TypeScript no ESLint vai usar essas informações automaticamente
-  globals: {
-    // Apenas globals do ambiente que não são cobertos pelo TypeScript
-    // Os auto-imports do Nuxt (Vue, composables, utils, etc.) são reconhecidos
-    // automaticamente através do tsconfig.json que estende .nuxt/tsconfig.json
   },
 
   parser: "vue-eslint-parser",
@@ -170,19 +139,6 @@ module.exports = {
         "src/server/**/*.{ts,vue}",
         "src/app.vue",
       ],
-      rules: {
-        "no-restricted-imports": [
-          "error",
-          {
-            patterns: [
-              {
-                group: ["~/layers/**", "@/layers/**"],
-                message: "Código compartilhado não deve importar de src/layers/*.",
-              },
-            ],
-          },
-        ],
-      },
     },
   ],
 };

@@ -1,5 +1,7 @@
 import { z } from "zod";
 
+import { createPaginatedSchema } from "./common.schema";
+
 /**
  * Schema Zod para Coleta
  * Baseado em ParceiroColeta de parceiro-detalhes.types.ts
@@ -29,6 +31,11 @@ export const schemaColeta = z
     obs: z.string().optional(),
   })
   .passthrough();
+
+/**
+ * Response schema paginado para Coleta
+ */
+export const coletaResponseSchema = createPaginatedSchema(schemaColeta);
 
 /**
  * Tipos inferidos

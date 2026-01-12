@@ -11,25 +11,6 @@
 
 import { useParceiroDetalhesService } from "~/composables/useParceiroDetalhesService";
 
-import type {
-  ParceiroPrecoResponse as ProspectoPrecoResponse,
-  ParceiroContatoResponse as ProspectoContatoResponse,
-  ParceiroCargaResponse as ProspectoCargaResponse,
-  ParceiroAtendimentoResponse as ProspectoAtendimentoResponse,
-  ParceiroColetaResponse as ProspectoColetaResponse,
-  ParceiroCheckinResponse as ProspectoCheckinResponse,
-} from "~/types/parceiro-detalhes.types";
-
-// Re-export types com nomes específicos para prospectos (backward compatibility)
-export type {
-  ParceiroPrecoResponse,
-  ParceiroContatoResponse,
-  ParceiroCargaResponse,
-  ParceiroAtendimentoResponse,
-  ParceiroColetaResponse,
-  ParceiroCheckinResponse,
-} from "~/types/parceiro-detalhes.types";
-
 // ============================================================================
 // SERVICE COMPOSABLE (WRAPPER)
 // ============================================================================
@@ -50,11 +31,7 @@ export const useProspectoDetalhesService = () => {
    * @param page - Página atual (default: 1)
    * @param size - Itens por página (default: 50)
    */
-  const fetchPrecos = async (
-    codpros: string,
-    page: number = 1,
-    size: number = 50,
-  ): Promise<ProspectoPrecoResponse> => {
+  const fetchPrecos = async (codpros: string, page: number = 1, size: number = 50) => {
     return parceiroService.fetchPrecos(codpros, page, size);
   };
 
@@ -65,11 +42,7 @@ export const useProspectoDetalhesService = () => {
    * @param page - Página atual (default: 1)
    * @param size - Itens por página (default: 50)
    */
-  const fetchContatos = async (
-    codpros: string,
-    page: number = 1,
-    size: number = 50,
-  ): Promise<ProspectoContatoResponse> => {
+  const fetchContatos = async (codpros: string, page: number = 1, size: number = 50) => {
     return parceiroService.fetchContatos(codpros, page, size);
   };
 
@@ -83,11 +56,7 @@ export const useProspectoDetalhesService = () => {
    * @param page - Página atual (default: 1)
    * @param size - Itens por página (default: 50)
    */
-  const fetchCargas = async (
-    codpros: string,
-    page: number = 1,
-    size: number = 50,
-  ): Promise<ProspectoCargaResponse> => {
+  const fetchCargas = async (codpros: string, page: number = 1, size: number = 50) => {
     return parceiroService.fetchCargas(codpros, page, size);
   };
 
@@ -98,11 +67,7 @@ export const useProspectoDetalhesService = () => {
    * @param page - Página atual (default: 1)
    * @param size - Itens por página (default: 50)
    */
-  const fetchAtendimentos = async (
-    codpros: string,
-    page: number = 1,
-    size: number = 50,
-  ): Promise<ProspectoAtendimentoResponse> => {
+  const fetchAtendimentos = async (codpros: string, page: number = 1, size: number = 50) => {
     return parceiroService.fetchAtendimentos(codpros, page, size);
   };
 
@@ -116,11 +81,7 @@ export const useProspectoDetalhesService = () => {
    * @param page - Página atual (default: 1)
    * @param size - Itens por página (default: 50)
    */
-  const fetchColetas = async (
-    codpros: string,
-    page: number = 1,
-    size: number = 50,
-  ): Promise<ProspectoColetaResponse> => {
+  const fetchColetas = async (codpros: string, page: number = 1, size: number = 50) => {
     return parceiroService.fetchColetas(codpros, page, size);
   };
 
@@ -131,11 +92,7 @@ export const useProspectoDetalhesService = () => {
    * @param page - Página atual (default: 1)
    * @param size - Itens por página (default: 50)
    */
-  const fetchCheckins = async (
-    codpros: string,
-    page: number = 1,
-    size: number = 50,
-  ): Promise<ProspectoCheckinResponse> => {
+  const fetchCheckins = async (codpros: string, page: number = 1, size: number = 50) => {
     return parceiroService.fetchCheckins(codpros, page, size);
   };
 

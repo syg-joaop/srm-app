@@ -6,14 +6,14 @@
  *
  */
 
-import type {
-  ParceiroAtendimentoResponse,
-  ParceiroCargaResponse,
-  ParceiroCheckinResponse,
-  ParceiroColetaResponse,
-  ParceiroContatoResponse,
-  ParceiroPrecoResponse,
-} from "~/types/parceiro-detalhes.types";
+import { z } from "zod";
+
+import { checkinResponseSchema } from "~/layers/checkin/schemas/checkin.schema";
+import { atendimentoResponseSchema } from "~/layers/ocorrencias/schemas/atendimentos.schema";
+import { cargaResponseSchema } from "~/server/schemas/carga.schema";
+import { coletaResponseSchema } from "~/server/schemas/coleta.schema";
+import { contatoResponseSchema } from "~/server/schemas/contato.schema";
+import { precoResponseSchema } from "~/server/schemas/preco.schema";
 
 // ============================================================================
 // ENDPOINTS
@@ -61,13 +61,9 @@ export const useParceiroDetalhesService = () => {
    * @param page - Página atual (default: 1)
    * @param size - Itens por página (default: 50)
    */
-  const fetchPrecos = async (
-    codfor: string,
-    page: number = 1,
-    size: number = 50,
-  ): Promise<ParceiroPrecoResponse> => {
+  const fetchPrecos = async (codfor: string, page: number = 1, size: number = 50) => {
     const body = buildDetalheBody(codfor, page, size);
-    return api<ParceiroPrecoResponse>(ENDPOINTS.PRECO, {
+    return api<z.infer<typeof precoResponseSchema>>(ENDPOINTS.PRECO, {
       method: "POST",
       body,
     });
@@ -80,13 +76,9 @@ export const useParceiroDetalhesService = () => {
    * @param page - Página atual (default: 1)
    * @param size - Itens por página (default: 50)
    */
-  const fetchContatos = async (
-    codfor: string,
-    page: number = 1,
-    size: number = 50,
-  ): Promise<ParceiroContatoResponse> => {
+  const fetchContatos = async (codfor: string, page: number = 1, size: number = 50) => {
     const body = buildDetalheBody(codfor, page, size);
-    return api<ParceiroContatoResponse>(ENDPOINTS.CONTATO, {
+    return api<z.infer<typeof contatoResponseSchema>>(ENDPOINTS.CONTATO, {
       method: "POST",
       body,
     });
@@ -99,13 +91,9 @@ export const useParceiroDetalhesService = () => {
    * @param page - Página atual (default: 1)
    * @param size - Itens por página (default: 50)
    */
-  const fetchCargas = async (
-    codfor: string,
-    page: number = 1,
-    size: number = 50,
-  ): Promise<ParceiroCargaResponse> => {
+  const fetchCargas = async (codfor: string, page: number = 1, size: number = 50) => {
     const body = buildDetalheBody(codfor, page, size);
-    return api<ParceiroCargaResponse>(ENDPOINTS.CARGA, {
+    return api<z.infer<typeof cargaResponseSchema>>(ENDPOINTS.CARGA, {
       method: "POST",
       body,
     });
@@ -118,13 +106,9 @@ export const useParceiroDetalhesService = () => {
    * @param page - Página atual (default: 1)
    * @param size - Itens por página (default: 50)
    */
-  const fetchAtendimentos = async (
-    codfor: string,
-    page: number = 1,
-    size: number = 50,
-  ): Promise<ParceiroAtendimentoResponse> => {
+  const fetchAtendimentos = async (codfor: string, page: number = 1, size: number = 50) => {
     const body = buildDetalheBody(codfor, page, size);
-    return api<ParceiroAtendimentoResponse>(ENDPOINTS.ATENDIMENTO, {
+    return api<z.infer<typeof atendimentoResponseSchema>>(ENDPOINTS.ATENDIMENTO, {
       method: "POST",
       body,
     });
@@ -137,13 +121,9 @@ export const useParceiroDetalhesService = () => {
    * @param page - Página atual (default: 1)
    * @param size - Itens por página (default: 50)
    */
-  const fetchColetas = async (
-    codfor: string,
-    page: number = 1,
-    size: number = 50,
-  ): Promise<ParceiroColetaResponse> => {
+  const fetchColetas = async (codfor: string, page: number = 1, size: number = 50) => {
     const body = buildDetalheBody(codfor, page, size);
-    return api<ParceiroColetaResponse>(ENDPOINTS.COLETA, {
+    return api<z.infer<typeof coletaResponseSchema>>(ENDPOINTS.COLETA, {
       method: "POST",
       body,
     });
@@ -156,13 +136,9 @@ export const useParceiroDetalhesService = () => {
    * @param page - Página atual (default: 1)
    * @param size - Itens por página (default: 50)
    */
-  const fetchCheckins = async (
-    codfor: string,
-    page: number = 1,
-    size: number = 50,
-  ): Promise<ParceiroCheckinResponse> => {
+  const fetchCheckins = async (codfor: string, page: number = 1, size: number = 50) => {
     const body = buildDetalheBody(codfor, page, size);
-    return api<ParceiroCheckinResponse>(ENDPOINTS.CHECKIN, {
+    return api<z.infer<typeof checkinResponseSchema>>(ENDPOINTS.CHECKIN, {
       method: "POST",
       body,
     });

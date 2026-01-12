@@ -1,42 +1,9 @@
-/**
- * Service para buscar dados detalhados de fornecedores via chameleon-mode
- *
- * Este é um wrapper layer-specific que usa o service compartilhado de parceiros.
- * Mantém a nomenclatura específica de fornecedores (codfor) enquanto usa
- * a implementação compartilhada.
- */
-
 import { useParceiroDetalhesService } from "~/composables/useParceiroDetalhesService";
-
-import type {
-  ParceiroPrecoResponse as FornecedorPrecoResponse,
-  ParceiroContatoResponse as FornecedorContatoResponse,
-  ParceiroCargaResponse as FornecedorCargaResponse,
-  ParceiroAtendimentoResponse as FornecedorAtendimentoResponse,
-  ParceiroColetaResponse as FornecedorColetaResponse,
-  ParceiroCheckinResponse as FornecedorCheckinResponse,
-} from "~/types/parceiro-detalhes.types";
-
-// Re-export types com nomes específicos para fornecedores (backward compatibility)
-export type {
-  ParceiroPrecoResponse,
-  ParceiroContatoResponse,
-  ParceiroCargaResponse,
-  ParceiroAtendimentoResponse,
-  ParceiroColetaResponse,
-  ParceiroCheckinResponse,
-} from "~/types/parceiro-detalhes.types";
 
 // ============================================================================
 // SERVICE COMPOSABLE (WRAPPER)
 // ============================================================================
 
-/**
- * Wrapper específico para fornecedores que usa o service compartilhado.
- *
- * NOTA: Este composable mantém a assinatura original (codfor) para
- * backward compatibility, mas internamente usa o service genérico.
- */
 export const useFornecedorDetalhesService = () => {
   const parceiroService = useParceiroDetalhesService();
 
@@ -47,11 +14,7 @@ export const useFornecedorDetalhesService = () => {
    * @param page - Página atual (default: 1)
    * @param size - Itens por página (default: 50)
    */
-  const fetchPrecos = async (
-    codfor: string,
-    page: number = 1,
-    size: number = 50,
-  ): Promise<FornecedorPrecoResponse> => {
+  const fetchPrecos = async (codfor: string, page: number = 1, size: number = 50) => {
     return parceiroService.fetchPrecos(codfor, page, size);
   };
 
@@ -62,11 +25,7 @@ export const useFornecedorDetalhesService = () => {
    * @param page - Página atual (default: 1)
    * @param size - Itens por página (default: 50)
    */
-  const fetchContatos = async (
-    codfor: string,
-    page: number = 1,
-    size: number = 50,
-  ): Promise<FornecedorContatoResponse> => {
+  const fetchContatos = async (codfor: string, page: number = 1, size: number = 50) => {
     return parceiroService.fetchContatos(codfor, page, size);
   };
 
@@ -77,11 +36,7 @@ export const useFornecedorDetalhesService = () => {
    * @param page - Página atual (default: 1)
    * @param size - Itens por página (default: 50)
    */
-  const fetchCargas = async (
-    codfor: string,
-    page: number = 1,
-    size: number = 50,
-  ): Promise<FornecedorCargaResponse> => {
+  const fetchCargas = async (codfor: string, page: number = 1, size: number = 50) => {
     return parceiroService.fetchCargas(codfor, page, size);
   };
 
@@ -92,11 +47,7 @@ export const useFornecedorDetalhesService = () => {
    * @param page - Página atual (default: 1)
    * @param size - Itens por página (default: 50)
    */
-  const fetchAtendimentos = async (
-    codfor: string,
-    page: number = 1,
-    size: number = 50,
-  ): Promise<FornecedorAtendimentoResponse> => {
+  const fetchAtendimentos = async (codfor: string, page: number = 1, size: number = 50) => {
     return parceiroService.fetchAtendimentos(codfor, page, size);
   };
 
@@ -107,11 +58,7 @@ export const useFornecedorDetalhesService = () => {
    * @param page - Página atual (default: 1)
    * @param size - Itens por página (default: 50)
    */
-  const fetchColetas = async (
-    codfor: string,
-    page: number = 1,
-    size: number = 50,
-  ): Promise<FornecedorColetaResponse> => {
+  const fetchColetas = async (codfor: string, page: number = 1, size: number = 50) => {
     return parceiroService.fetchColetas(codfor, page, size);
   };
 
@@ -122,11 +69,7 @@ export const useFornecedorDetalhesService = () => {
    * @param page - Página atual (default: 1)
    * @param size - Itens por página (default: 50)
    */
-  const fetchCheckins = async (
-    codfor: string,
-    page: number = 1,
-    size: number = 50,
-  ): Promise<FornecedorCheckinResponse> => {
+  const fetchCheckins = async (codfor: string, page: number = 1, size: number = 50) => {
     return parceiroService.fetchCheckins(codfor, page, size);
   };
 
