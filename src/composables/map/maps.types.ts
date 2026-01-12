@@ -18,16 +18,16 @@ export interface MapaPonto {
   latitude: number | string;
   longitude: number | string;
   titulo: string;
-  subtitulo?: string;
+  subtitulo?: string | null;
   sequencia?: number;
   status?: string;
   endereco?: {
-    rua?: string;
-    numero?: string;
-    bairro?: string;
-    cidade?: string;
-    estado?: string;
-    cep?: string;
+    rua?: string | null;
+    numero?: string | null;
+    bairro?: string | null;
+    cidade?: string | null;
+    estado?: string | null;
+    cep?: string | null;
   };
 }
 

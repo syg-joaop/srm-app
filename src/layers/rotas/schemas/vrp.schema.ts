@@ -5,14 +5,43 @@ import { z } from "zod";
  * API externa de terceiros para roteirizacao
  */
 export const schemaVrpSummary = z.object({
+  tasks: z.object({
+    deliveries: z.number().optional(),
+    catches: z.number().optional(),
+    avgCosts: z.number().optional(),
+    vehicles: z.number().optional(),
+  }).optional(),
+  tolls: z.object({
+    counter: z.number().optional(),
+    costs: z.number().optional(),
+  }).optional(),
+  fuel: z.object({
+    liters: z.number().optional(),
+    reloads: z.number().optional(),
+    costs: z.number().optional(),
+  }).optional(),
   distance: z.object({
     meters: z.number(),
+    costs: z.number().optional(),
   }),
   time: z.object({
+    preparation: z.number().optional(),
     duration: z.number(),
     traveling: z.number(),
+    costs: z.number().optional(),
+    firstTaskArrival: z.number().optional(),
+    lastTaskArrival: z.number().optional(),
+    departure: z.number().optional(),
+    return: z.number().optional(),
+    firstDeparture: z.number().optional(),
+    lastReturn: z.number().optional(),
   }),
-});
+  volumes: z.object({
+    initial: z.number().optional(),
+    final: z.number().optional(),
+  }).optional(),
+  daysWorking: z.number().optional(),
+}).passthrough();
 
 export const schemaVrpLocation = z.object({
   latitude: z.number(),
@@ -51,25 +80,37 @@ export const schemaVrpRouteRequest = z.object({
 
 // Schema para VrpSequenceItem
 const vrpSequenceItemSchema = z.object({
+  idx: z.number(),
   type: z.enum(["start", "job", "end"]),
-  id: z.number(),
+  id: z.number().optional(),
   location: schemaVrpLocation,
   time: z.object({
-    arrival: z.number(),
-    departure: z.number(),
     traveling: z.number(),
+    arrival: z.number(),
+    waiting: z.number(),
+    prepared: z.number(),
     complete: z.number(),
+    departure: z.number(),
   }),
   distance: z.object({
     meters: z.number(),
+    costs: z.number().optional(),
   }),
-});
+  volumes: z.object({
+    load: z.number(),
+    unload: z.number(),
+    before: z.number(),
+    after: z.number(),
+  }).optional(),
+}).passthrough();
 
 // Schema para VrpRoute (dentro de VrpPlan)
 const vrpRouteSchema = z.object({
   polyline: z.string(),
   sequence: z.array(vrpSequenceItemSchema),
-});
+  tolls: z.array(z.any()).optional(),
+  gasStations: z.array(z.any()).optional(),
+}).passthrough();
 
 export const schemaVrpPlan = z.object({
   vehicle: z.number(),
@@ -105,6 +146,13 @@ export const schemaVrpRouteResponseFlat = z
  * Normaliza a resposta para o formato esperado pelo codigo
  */
 export const validateVrpResponse = (response: unknown): VrpRouteResponse => {
+  // Verifica se response é um objeto
+  if (!response || typeof response !== "object") {
+    throw new Error(
+      `Falha na validacao da API VRP: resposta não é um objeto (tipo: ${typeof response})`
+    );
+  }
+
   const resultWithWrapper = schemaVrpRouteResponse.safeParse(response);
   if (resultWithWrapper.success) {
     return resultWithWrapper.data as VrpRouteResponse;
@@ -121,10 +169,17 @@ export const validateVrpResponse = (response: unknown): VrpRouteResponse => {
     } as VrpRouteResponse;
   }
 
-  const errorDetails = resultWithWrapper.error.errors
+  // Log de ambos os erros para debug
+  const wrapperErrors = resultWithWrapper.error.errors
     .map((err) => `${err.path.join(".")}: ${err.message}`)
     .join(", ");
-  throw new Error(`Falha na validacao da API VRP: ${errorDetails}`);
+  const flatErrors = resultFlat.error.errors
+    .map((err) => `${err.path.join(".")}: ${err.message}`)
+    .join(", ");
+
+  throw new Error(
+    `Falha na validacao da API VRP:\nCom wrapper: ${wrapperErrors}\nFlat: ${flatErrors}`
+  );
 };
 
 export type VrpLocation = z.infer<typeof schemaVrpLocation>;

@@ -1,8 +1,7 @@
 <template>
   <div class="relative w-full h-full">
-    <div ref="mapContainer" class="w-full h-full"></div>
+    <div ref="mapContainerRef" class="w-full h-full"></div>
 
-    <!-- Botão de geolocalização estilo Google Maps -->
     <button
       v-if="showLocationButton"
       class="absolute bottom-24 right-3 z-[1000] bg-white rounded-sm shadow-md hover:shadow-lg transition-shadow w-10 h-10 flex items-center justify-center border border-gray-300"
@@ -49,14 +48,14 @@ export interface RotaPonto {
   latitude: number | string;
   longitude: number | string;
   titulo: string;
-  subtitulo?: string;
+  subtitulo?: string | null;
   sequencia?: number;
   status?: string;
   endereco?: {
-    rua?: string;
-    numero?: string;
-    cidade?: string;
-    bairro?: string;
+    rua?: string | null;
+    numero?: string | null;
+    cidade?: string | null;
+    bairro?: string | null;
   };
 }
 
@@ -109,13 +108,11 @@ const emit = defineEmits<{
   (e: "markerClick", ponto: RotaPonto): void;
 }>();
 
-// Composables de mapa
 const mapMarkers = useMapMarkers();
 const mapPolyline = useMapPolyline();
 const mapUserLocation = useMapUserLocation();
 const mapBounds = useMapBounds();
 
-// Geolocalização
 const { position: currentPosition, getCurrentPosition } = useGeolocation({
   enableHighAccuracy: true,
   timeout: 10000,
@@ -128,7 +125,6 @@ const mapContainerRef = ref<HTMLElement | null>(null);
 let map: L.Map | null = null;
 let mapTileLayer: L.TileLayer | null = null;
 
-// Configuração de status
 const resolvedStatusConfig = computed<Record<string, MapaStatusConfig>>(() => ({
   aguardando: { color: "#6b7280", label: "Aguardando" },
   pendente: { color: "#f59e0b", label: "Pendente" },
@@ -143,7 +139,6 @@ const getStatus = (status?: string): MapaStatusConfig => {
   return resolvedStatusConfig.value[normalized] || resolvedStatusConfig.value.aguardando;
 };
 
-// Configuração do tile layer
 const getTileConfig = (type: string) => {
   const configs = {
     roadmap: {
@@ -167,9 +162,6 @@ const getTileConfig = (type: string) => {
   return configs[type as keyof typeof configs] || configs.roadmap;
 };
 
-/**
- * Inicializa o mapa Leaflet
- */
 const initMap = () => {
   if (!mapContainerRef.value || map) return;
 
@@ -188,20 +180,14 @@ const initMap = () => {
   updateMap();
 };
 
-/**
- * Atualiza markers, polyline e localização do usuário
- */
 const updateMap = () => {
   if (!map) return;
 
-  // Limpa tudo
   mapMarkers.clearMarkers();
   mapUserLocation.clearAll();
 
-  // Coordenadas válidas para bounds
   const validBounds: [number, number][] = [];
 
-  // Adiciona markers
   const pointsWithStatus: MapaPonto[] = props.points.map((p) => ({
     ...p,
     endereco: p.endereco
@@ -217,7 +203,6 @@ const updateMap = () => {
   const markerBounds = mapMarkers.addMarkers(map, pointsWithStatus, getStatus);
   validBounds.push(...markerBounds);
 
-  // Renderiza polyline
   const { coordinates: routeCoords } = mapPolyline.renderPolyline(map, {
     encodedPolyline: props.polyline,
     polylineCoords: props.routeCoords,
@@ -225,7 +210,6 @@ const updateMap = () => {
     config: props.polylineConfig,
   });
 
-  // Adiciona bounds da polyline se existir
   if (routeCoords.length >= 2) {
     const first = routeCoords[0];
     const last = routeCoords[routeCoords.length - 1];
@@ -234,25 +218,21 @@ const updateMap = () => {
 
   const hasRouteBounds = validBounds.length > 0;
 
-  // Atualiza localização do usuário
   let userCoords: [number, number] | null = null;
 
   if (props.userLocation) {
     userCoords = mapUserLocation.updateUserLocation(map, props.userLocation);
   }
 
-  // Inclui localização do usuário nos bounds se configurado
   if ((!hasRouteBounds || props.includeUserInBounds) && userCoords) {
     validBounds.push(userCoords);
   }
 
-  // Desenha linha do usuário até a rota
   if (props.showUserRouteLine && userCoords) {
     const routeStart = mapUserLocation.getRouteStartCoords(routeCoords, props.points);
     mapUserLocation.drawUserToRouteLine(map, userCoords, routeStart);
   }
 
-  // Ajusta view
   if (props.autoFitBounds && mapBounds.isValidBounds(validBounds)) {
     mapBounds.fitToBounds(map, validBounds, {
       padding: props.boundsPadding,
@@ -262,9 +242,6 @@ const updateMap = () => {
   }
 };
 
-/**
- * Botão "Minha Localização"
- */
 const locateUser = async () => {
   if (!map) return;
 
@@ -291,7 +268,6 @@ const locateUser = async () => {
   }
 };
 
-// Watch para mudanças nas props
 watch(
   () => [props.points, props.polyline, props.routeCoords, props.userLocation],
   () => {
@@ -300,7 +276,6 @@ watch(
   { deep: true },
 );
 
-// Watch para mudanças no tipo de mapa
 watch(
   () => props.mapType,
   () => {
@@ -308,27 +283,40 @@ watch(
 
     const tileConfig = getTileConfig(props.mapType);
     mapTileLayer.setUrl(tileConfig.url);
-    // Note: setAttribution não existe no TileLayer do Leaflet
-    // Para alterar attribution, seria necessário remover e recriar a camada
   },
 );
 
-// Inicializa o mapa quando o componente for montado
 onMounted(() => {
   if (import.meta.client) {
     initMap();
   }
 });
 
-// Limpeza quando o componente for desmontado
 onBeforeUnmount(() => {
   if (map) {
     map.remove();
     map = null;
   }
 });
-</script>
 
-<style scoped>
-/* Estilos específicos se necessário */
-</style>
+const invalidateSize = () => {
+  if (map) {
+    map.invalidateSize();
+  }
+};
+
+const panTo = (lat: number, lng: number, zoom?: number) => {
+  if (map) {
+    if (zoom !== undefined) {
+      map.setView([lat, lng], zoom);
+    } else {
+      map.panTo([lat, lng]);
+    }
+  }
+};
+
+defineExpose({
+  invalidateSize,
+  panTo,
+});
+</script>

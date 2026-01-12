@@ -18,15 +18,18 @@ export const schemaRota = z
     id: z.coerce.number(),
     codigo: z.coerce.number().optional(),
     tipo: z.string(),
-    data_inicio: z.string().optional(),
-    data_fim: z.string().optional(),
-    usuario: z.string().optional(),
-    usuario_created: z.string().optional(),
+    data_inicio: z.string().nullish(),
+    data_fim: z.string().nullish(),
+    usuario: z.string().nullish(),
+    usuario_created: z.string().nullish(),
     id_usuario: z.coerce.number().optional(),
     id_usuario_created: z.coerce.number().optional(),
     status: z.string().optional(),
-    observacao: z.string().optional(),
+    observacao: z.string().nullish(),
     progresso: schemaRotaProgresso.optional(),
+    created_at: z.string().nullish(),
+    updated_at: z.string().nullish(),
+    deleted_at: z.string().nullish(),
   })
   .passthrough();
 
@@ -55,12 +58,12 @@ export const schemaRoteiroEndereco = z
   .object({
     latitude: numberLike,
     longitude: numberLike,
-    rua: z.string().optional(),
-    numero: z.string().optional(),
-    cidade: z.string().optional(),
-    bairro: z.string().optional(),
-    uf: z.string().optional(),
-    cep: z.string().optional(),
+    rua: z.string().nullish(),
+    numero: z.string().nullish(),
+    cidade: z.string().nullish(),
+    bairro: z.string().nullish(),
+    uf: z.string().nullish(),
+    cep: z.string().nullish(),
   })
   .passthrough();
 
@@ -71,8 +74,10 @@ export const schemaRoteiroStatus = z
     status: z.string().optional(),
     id_usuario: z.coerce.number().optional(),
     usuario: z.string().optional(),
-    observacao: z.string().optional(),
-    created_at: z.string().optional(),
+    observacao: z.string().nullish(),
+    created_at: z.string().nullish(),
+    updated_at: z.string().nullish(),
+    deleted_at: z.string().nullish(),
   })
   .passthrough();
 
@@ -81,15 +86,16 @@ export const schemaRoteiro = z
     id: z.coerce.number(),
     id_rota: z.coerce.number().optional(),
     id_checkin: z.coerce.number().optional(),
-    nome: z.string().optional(),
+    nome: z.string().nullish(),
     codigo: z.coerce.number().optional(),
     sequencia: z.coerce.number().optional(),
     status: z.string().optional(),
-    observacao: z.string().optional(),
+    observacao: z.string().nullish(),
     endereco: schemaRoteiroEndereco.optional(),
     srm_status_roteiro: z.array(schemaRoteiroStatus).optional(),
-    created_at: z.string().optional(),
-    updated_at: z.string().optional(),
+    created_at: z.string().nullish(),
+    updated_at: z.string().nullish(),
+    deleted_at: z.string().nullish(),
   })
   .passthrough();
 

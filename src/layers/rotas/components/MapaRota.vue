@@ -171,6 +171,8 @@ import {
 } from "lucide-vue-next";
 
 import { logger } from "~/utils/logger";
+import { isValidCoordinate } from "~/utils/geo/coordinateUtils";
+import { formatarDistancia, formatarDuracao } from "~/utils/formatters/formatadores";
 
 import type { Roteiro } from "../schemas/rotas.schema";
 import type { VrpSummary } from "../schemas/rotas.schema";
@@ -183,6 +185,12 @@ const props = defineProps<{
   summaryData?: VrpSummary | null;
   idRota?: number;
   autoLoad?: boolean;
+  userLocation?: {
+    latitude: number;
+    longitude: number;
+    accuracy: number;
+    timestamp: number;
+  } | null;
 }>();
 
 const emit = defineEmits<{
@@ -207,6 +215,15 @@ const {
 });
 
 const userLocation = computed(() => {
+  // Prioriza localização passada como prop (da tela de rotas)
+  if (props.userLocation) {
+    return {
+      latitude: props.userLocation.latitude,
+      longitude: props.userLocation.longitude,
+    };
+  }
+
+  // Fallback para geolocalização interna
   if (!geoPosition.value) return null;
   return {
     latitude: geoPosition.value.latitude,
@@ -274,14 +291,14 @@ const pontos = computed<RotaPonto[]>(() => {
       latitude: lat,
       longitude: lng,
       titulo: r.nome || `Ponto ${r.sequencia}`,
-      subtitulo: r.observacao,
+      subtitulo: r.observacao ?? undefined,
       sequencia: r.sequencia,
       status: ultimoStatus,
       endereco: {
-        rua: r.endereco.rua,
-        numero: r.endereco.numero,
-        cidade: r.endereco.cidade,
-        bairro: r.endereco.bairro,
+        rua: r.endereco.rua ?? undefined,
+        numero: r.endereco.numero ?? undefined,
+        cidade: r.endereco.cidade ?? undefined,
+        bairro: r.endereco.bairro ?? undefined,
       },
     });
   }
@@ -362,7 +379,9 @@ const recalcularApartirDeMim = async () => {
     const pos = await getCurrentPosition();
     if (!pos) return;
 
-    mapaRef.value?.panTo(pos.latitude, pos.longitude, 15);
+    if (mapaRef.value && typeof mapaRef.value.panTo === "function") {
+      mapaRef.value.panTo(pos.latitude, pos.longitude, 15);
+    }
 
     loadingMessage.value = "Calculando rota...";
     const result = await rotaService.calcularPolyline(roteirosValidos, {
@@ -443,7 +462,9 @@ const handleMarkerClick = (ponto: RotaPonto) => {
  * ForÃ§a resize do mapa (Ãºtil quando o container muda de tamanho)
  */
 const invalidateSize = () => {
-  mapaRef.value?.invalidateSize();
+  if (mapaRef.value && typeof mapaRef.value.invalidateSize === "function") {
+    mapaRef.value.invalidateSize();
+  }
 };
 
 // Watch para polyline/summary passados como prop

@@ -29,26 +29,25 @@
     </div>
 
     <!-- Lista -->
-    <div class="max-h-[400px] overflow-y-auto space-y-2">
-      <UiEmptyState
-        v-if="roteiros.length === 0"
-        :icon="MapPin"
-        title="Nenhum ponto na rota"
-        description="Adicione pontos para criar seu roteiro"
-      >
-        <template #action>
-          <UiButton variant="primary" size="small" @click="$emit('adicionar')">
-            <Plus class="w-4 h-4" />
-            Adicionar Ponto
-          </UiButton>
-        </template>
-      </UiEmptyState>
+    <UiEmptyState
+      v-if="roteiros.length === 0"
+      :icon="MapPin"
+      title="Nenhum ponto na rota"
+      description="Adicione pontos para criar seu roteiro"
+    >
+      <template #action>
+        <UiButton variant="primary" size="small" @click="$emit('adicionar')">
+          <Plus class="w-4 h-4" />
+          Adicionar Ponto
+        </UiButton>
+      </template>
+    </UiEmptyState>
 
+    <div v-else class="max-h-[400px] overflow-y-auto space-y-2">
       <div
         v-for="(roteiro, index) in roteiros"
-        v-else
         :key="roteiro.id"
-        class="flex items-center gap-3 p-3 rounded-lg border transition-all select-none"
+        class="flex items-center gap-3 p-3 rounded border transition-all select-none"
         style="
           background-color: var(--color-surface);
           border-color: var(--color-border);
@@ -78,7 +77,7 @@
 
         <!-- Número -->
         <div
-          class="w-7 h-7 rounded-lg flex items-center justify-center text-xs font-bold text-white flex-shrink-0"
+          class="w-8 h-8 rounded flex items-center justify-center text-xs font-bold font-mono tabular-nums text-white flex-shrink-0"
           :style="{ backgroundColor: getStatusColor(getUltimoStatus(roteiro)) }"
         >
           {{ index + 1 }}
@@ -92,9 +91,9 @@
             {{ roteiro.nome || `Ponto ${roteiro.sequencia}` }}
           </div>
           <div
-            class="text-xs truncate flex items-center gap-1 text-[var(--color-text-muted)]"
+            class="text-xs truncate flex items-center gap-1.5 mt-0.5 text-[var(--color-text-muted)]"
           >
-            <MapPin class="w-3 h-3" />
+            <MapPin class="w-3.5 h-3.5" />
             {{ formatEndereco(roteiro.endereco) }}
           </div>
         </div>
@@ -110,7 +109,7 @@
 
         <!-- Remover -->
         <button
-          class="p-2 rounded-lg transition-colors hover:bg-red-500/10 text-[var(--color-danger)]"
+          class="p-2 rounded transition-colors hover:bg-red-500/10 text-[var(--color-danger)]"
           @click.stop="$emit('remover', roteiro)"
         >
           <Trash2 class="w-4 h-4" />
@@ -201,7 +200,7 @@ const formatEndereco = (endereco?: Roteiro["endereco"]): string => {
     endereco.numero,
     endereco.bairro,
     endereco.cidade,
-  ].filter(Boolean);
+  ].filter((part) => part !== null && part !== undefined && part !== "");
   return parts.length > 0 ? parts.join(", ") : "Endereço não disponível";
 };
 </script>

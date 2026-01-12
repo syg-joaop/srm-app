@@ -7,6 +7,7 @@
       :roteiros="roteiros"
       :polyline-encoded="polylineEncoded"
       :summary-data="summaryData"
+      :user-location="userLocation"
       @ponto-click="$emit('pontoClick', $event)"
       @loaded="$emit('loaded', $event)"
     />
@@ -23,6 +24,12 @@ defineProps<{
   roteiros: Roteiro[];
   polylineEncoded: string | null;
   summaryData: VrpSummary | null;
+  userLocation?: {
+    latitude: number;
+    longitude: number;
+    accuracy: number;
+    timestamp: number;
+  } | null;
 }>();
 
 defineEmits<{
@@ -33,11 +40,15 @@ defineEmits<{
 const mapaRef = ref<InstanceType<typeof MapaRota> | null>(null);
 
 const invalidateSize = () => {
-  mapaRef.value?.invalidateSize();
+  if (mapaRef.value && typeof mapaRef.value.invalidateSize === "function") {
+    mapaRef.value.invalidateSize();
+  }
 };
 
 const carregarRota = () => {
-  mapaRef.value?.carregarRota();
+  if (mapaRef.value && typeof mapaRef.value.carregarRota === "function") {
+    mapaRef.value.carregarRota();
+  }
 };
 
 defineExpose({ invalidateSize, carregarRota });

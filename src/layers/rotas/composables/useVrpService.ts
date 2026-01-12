@@ -129,9 +129,22 @@ export function useVrpService() {
     });
 
     logDebug("Resposta API VRP:", response);
+    logDebug("Tipo da resposta:", typeof response);
+
+    // Se a resposta for string, tenta fazer parse
+    let parsedResponse = response;
+    if (typeof response === "string") {
+      try {
+        parsedResponse = JSON.parse(response);
+        logDebug("Resposta parseada de string para objeto");
+      } catch (e) {
+        logError("Erro ao fazer parse da resposta VRP:", e);
+        throw new Error("Resposta da API VRP não é um JSON válido");
+      }
+    }
 
     // Valida a resposta com o schema Zod
-    const validatedResponse = validateVrpResponse(response);
+    const validatedResponse = validateVrpResponse(parsedResponse);
 
     const parsed = parseVrpResponse(validatedResponse);
     if (!parsed.polyline || typeof parsed.polyline !== "string") {

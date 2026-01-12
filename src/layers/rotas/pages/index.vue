@@ -37,6 +37,57 @@
         </UiButton>
       </div>
 
+      <!-- Indicador de localização do usuário -->
+      <Transition
+        enter-active-class="transition-all duration-200 ease-out"
+        enter-from-class="opacity-0 -translate-y-2"
+        enter-to-class="opacity-100 translate-y-0"
+        leave-active-class="transition-all duration-150 ease-in"
+        leave-from-class="opacity-100 translate-y-0"
+        leave-to-class="opacity-0 -translate-y-2"
+      >
+        <div
+          v-if="userLocation"
+          class="flex items-center gap-2 text-xs bg-[var(--color-surface)] border border-[var(--color-border)] rounded px-3 py-2 w-fit"
+        >
+          <Icon icon="heroicons:map-pin-20-solid" class="w-3.5 h-3.5 text-[var(--color-primary)]" />
+          <span class="text-[var(--color-text-muted)]">
+            Localização obtida
+            <span class="font-medium font-mono tabular-nums text-[var(--color-text)] ml-1">
+              (±{{ Math.round(userLocation.accuracy) }}m)
+            </span>
+          </span>
+        </div>
+      </Transition>
+
+      <!-- Erro de geolocalização -->
+      <Transition
+        enter-active-class="transition-all duration-200 ease-out"
+        enter-from-class="opacity-0 -translate-y-2"
+        enter-to-class="opacity-100 translate-y-0"
+        leave-active-class="transition-all duration-150 ease-in"
+        leave-from-class="opacity-100 translate-y-0"
+        leave-to-class="opacity-0 -translate-y-2"
+      >
+        <div
+          v-if="geoError && !userLocation"
+          class="flex items-center justify-between gap-3 text-xs bg-orange-50 dark:bg-orange-900/10 border border-orange-200 dark:border-orange-800 rounded px-3 py-2"
+        >
+          <div class="flex items-center gap-2">
+            <Icon icon="heroicons:exclamation-triangle" class="w-3.5 h-3.5 text-orange-600 dark:text-orange-400" />
+            <span class="text-orange-800 dark:text-orange-200">
+              Localização não disponível. Rotas serão otimizadas sem ponto de partida.
+            </span>
+          </div>
+          <button
+            class="text-orange-600 dark:text-orange-400 hover:text-orange-700 dark:hover:text-orange-300 font-medium"
+            @click="solicitarLocalizacao"
+          >
+            Tentar novamente
+          </button>
+        </div>
+      </Transition>
+
       <!-- Indicador de filtros ativos -->
       <Transition
         enter-active-class="transition-all duration-200 ease-out"
@@ -48,7 +99,7 @@
       >
         <div
           v-if="filtroDataInicio || filtroDataFim"
-          class="flex items-center gap-2 text-xs text-[var(--color-text-muted)] bg-[var(--color-surface)] border border-[var(--color-border-subtle)] rounded-lg px-3 py-2 w-fit"
+          class="flex items-center gap-2 text-xs text-[var(--color-text-muted)] bg-[var(--color-surface)] border border-[var(--color-border-subtle)] rounded px-3 py-2 w-fit"
         >
           <Icon icon="heroicons:funnel" class="w-3.5 h-3.5" />
           <span>
@@ -187,7 +238,11 @@
 
     <!-- Modais -->
     <ModalNovaRota v-model="showNovaRotaModal" @save="handleRouteCreated" />
-    <ModalDetalhesRota v-model="showDetalhesModal" :rota="rotaSelecionada" />
+    <ModalDetalhesRota
+      v-model="showDetalhesModal"
+      :rota="rotaSelecionada"
+      :user-location="userLocation"
+    />
   </div>
 </template>
 
@@ -226,8 +281,33 @@ const error = ref<string | null>(null);
 // Service
 const rotaService = useRotaService();
 
+// Geolocalização do usuário
+const {
+  position: geoPosition,
+  getCurrentPosition,
+  error: geoError,
+  isLoading: isLoadingGeo,
+} = useGeolocation({
+  enableHighAccuracy: false,
+  timeout: 10000,
+  maximumAge: 300000, // Cache por 5 minutos
+});
+
 // Computed
 const totalPages = computed(() => Math.ceil(totalItems.value / itemsPerPage) || 1);
+
+/**
+ * Localização do usuário armazenada
+ */
+const userLocation = computed(() => {
+  if (!geoPosition.value) return null;
+  return {
+    latitude: geoPosition.value.latitude,
+    longitude: geoPosition.value.longitude,
+    accuracy: geoPosition.value.accuracy,
+    timestamp: geoPosition.value.timestamp,
+  };
+});
 
 const rotasPaginadas = computed(() => {
   // Se os dados já vêm paginados do backend, retorna direto
@@ -346,9 +426,28 @@ watch([() => currentPage.value, () => filtroDataInicio.value, () => filtroDataFi
   carregarRotas();
 });
 
-// Carrega dados iniciais
+/**
+ * Solicita permissão de geolocalização
+ */
+const solicitarLocalizacao = async () => {
+  try {
+    await getCurrentPosition();
+    if (geoPosition.value) {
+      logger.info("[RotasPage] Localização do usuário obtida:", {
+        lat: geoPosition.value.latitude,
+        lng: geoPosition.value.longitude,
+        accuracy: geoPosition.value.accuracy,
+      });
+    }
+  } catch (err) {
+    logger.warn("[RotasPage] Erro ao obter localização:", err);
+  }
+};
+
+// Carrega dados iniciais e solicita localização
 onMounted(() => {
   carregarRotas();
+  solicitarLocalizacao();
 });
 </script>
 
