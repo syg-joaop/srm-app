@@ -49,7 +49,7 @@
 
           <div class="col-span-2 flex items-center">
             <span class="text-sm text-[var(--color-text-muted)]">
-              {{ formatarData(checkin.dataCheckin) || '-' }}
+              {{ formatarData(checkin.data) || '-' }}
             </span>
           </div>
 
@@ -100,7 +100,7 @@
                 {{ checkin.status }}
               </UiBadge>
               <span class="text-[10px] text-[var(--color-text-muted)]">
-                {{ formatarData(checkin.dataCheckin) }}
+                {{ formatarData(checkin.data) }}
               </span>
             </div>
           </div>
@@ -115,9 +115,13 @@
 
 <script setup lang="ts">
 import { MapPin } from "lucide-vue-next";
+import { z } from "zod";
 
-import type { Checkin } from "../schemas/checkin.schema";
+import { checkinSchema } from "../schemas/checkin.schema";
+import { resolveStatusIconClass, resolveStatusVariant } from "~/components/ui/utils/status";
 import { type Variant } from "~/components/ui/UiBadge.vue";
+
+type Checkin = z.infer<typeof checkinSchema>;
 
 defineProps<{
   checkins: Checkin[];
@@ -141,9 +145,9 @@ const STATUS_ICON_CLASSES: Record<string, string> = {
   inativo: "bg-red-500/10 text-red-500",
 };
 
-const getVariant = (status?: string): Variant =>
-  resolveStatusVariant(status, STATUS_VARIANTS) as Variant;
+const getVariant = (status?: string | null): Variant =>
+  resolveStatusVariant(status || undefined, STATUS_VARIANTS) as Variant;
 
-const getIconClass = (status?: string): string =>
-  resolveStatusIconClass(status, STATUS_ICON_CLASSES);
+const getIconClass = (status?: string | null): string =>
+  resolveStatusIconClass(status || undefined, STATUS_ICON_CLASSES);
 </script>

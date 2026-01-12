@@ -3,7 +3,7 @@
     <template #title>
       <div class="flex items-center gap-2">
         <Route class="w-5 h-5 text-[var(--color-primary)]" />
-        <span>Adicionar à Rota</span>
+        <span>Adicionar Ã  Rota</span>
       </div>
     </template>
 
@@ -113,18 +113,18 @@
         class="flex flex-col items-center justify-center py-8 text-[var(--color-text-muted)]"
       >
         <Route class="w-12 h-12 opacity-50 mb-2" />
-        <p class="text-sm">Nenhuma rota disponível</p>
+        <p class="text-sm">Nenhuma rota disponÃ­vel</p>
         <p class="text-xs">Crie uma rota primeiro para adicionar fornecedores</p>
       </div>
 
-      <!-- Observação -->
+      <!-- ObservaÃ§Ã£o -->
       <div v-if="selectedRota" class="flex flex-col gap-1.5">
         <label class="text-sm font-semibold text-[var(--color-text)]">
-          Observação (opcional)
+          ObservaÃ§Ã£o (opcional)
         </label>
         <textarea
           v-model="observacao"
-          placeholder="Adicione uma observação para este ponto..."
+          placeholder="Adicione uma observaÃ§Ã£o para este ponto..."
           rows="2"
           class="w-full px-3 py-2.5 rounded-md border border-[var(--color-border)] bg-[var(--color-surface)] text-sm text-[var(--color-text)] placeholder:text-[var(--color-text-muted)] focus:border-[var(--color-primary)] focus:outline-none transition-colors resize-none"
         />
@@ -152,9 +152,12 @@ import { Route, Building2, Plus, Check } from "lucide-vue-next";
 import { getStatusColor, getStatusLabel, getStatusVariant } from "~/components/ui/utils/status";
 import { logger } from "~/utils/logger";
 import { isValidCoordinate } from "~/utils/geo/coordinateUtils";
+import { z } from "zod";
 
 import type { Rota } from "../../rotas/schemas/rotas.schema";
-import type { Fornecedor } from "../schemas/fornecedores.schema";
+import { fornecedorItemSchema } from "../schemas/fornecedores.schema";
+
+type Fornecedor = z.infer<typeof fornecedorItemSchema>;
 
 const props = defineProps<{
   modelValue: boolean;
@@ -182,7 +185,7 @@ const isAdding = ref(false);
 // eslint-disable-next-line no-undef
 const rotaService = useRotaService();
 
-// Verifica se fornecedor tem coordenadas válidas
+// Verifica se fornecedor tem coordenadas vÃ¡lidas
 const hasValidCoordinates = computed(() => {
   if (!props.fornecedor) return false;
   const lat = Number(props.fornecedor.latitude ?? 0);
@@ -212,7 +215,7 @@ const getStatusBadgeClass = (status?: string) => {
 };
 
 /**
- * Carrega rotas disponíveis
+ * Carrega rotas disponÃ­veis
  */
 const carregarRotas = async () => {
   isLoadingRotas.value = true;
@@ -220,7 +223,7 @@ const carregarRotas = async () => {
   try {
     const response = await rotaService.fetchRotas({ itens: 50 });
     if (response?.data) {
-      // Filtra apenas rotas não concluídas/canceladas
+      // Filtra apenas rotas nÃ£o concluÃ­das/canceladas
       rotas.value = response.data.filter(
         (r) => !["concluida", "cancelada"].includes(r.status?.toLowerCase() || "")
       );
@@ -233,7 +236,7 @@ const carregarRotas = async () => {
 };
 
 /**
- * Adiciona fornecedor à rota
+ * Adiciona fornecedor Ã  rota
  */
 const handleAdd = async () => {
   if (!selectedRota.value || !props.fornecedor) return;
@@ -245,12 +248,12 @@ const handleAdd = async () => {
     const lat = Number(fornecedor.latitude ?? 0);
     const lng = Number(fornecedor.longitude ?? 0);
 
-    // Busca quantidade atual de roteiros para definir sequência
+    // Busca quantidade atual de roteiros para definir sequÃªncia
     const roteirosResponse = await rotaService.fetchRoteiros(selectedRota.value.id);
     const currentSequence = roteirosResponse?.data?.length || 0;
 
     const result = await rotaService.createRoteiro({
-      nome: fornecedor.fanta || fornecedor.fornecedor,
+      nome: fornecedor.fanta || fornecedor.fornecedor || "Fornecedor",
       id_rota: selectedRota.value.id,
       codigo: Number(fornecedor.codfor ?? 0) || 0,
       endereco: {
@@ -286,7 +289,7 @@ const handleCancel = () => {
 };
 
 /**
- * Reseta formulário
+ * Reseta formulÃ¡rio
  */
 const resetForm = () => {
   selectedRota.value = null;
@@ -297,7 +300,7 @@ const resetForm = () => {
  * Formata range de datas
  */
 const formatDateRange = (inicio?: string, fim?: string): string => {
-  if (!inicio && !fim) return "—";
+  if (!inicio && !fim) return "Ã ";
 
   const formatDate = (dateStr?: string) => {
     if (!dateStr) return "";
@@ -312,7 +315,7 @@ const formatDateRange = (inicio?: string, fim?: string): string => {
     return `${dataInicio} - ${dataFim}`;
   }
 
-  return dataInicio || dataFim || "—";
+  return dataInicio || dataFim || "Ã ";
 };
 
 // Carrega rotas quando modal abre

@@ -106,7 +106,7 @@
               <span class="text-sm text-[var(--color-text)] font-medium">
                 {{ internalStartDate ? formatDate(internalStartDate) : "Início" }}
               </span>
-              <span class="text-[var(--color-text-muted)]">â†’</span>
+              <span class="text-[var(--color-text-muted)"><ArrowRight class="w-4 h-4" /></span>
               <span class="text-sm text-[var(--color-text)] font-medium">
                 {{ internalEndDate ? formatDate(internalEndDate) : "Fim" }}
               </span>
@@ -136,7 +136,7 @@
 </template>
 
 <script setup lang="ts">
-import { Calendar, ChevronDown, ChevronLeft, ChevronRight } from "lucide-vue-next";
+import { ArrowRight, Calendar, ChevronDown, ChevronLeft, ChevronRight } from "lucide-vue-next";
 
 interface Props {
   modelValue?: Date | null;
@@ -279,7 +279,7 @@ function isSelected(date: Date): boolean {
   if (props.range) {
     return Boolean(
       (internalStartDate.value && isSameDay(date, internalStartDate.value)) ||
-      (internalEndDate.value && isSameDay(date, internalEndDate.value))
+        (internalEndDate.value && isSameDay(date, internalEndDate.value)),
     );
   }
   return props.modelValue ? isSameDay(date, props.modelValue) : false;

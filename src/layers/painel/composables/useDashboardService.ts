@@ -1,8 +1,9 @@
 ﻿import { useAuthStore } from "~/stores/auth";
+import { z } from "zod";
 
-import { schemaDashboardApiResponse } from "../schemas/dashboard.schema";
+import { dashboardApiResponseSchema } from "../schemas/dashboard.schema";
 
-import type { DashboardApiResponse } from "~/layers/painel/schemas/dashboard.schema";
+type DashboardApiResponse = z.infer<typeof dashboardApiResponseSchema>;
 
 type ApiDataWrapper<T> = { data: T };
 
@@ -53,7 +54,7 @@ const unwrapApiData = <T>(response: T | ApiDataWrapper<T>): T => {
  * Lança um erro detalhado se a validação falhar
  */
 const validateDashboardResponse = (response: unknown): DashboardApiResponse => {
-  const result = schemaDashboardApiResponse.safeParse(response);
+  const result = dashboardApiResponseSchema.safeParse(response);
 
   if (!result.success) {
     console.error("Erro de validação do Dashboard:", result.error.format());

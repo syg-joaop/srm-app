@@ -7,14 +7,16 @@
  */
 
 import { logger } from "~/utils/logger";
+import { z } from "zod";
 
-import type { Atendimento } from "~/server/schemas/atendimento.schema";
 import type { Carga } from "~/server/schemas/carga.schema";
-import type { Checkin } from "~/server/schemas/checkin.schema";
+import { checkinSchema } from "~/layers/checkin/schemas/checkin.schema";
 import type { Coleta } from "~/server/schemas/coleta.schema";
 import type { Contato } from "~/server/schemas/contato.schema";
 import type { ParceiroData } from "~/types/parceiro";
 import type { Preco } from "~/server/schemas/preco.schema";
+
+type Checkin = z.infer<typeof checkinSchema>;
 
 
 export const useParceiroDetalhesData = (
@@ -33,14 +35,17 @@ export const useParceiroDetalhesData = (
 
   const parceiro = computed(() => parceiroFn());
 
-  const isFornecedor = computed(() => {
-    return parceiro.value?.codfor && !parceiro.value?.codpros;
-  });
-
+  // Verifica se é prospecto baseado no campo tf (começa com "PRO")
   const isProspecto = computed(() => {
-    return parceiro.value?.codpros || (typeof parceiro.value?.tf === 'string' && parceiro.value.tf.startsWith("PRO"));
+    return typeof parceiro.value?.tf === 'string' && parceiro.value.tf.startsWith("PRO");
   });
 
+  // Fornecedor tem codfor E não é prospecto
+  const isFornecedor = computed(() => {
+    return parceiro.value?.codfor && !isProspecto.value;
+  });
+
+  // Usa codfor (agora usado tanto por fornecedores quanto prospectos da API)
   const codforOrCodpros = computed(() => {
     if (!parceiro.value) return null;
     const cod = parceiro.value.codfor || parceiro.value.codpros;

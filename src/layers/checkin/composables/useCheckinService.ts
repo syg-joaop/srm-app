@@ -1,18 +1,21 @@
-import { schemaPaginatedCheckinResponse } from "../schemas/checkin.schema";
+import { z } from "zod";
+
+import { checkinResponseSchema, checkinFiltersSchema } from "../schemas/checkin.schema";
 import { buildPagedBody } from "~/utils/pagination";
 
-import type { CheckinFilters, PaginatedCheckinResponse } from "../schemas/checkin.schema";
+type CheckinResponse = z.infer<typeof checkinResponseSchema>;
+type CheckinFilters = z.infer<typeof checkinFiltersSchema>;
 
 const CHECKINS_LIST_ENDPOINT = "/sygecom/chameleon-mode/SRM_GET_CHECKIN";
 
 export const useCheckinService = () => {
-  const fetchCheckins = useOfflineAsyncData<PaginatedCheckinResponse, CheckinFilters>({
+  const fetchCheckins = useOfflineAsyncData<CheckinResponse, CheckinFilters>({
     key: "checkins",
     endpoint: CHECKINS_LIST_ENDPOINT,
     buildBody: buildPagedBody,
     homol: true,
     cacheTtl: 1 * 60 * 1000,
-    schema: schemaPaginatedCheckinResponse,
+    schema: checkinResponseSchema,
   });
 
   return { fetchCheckins };

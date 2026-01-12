@@ -1,6 +1,6 @@
+import { getOfflineCacheTtl, stableStringify } from "~/composables/offline/helpers";
 import { useAuthStore } from "~/stores/auth";
 import { logger } from "~/utils/logger";
-import { getOfflineCacheTtl, stableStringify } from "~/composables/offline/helpers";
 
 import type { ZodTypeAny } from "zod";
 
@@ -36,12 +36,20 @@ const getHttpStatus = (error: unknown): number | null => {
   return null;
 };
 
-const buildCacheKey = (userKey: string, baseKey: string, page: number, size: number, filters: unknown) => {
+const buildCacheKey = (
+  userKey: string,
+  baseKey: string,
+  page: number,
+  size: number,
+  filters: unknown,
+) => {
   const suffix = stableStringify(filters);
   return `${userKey}:${baseKey}:${page}:${size}:${suffix}`;
 };
 
-export const useOfflineAsyncData = <Response, Filters>(config: UseOfflineAsyncDataConfig<Filters>) => {
+export const useOfflineAsyncData = <Response, Filters>(
+  config: UseOfflineAsyncDataConfig<Filters>,
+) => {
   const api = useMainApi(config.homol);
   const authStore = useAuthStore();
   const storage = useOfflineStorage();
@@ -65,7 +73,7 @@ export const useOfflineAsyncData = <Response, Filters>(config: UseOfflineAsyncDa
     const isFromCache = ref(false);
     const isCacheStale = ref(false);
     const lastCacheError = ref<string | null>(null);
-    
+
     const execute = async (): Promise<Response | null> => {
       const userKey = authStore.userEmail ? `user:${authStore.userEmail}` : "user:anon";
       const cacheKey = buildCacheKey(userKey, config.key, page.value, size.value, filters.value);
@@ -117,4 +125,3 @@ export const useOfflineAsyncData = <Response, Filters>(config: UseOfflineAsyncDa
     return Object.assign(asyncData, { isFromCache, isCacheStale, lastCacheError });
   };
 };
-

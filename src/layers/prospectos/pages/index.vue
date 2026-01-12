@@ -1,9 +1,9 @@
 ﻿<template>
-    <div
-      class="min-h-screen p-4 sm:p-6 pb-20 transition-colors"
-      style="background-color: var(--color-background); color: var(--color-text)"
-    >
-      <h1 class="text-xl sm:text-2xl font-bold mb-4 sm:mb-6">Prospectos</h1>
+  <div
+    class="min-h-screen p-4 sm:p-6 pb-20 transition-colors"
+    style="background-color: var(--color-background); color: var(--color-text)"
+  >
+    <h1 class="text-xl sm:text-2xl font-bold mb-4 sm:mb-6">Prospectos</h1>
     <UiListToolbar
       v-model:search="search"
       v-model:filters="filters"
@@ -27,17 +27,17 @@
         </div>
         <ListaProspectos :prospectos="paginatedProspectos" @select="handleSelectProspecto" />
 
-          <UiPaginacao
-            v-model:page="currentPage"
-            :total-items="prospectos?.data?.totalItems ?? 0"
-            :total-pages="prospectos?.data?.totalPages ?? 0"
-            class="mt-6"
-          />
-        </div>
+        <UiPaginacao
+          v-model:page="currentPage"
+          :total-items="prospectos?.data?.totalItems ?? 0"
+          :total-pages="prospectos?.data?.totalPages ?? 0"
+          class="mt-6"
+        />
+      </div>
 
-        <div v-else>
-          <MapaProspectos :prospectos="prospectos?.data?.items ?? []" />
-        </div>
+      <div v-else>
+        <MapaProspectos :prospectos="prospectos?.data?.items ?? []" />
+      </div>
     </div>
 
     <ModalDetalhesParceiro v-model="showModal" :parceiro="selectedProspecto" variant="parceiro" />
@@ -46,13 +46,17 @@
 
 <script setup lang="ts">
 import { List, Map } from "lucide-vue-next";
+import { z } from "zod";
 
 import ModalDetalhesParceiro from "~/components/common/ModalDetalhesParceiro.vue";
 
 import ListaProspectos from "../components/ListaProspectos.vue";
 import MapaProspectos from "../components/MapaProspectos.vue";
+import { prospectoItemSchema } from "../schemas/prospectos.schema";
 
-import type { Prospecto } from "../schemas/prospectos.schema";
+import type { ParceiroData } from "~/types/parceiro";
+
+type Prospecto = z.infer<typeof prospectoItemSchema>;
 
 const viewMode = ref<"list" | "map">("list");
 const currentPage = ref(1);
@@ -63,7 +67,7 @@ const filters = ref({
   fantasia: "",
   cidade: "",
   status: "todos",
-  sortBy: "prospecto",
+  sortBy: "fornecedor",
 });
 
 const viewModeOptions = [
@@ -79,10 +83,10 @@ const statusOptions = [
 ];
 
 const sortOptions = [
-  { label: "Prospecto", value: "prospecto" },
+  { label: "Fornecedor", value: "fornecedor" },
   { label: "Cidade", value: "cidade" },
   { label: "Status", value: "status" },
-  { label: "Interação +60 dias", value: "sem_interacao" },
+  { label: "Carga +60 dias", value: "sem_carga" },
 ];
 
 const filterItems = [
@@ -113,7 +117,7 @@ const filterItems = [
     label: "Ordenar por",
     type: "segmented" as const,
     options: sortOptions,
-    defaultValue: "prospecto",
+    defaultValue: "fornecedor",
     segmentedFullWidth: true,
     segmentedMobileSize: "xs" as const,
   },
@@ -146,13 +150,30 @@ const { data: prospectos } = fetchProspectos(currentPage, itemsPerPage, prospect
 const paginatedProspectos = computed(() => prospectos.value?.data?.items ?? []);
 
 const showModal = ref(false);
-const selectedProspecto = ref<Prospecto | null>(null);
+const selectedProspecto = ref<ParceiroData | null>(null);
 
 const handleSelectProspecto = (prospecto: Prospecto) => {
   selectedProspecto.value = {
-    ...prospecto,
-    name: prospecto.prospecto,
-  } as typeof selectedProspecto.value;
+    name: prospecto.fornecedor,
+    fornecedor: prospecto.fornecedor,
+    fanta: prospecto.fanta,
+    status: prospecto.status,
+    cidade: prospecto.cidade,
+    uf: prospecto.uf,
+    codfor: prospecto.codfor ? String(prospecto.codfor) : undefined,
+    codpros: undefined,
+    categoria: prospecto.categoria,
+    ende: prospecto.ende,
+    comp: prospecto.comp,
+    fone: prospecto.fone,
+    celular: prospecto.celular,
+    tel3: prospecto.tel3,
+    email: prospecto.email,
+    ultima_carga: prospecto.ultima_carga,
+    latitude: prospecto.latitude,
+    longitude: prospecto.longitude,
+    latlong: prospecto.latlong,
+  } as ParceiroData;
   showModal.value = true;
 };
 </script>

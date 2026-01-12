@@ -49,19 +49,23 @@
 
 <script setup lang="ts">
 import { MapPin } from "lucide-vue-next";
+import { z } from "zod";
 
 import ListaCheckins from "../components/ListaCheckins.vue";
 import ModalDetalhesCheckin from "../components/ModalDetalhesCheckin.vue";
 import { toNumber, toStringValue } from "~/utils/coerce";
+import { checkinSchema, checkinFiltersSchema } from "../schemas/checkin.schema";
 
-import type { Checkin, CheckinFilters } from "../schemas/checkin.schema";
+type Checkin = z.infer<typeof checkinSchema>;
+type CheckinFilters = z.infer<typeof checkinFiltersSchema>;
 
 definePageMeta({ layout: "default" });
 
 const currentPage = ref(1);
 const itemsPerPage = ref(50);
 
-const filters = ref({
+const filters = ref<CheckinFilters>({
+  search: "",
   fornecedor: "",
   responsavel: "",
   cidade: "",
@@ -98,11 +102,11 @@ const checkins = computed(() => (checkinsResponse.value?.data?.items ?? []).map(
 const { search, filteredItems: filteredCheckins } = useListFilter(checkins, {
   searchFields: ["fornecedor", "responsavel"],
   customFilters: (item) => {
-    const fornecedor = filters.value.fornecedor.trim().toLowerCase();
-    const responsavel = filters.value.responsavel.trim().toLowerCase();
-    const cidade = filters.value.cidade.trim().toLowerCase();
+    const fornecedor = filters.value.fornecedor?.trim().toLowerCase();
+    const responsavel = filters.value.responsavel?.trim().toLowerCase();
+    const cidade = filters.value.cidade?.trim().toLowerCase();
 
-    if (fornecedor && !item.fornecedor.toLowerCase().includes(fornecedor)) return false;
+    if (fornecedor && !item.fornecedor?.toLowerCase().includes(fornecedor)) return false;
     if (responsavel && !(item.responsavel ?? "").toLowerCase().includes(responsavel)) return false;
     if (cidade && !(item.cidade ?? "").toLowerCase().includes(cidade)) return false;
 
@@ -140,11 +144,10 @@ const normalizeCheckin = (raw: Record<string, unknown>): Checkin => ({
     toStringValue(raw.empresa) ??
     toStringValue(raw.apelido) ??
     toStringValue(raw.nome) ??
-    "â€”",
+    "—",
   cidade: toStringValue(raw.cidade) ?? toStringValue(raw.municipio),
-  estado: toStringValue(raw.estado) ?? toStringValue(raw.uf),
-  dataCheckin:
-    toStringValue(raw.dataCheckin) ??
+  uf: toStringValue(raw.estado) ?? toStringValue(raw.uf),
+  data: toStringValue(raw.dataCheckin) ??
     toStringValue(raw.data_checkin) ??
     toStringValue(raw.data) ??
     toStringValue(raw.dataCadastro),
@@ -154,8 +157,8 @@ const normalizeCheckin = (raw: Record<string, unknown>): Checkin => ({
     toStringValue(raw.colaborador),
   observacao: toStringValue(raw.observacao) ?? toStringValue(raw.obs),
   status: toStringValue(raw.status) ?? toStringValue(raw.situacao),
-  latitude: toNumber(raw.latitude) ?? toNumber(raw.lat),
-  longitude: toNumber(raw.longitude) ?? toNumber(raw.lng),
+  latitude: toStringValue(raw.latitude) ?? toStringValue(raw.lat),
+  longitude: toStringValue(raw.longitude) ?? toStringValue(raw.lng),
 });
 
 const fallbackTotalItems = computed(

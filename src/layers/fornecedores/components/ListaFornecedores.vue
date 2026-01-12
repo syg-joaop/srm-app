@@ -110,6 +110,7 @@
 
 <script setup lang="ts">
 import { Building2, MapPin, MessageSquareText } from "lucide-vue-next";
+import { z } from "zod";
 
 import { type Variant } from "~/components/ui/UiBadge.vue";
 import {
@@ -119,7 +120,9 @@ import {
   resolveStatusVariant,
 } from "~/components/ui/utils/status";
 
-import type { Fornecedor } from "../schemas/fornecedores.schema";
+import { fornecedorItemSchema } from "../schemas/fornecedores.schema";
+
+type Fornecedor = z.infer<typeof fornecedorItemSchema>;
 
 defineProps<{
   fornecedores: Fornecedor[];

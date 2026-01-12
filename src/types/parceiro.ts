@@ -2,14 +2,20 @@
  * Tipos relacionados ao parceiro e suas visualizações.
  */
 
-import type { Agendamento } from '~/server/schemas/agendamento.schema';
-import type { Atendimento } from '~/server/schemas/atendimento.schema';
-import type { Carga } from '~/server/schemas/carga.schema';
-import type { Checkin } from '~/server/schemas/checkin.schema';
-import type { Coleta } from '~/server/schemas/coleta.schema';
-import type { Contato } from '~/server/schemas/contato.schema';
-import type { Favorecido } from '~/server/schemas/favorecido.schema';
-import type { Preco } from '~/server/schemas/preco.schema';
+import { z } from "zod";
+
+import { checkinSchema } from "~/layers/checkin/schemas/checkin.schema";
+import { atendimentoSchema } from "~/layers/ocorrencias/schemas/atendimentos.schema";
+
+import type { Agendamento } from "~/server/schemas/agendamento.schema";
+import type { Carga } from "~/server/schemas/carga.schema";
+import type { Coleta } from "~/server/schemas/coleta.schema";
+import type { Contato } from "~/server/schemas/contato.schema";
+import type { Favorecido } from "~/server/schemas/favorecido.schema";
+import type { Preco } from "~/server/schemas/preco.schema";
+
+type Atendimento = z.infer<typeof atendimentoSchema>;
+type Checkin = z.infer<typeof checkinSchema>;
 
 export type ParceiroVariant = "parceiro" | "atendente" | "time";
 
@@ -68,7 +74,7 @@ export interface TabItem {
   status?: string;
   details: EnhancedDetail[];
   rightLabel?: string;
-  detailsLayout?: 'grid' | 'list';
+  detailsLayout?: "grid" | "list";
 }
 
 export interface ParceiroTabOption {
@@ -94,17 +100,17 @@ export interface FieldMapping {
 
 /** Detalhe separador visual (usado em listas) */
 export interface SeparatorDetail extends DetailPair {
-  __type: 'separator';
+  __type: "separator";
 }
 
 /** Detalhe de total (destacado visualmente) */
 export interface TotalDetail extends DetailPair {
-  __type: 'total';
+  __type: "total";
 }
 
 /** Detalhe de produto em uma lista de produtos */
 export interface ProductDetail extends DetailPair {
-  __type: 'product';
+  __type: "product";
   produtoIndex?: number;
 }
 
@@ -117,15 +123,15 @@ export type EnhancedDetail = DetailPair | SeparatorDetail | TotalDetail | Produc
  * Substituem de forma type-safe os casts 'as any'
  */
 export const isSeparatorDetail = (detail: EnhancedDetail): detail is SeparatorDetail => {
-  return '__type' in detail && detail.__type === 'separator';
+  return "__type" in detail && detail.__type === "separator";
 };
 
 export const isTotalDetail = (detail: EnhancedDetail): detail is TotalDetail => {
-  return '__type' in detail && detail.__type === 'total';
+  return "__type" in detail && detail.__type === "total";
 };
 
 export const isProductDetail = (detail: EnhancedDetail): detail is ProductDetail => {
-  return '__type' in detail && detail.__type === 'product';
+  return "__type" in detail && detail.__type === "product";
 };
 
 /**

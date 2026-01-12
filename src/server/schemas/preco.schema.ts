@@ -1,5 +1,7 @@
 import { z } from "zod";
 
+import { createPaginatedSchema } from "./common.schema";
+
 /**
  * Schema Zod para Preco
  * Baseado em ParceiroPreco de parceiro-detalhes.types.ts
@@ -22,6 +24,11 @@ export const schemaPreco = z
     moeda: z.string().optional(),
   })
   .passthrough();
+
+/**
+ * Response schema paginado para Preco
+ */
+export const precoResponseSchema = createPaginatedSchema(schemaPreco);
 
 /**
  * Tipos inferidos

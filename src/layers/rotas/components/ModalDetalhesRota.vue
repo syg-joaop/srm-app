@@ -69,7 +69,7 @@
             <div class="font-bold" style="color: var(--color-success)">
               {{ rota.progresso.concluidos }}
             </div>
-            <div style="color: var(--color-text-muted)">Concluídos</div>
+            <div style="color: var(--color-text-muted)">ConcluÃ­dos</div>
           </div>
           <div>
             <div class="font-bold" style="color: var(--color-warning)">
@@ -95,7 +95,7 @@
         :hide-labels-on-mobile="false"
       />
 
-      <!-- Conteúdo das abas -->
+      <!-- ConteÃºdo das abas -->
       <div class="min-h-[300px]">
         <!-- ABA MAPA -->
         <RotaAbaMapa
@@ -189,13 +189,13 @@ const originalOrder = ref<number[]>([]);
 // Service
 const rotaService = useRotaService();
 
-// Computed para sequência máxima
+// Computed para sequÃªncia mÃ¡xima
 const maxSequencia = computed(() => {
   if (roteiros.value.length === 0) return 0;
   return Math.max(...roteiros.value.map((r) => r.sequencia || 0));
 });
 
-// Roteiros ordenados por sequência
+// Roteiros ordenados por sequÃªncia
 const roteirosOrdenados = computed(() =>
   [...roteiros.value].sort((a, b) => (a.sequencia || 0) - (b.sequencia || 0)),
 );
@@ -289,7 +289,7 @@ watch(
   },
 );
 
-// Watch para mudança de rota
+// Watch para mudanÃ§a de rota
 watch(
   () => props.rota?.id,
   () => {
@@ -300,7 +300,7 @@ watch(
 );
 
 /**
- * Handler quando roteiro é adicionado
+ * Handler quando roteiro Ã© adicionado
  */
 const handleRoteiroAdded = async () => {
   await carregarDados();

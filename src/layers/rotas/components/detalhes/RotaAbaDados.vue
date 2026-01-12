@@ -5,12 +5,12 @@
         <div
           class="text-xs uppercase font-medium mb-1 text-[var(--color-text-muted)]"
         >
-          CÛdigo
+          C√≥digo
         </div>
         <div
           class="text-lg font-mono font-medium text-[var(--color-text)]"
         >
-          {{ rota?.codigo || rota?.id || "ó" }}
+          {{ rota?.codigo || rota?.id || "-" }}
         </div>
       </UiCard>
 
@@ -32,11 +32,11 @@
         <div
           class="text-xs uppercase font-medium mb-1 text-[var(--color-text-muted)]"
         >
-          Respons·vel
+          Respons√°vel
         </div>
         <div class="flex items-center gap-2 text-[var(--color-text)]">
           <User class="w-4 h-4 text-[var(--color-primary)]" />
-          <span class="font-medium truncate">{{ rota?.usuario || "ó" }}</span>
+          <span class="font-medium truncate">{{ rota?.usuario || "-" }}</span>
         </div>
       </UiCard>
 
@@ -49,7 +49,7 @@
         <div class="flex items-center gap-2 text-[var(--color-text)]">
           <User class="w-4 h-4 text-[var(--color-text-muted)]" />
           <span class="font-medium truncate">{{
-            rota?.usuario_created || "ó"
+            rota?.usuario_created || "-"
           }}</span>
         </div>
       </UiCard>
@@ -58,7 +58,7 @@
         <div
           class="text-xs uppercase font-medium mb-1 text-[var(--color-text-muted)]"
         >
-          PerÌodo de ExecuÁ„o
+          Per√≠odo de Execu√ß√£o
         </div>
         <div class="flex items-center gap-2 text-[var(--color-text)]">
           <Calendar class="w-4 h-4 text-[var(--color-primary)]" />
@@ -72,7 +72,7 @@
         <div
           class="text-xs uppercase font-medium mb-1 text-[var(--color-text-muted)]"
         >
-          ObservaÁıes
+          Observa√ß√µes
         </div>
         <p class="text-sm leading-relaxed text-[var(--color-text)]">
           {{ rota.observacao }}
@@ -80,12 +80,12 @@
       </UiCard>
     </div>
 
-    <!-- Resumo logÌstico -->
+    <!-- Resumo log√≠stico -->
     <UiCard v-if="summary">
       <template #header>
         <div class="flex items-center gap-2 text-[var(--color-primary)]">
           <TrendingUp class="w-4 h-4" />
-          <span class="font-semibold">Resumo LogÌstico</span>
+          <span class="font-semibold">Resumo Log√≠stico</span>
         </div>
       </template>
       <div class="grid grid-cols-3 gap-4 text-center">
@@ -102,7 +102,7 @@
             {{ formatarDistancia(summary.distance.meters) }}
           </div>
           <div class="text-xs uppercase text-[var(--color-text-muted)]">
-            Dist‚ncia
+            Dist√¢ncia
           </div>
         </div>
         <div>

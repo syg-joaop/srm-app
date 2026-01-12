@@ -5,7 +5,7 @@
     >
       <div class="col-span-4">Prospecto</div>
       <div class="col-span-2">Cidade</div>
-      <div class="col-span-2">Última Interação</div>
+      <div class="col-span-2">Última Carga</div>
       <div class="col-span-2 text-center">Status</div>
       <div class="col-span-2 text-end">Ações</div>
     </div>
@@ -13,7 +13,7 @@
     <div class="flex flex-col gap-1.5 md:gap-0">
       <div
         v-for="prospecto in prospectos"
-        :key="prospecto.codpros"
+        :key="prospecto.codfor"
         class="group/item relative bg-[var(--color-surface)] md:rounded-none first:md:rounded-t-none last:md:rounded-b-lg rounded-lg border border-[var(--color-border-subtle)] md:border-[var(--color-border)] md:border-t-0 first:md:border-t hover:border-[var(--color-primary-border)] hover:bg-[var(--color-primary-soft)] transition-all duration-300 ease-out hover:shadow-sm px-3 py-3 md:px-5 md:py-2.5 cursor-pointer"
         @click="$emit('select', prospecto)"
       >
@@ -33,7 +33,7 @@
               <span
                 class="font-semibold text-[var(--color-text)] text-sm group-hover/item:text-[var(--color-primary)] transition-colors truncate"
               >
-                {{ prospecto.prospecto }}
+                {{ prospecto.fornecedor }}
               </span>
               <span class="text-xs text-[var(--color-text-muted)] truncate">
                 {{ prospecto.fanta }}
@@ -49,7 +49,7 @@
 
           <div class="col-span-2 flex items-center">
             <span class="text-sm text-[var(--color-text-muted)]">
-              {{ prospecto.ultima_interacao }}
+              {{ prospecto.ultima_carga }}
             </span>
           </div>
 
@@ -89,7 +89,7 @@
                 <span
                   class="font-semibold text-[var(--color-text)] text-sm group-hover/item:text-[var(--color-primary)] transition-colors truncate"
                 >
-                  {{ prospecto.prospecto }}
+                  {{ prospecto.fornecedor }}
                 </span>
                 <span class="text-[11px] text-[var(--color-text-muted)] truncate">
                   {{ prospecto.fanta }}
@@ -105,7 +105,7 @@
                 {{ prospecto.status }}
               </UiBadge>
               <span class="text-[10px] text-[var(--color-text-muted)]">
-                {{ prospecto.ultima_interacao }}
+                {{ prospecto.ultima_carga }}
               </span>
             </div>
           </div>
@@ -122,6 +122,7 @@
 
 <script setup lang="ts">
 import { Building2, MapPin, MessageSquareText } from "lucide-vue-next";
+import { z } from "zod";
 
 import { type Variant } from "~/components/ui/UiBadge.vue";
 import {
@@ -131,7 +132,9 @@ import {
   resolveStatusVariant,
 } from "~/components/ui/utils/status";
 
-import type { Prospecto } from "../schemas/prospectos.schema";
+import { prospectoItemSchema } from "../schemas/prospectos.schema";
+
+type Prospecto = z.infer<typeof prospectoItemSchema>;
 
 defineProps<{
   prospectos: Prospecto[];

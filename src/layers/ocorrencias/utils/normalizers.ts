@@ -1,5 +1,11 @@
+import { z } from "zod";
+
 import { toNumber, toStringValue } from "~/utils/coerce";
-import type { Ocorrencia, OcorrenciaStatus } from "~/server/schemas/ocorrencias.schema";
+
+import { ocorrenciaSchema } from "../schemas/ocorrencias.schema";
+
+type Ocorrencia = z.infer<typeof ocorrenciaSchema>;
+type OcorrenciaStatus = "pendente" | "acompanhamento" | "concluida";
 
 const mapStatus = (statusValue: string | unknown): OcorrenciaStatus => {
   const normalized = (statusValue ?? "").toString().toLowerCase().trim();
@@ -88,18 +94,10 @@ export function normalizeOcorrencia(raw: Record<string, unknown>): Ocorrencia {
     id: extractNumber(raw, ["id", "sr_recno", "codigo", "cod_ocorrencia"], Date.now()),
 
     // Título - vários campos possíveis
-    titulo: extractField(
-      raw,
-      ["titulo", "titulo_ocorrencia", "assunto", "descricao"],
-      undefined,
-    ),
+    titulo: extractField(raw, ["titulo", "titulo_ocorrencia", "assunto", "descricao"], undefined),
 
     // Fornecedor - vários campos possíveis
-    fornecedor: extractField(
-      raw,
-      ["fornecedor", "empresa", "apelido", "nome_fornecedor"],
-      "—",
-    ),
+    fornecedor: extractField(raw, ["fornecedor", "empresa", "apelido", "nome_fornecedor"], "—"),
 
     // Data de cadastro - tenta múltiplos formatos
     dataCadastro: extractField(
@@ -111,13 +109,7 @@ export function normalizeOcorrencia(raw: Record<string, unknown>): Ocorrencia {
     // Atendente - vários campos possíveis
     atendente: extractField(
       raw,
-      [
-        "atendente",
-        "usuario",
-        "atendente_nome",
-        "atendenteResponsavel",
-        "responsavel",
-      ],
+      ["atendente", "usuario", "atendente_nome", "atendenteResponsavel", "responsavel"],
       "—",
     ),
 
@@ -132,25 +124,13 @@ export function normalizeOcorrencia(raw: Record<string, unknown>): Ocorrencia {
     ),
 
     // Encaminhado para
-    encaminhadoPara: extractField(
-      raw,
-      ["encaminhadoPara", "encaminhado_para"],
-      undefined,
-    ),
+    encaminhadoPara: extractField(raw, ["encaminhadoPara", "encaminhado_para"], undefined),
 
     // Diagnosticado por
-    diagnosticadoPor: extractField(
-      raw,
-      ["diagnosticadoPor", "diagnosticado_por"],
-      undefined,
-    ),
+    diagnosticadoPor: extractField(raw, ["diagnosticadoPor", "diagnosticado_por"], undefined),
 
     // Forma de atendimento
-    formaAtendimento: extractField(
-      raw,
-      ["formaAtendimento", "forma_atendimento"],
-      undefined,
-    ),
+    formaAtendimento: extractField(raw, ["formaAtendimento", "forma_atendimento"], undefined),
 
     // Situação (campo adicional)
     situacao: extractField(raw, ["situacao", "status"], undefined),

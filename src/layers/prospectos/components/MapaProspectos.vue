@@ -8,8 +8,14 @@
 </template>
 
 <script setup lang="ts">
-import type { ProspectoMapItem } from "../schemas/prospectos.schema";
+import { z } from "zod";
+
+import { COMMON_MAP_STATUS_CONFIG } from "~/components/ui/utils/status";
+
 import type { UiMapaPonto, UiMapaStatusConfig } from "~/components/ui/maps.types";
+import { prospectoMapItemSchema } from "../schemas/prospectos.schema";
+
+type ProspectoMapItem = z.infer<typeof prospectoMapItemSchema>;
 
 const statusConfig: UiMapaStatusConfig = {
   ...COMMON_MAP_STATUS_CONFIG,
@@ -26,16 +32,16 @@ const pontos = computed<UiMapaPonto[]>(() => {
   return prospectos
     .filter((p) => p.latlong)
     .map((p) => ({
-      id: p.prospecto,
-      titulo: p.prospecto,
+      id: p.fornecedor || "",
+      titulo: p.fornecedor || "",
       subtitulo: p.fanta,
       status: p.status,
-      latitude: p.latitude,
-      longitude: p.longitude,
+      latitude: p.latitude || "",
+      longitude: p.longitude || "",
       linhas: [
-        { rotulo: "Nome", valor: p.prospecto },
-        { rotulo: "Cidade", valor: p.cidade },
-        { rotulo: "Última interação", valor: p.ultima_interacao || "Nenhuma" },
+        { rotulo: "Nome", valor: p.fornecedor || "" },
+        { rotulo: "Cidade", valor: p.cidade || "" },
+        { rotulo: "Última carga", valor: p.ultima_carga || "Nenhuma" },
       ],
     }));
 });

@@ -7,7 +7,7 @@
           {{ roteiros.length }} pontos
         </span>
         <UiBadge v-if="hasChanges" variant="warning" size="small" :dot="true">
-          AlteraÁıes n„o salvas
+          Altera√ß√µes n√£o salvas
         </UiBadge>
       </div>
       <div class="flex gap-2">
@@ -76,7 +76,7 @@
           <GripVertical class="w-4 h-4" />
         </div>
 
-        <!-- N˙mero -->
+        <!-- N√∫mero -->
         <div
           class="w-7 h-7 rounded-lg flex items-center justify-center text-xs font-bold text-white flex-shrink-0"
           :style="{ backgroundColor: getStatusColor(getUltimoStatus(roteiro)) }"
@@ -187,21 +187,21 @@ const handleDrop = (event: DragEvent, targetIndex: number) => {
 };
 
 // Utils (duplicados do pai por enquanto, idealmente em composable ou utils compartilhado)
-// Para evitar duplicaÁ„o, vou apenas usar funÁıes locais simples ou props se fosse complexo.
-// Mas aqui È formataÁ„o simples.
+// Para evitar duplica√ß√£o, vou apenas usar fun√ß√µes locais simples ou props se fosse complexo.
+// Mas aqui √© formata√ß√£o simples.
 
 const getUltimoStatus = (roteiro: Roteiro): string => {
   return roteiro.srm_status_roteiro?.[0]?.status?.toLowerCase() || "aguardando";
 };
 
 const formatEndereco = (endereco?: Roteiro["endereco"]): string => {
-  if (!endereco) return "EndereÁo n„o disponÌvel";
+  if (!endereco) return "Endere√ßo n√£o dispon√≠vel";
   const parts = [
     endereco.rua,
     endereco.numero,
     endereco.bairro,
     endereco.cidade,
   ].filter(Boolean);
-  return parts.length > 0 ? parts.join(", ") : "EndereÁo n„o disponÌvel";
+  return parts.length > 0 ? parts.join(", ") : "Endere√ßo n√£o dispon√≠vel";
 };
 </script>

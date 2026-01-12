@@ -1,5 +1,7 @@
 import { z } from "zod";
 
+import { createPaginatedSchema } from "./common.schema";
+
 /**
  * Schema Zod para Contato
  * Baseado em ParceiroContato de parceiro-detalhes.types.ts
@@ -20,6 +22,11 @@ export const schemaContato = z
     observacao: z.string().optional(),
   })
   .passthrough();
+
+/**
+ * Response schema paginado para Contato
+ */
+export const contatoResponseSchema = createPaginatedSchema(schemaContato);
 
 /**
  * Tipos inferidos

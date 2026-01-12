@@ -1,5 +1,7 @@
 import { z } from "zod";
 
+import { createPaginatedSchema } from "./common.schema";
+
 /**
  * Schema Zod para Carga
  * Baseado em ParceiroCarga de parceiro-detalhes.types.ts
@@ -27,6 +29,11 @@ export const schemaCarga = z
     peso: z.number().or(z.string()).optional(),
   })
   .passthrough();
+
+/**
+ * Response schema paginado para Carga
+ */
+export const cargaResponseSchema = createPaginatedSchema(schemaCarga);
 
 /**
  * Tipos inferidos

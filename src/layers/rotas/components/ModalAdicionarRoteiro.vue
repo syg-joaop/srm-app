@@ -156,9 +156,14 @@ import { Building2, Check, MapPin, MapPinOff, Plus, Search } from "lucide-vue-ne
 
 import { logger } from "~/utils/logger";
 import { isValidCoordinate } from "~/utils/geo/coordinateUtils";
+import { z } from "zod";
 
-import type { Fornecedor, FornecedorFilters } from "../../fornecedores/schemas/fornecedores.schema";
+import { fornecedorSchema, fornecedorFiltersSchema, fornecedorItemSchema } from "../../fornecedores/schemas/fornecedores.schema";
 import type { Rota } from "../schemas/rotas.schema";
+
+type Fornecedor = z.infer<typeof fornecedorSchema>;
+type FornecedorItem = z.infer<typeof fornecedorItemSchema>;
+type FornecedorFilters = z.infer<typeof fornecedorFiltersSchema>;
 
 const props = defineProps<{
   modelValue: boolean;
@@ -178,8 +183,8 @@ const isOpen = computed({
 
 // Estado
 const searchTerm = ref("");
-const fornecedores = ref<Fornecedor[]>([]);
-const selectedFornecedor = ref<Fornecedor | null>(null);
+const fornecedores = ref<FornecedorItem[]>([]);
+const selectedFornecedor = ref<FornecedorItem | null>(null);
 const observacao = ref("");
 const isSearching = ref(false);
 const isAdding = ref(false);
@@ -197,7 +202,7 @@ const rotaService = useRotaService();
 /**
  * Verifica se fornecedor tem coordenadas válidas
  */
-const hasValidCoordinates = (fornecedor: Fornecedor): boolean => {
+const hasValidCoordinates = (fornecedor: FornecedorItem): boolean => {
   if (!fornecedor.latitude || !fornecedor.longitude) return false;
   const lat = Number(fornecedor.latitude ?? 0);
   const lng = Number(fornecedor.longitude ?? 0);
@@ -242,7 +247,7 @@ const buscarFornecedores = async () => {
 /**
  * Seleciona um fornecedor
  */
-const selectFornecedor = (fornecedor: Fornecedor) => {
+const selectFornecedor = (fornecedor: FornecedorItem) => {
   if (selectedFornecedor.value?.codfor === fornecedor.codfor) {
     selectedFornecedor.value = null;
   } else {
@@ -264,7 +269,7 @@ const handleAdd = async () => {
     const lng = Number(fornecedor.longitude ?? 0);
 
     const result = await rotaService.createRoteiro({
-      nome: fornecedor.fanta || fornecedor.fornecedor,
+      nome: fornecedor.fanta || fornecedor.fornecedor || "Fornecedor",
       id_rota: props.rota.id,
       codigo: Number(fornecedor.codfor ?? 0) || 0,
       endereco: {

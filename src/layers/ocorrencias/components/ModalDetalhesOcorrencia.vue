@@ -8,7 +8,7 @@
         />
         <div class="flex-1 min-w-0">
           <h2 class="text-base md:text-lg font-bold text-[var(--color-text)] truncate">
-            {{ ocorrencia?.titulo || "Sem descrição" }}
+            {{ ocorrencia?.titulo || "Sem descriÃ§Ã£o" }}
           </h2>
           <div class="flex items-center gap-1.5 md:gap-2 mt-0.5">
             <span class="text-[10px] md:text-xs text-[var(--color-text-muted)]"
@@ -84,7 +84,7 @@
               <h3
                 class="text-[10px] md:text-xs font-semibold text-[var(--color-text-muted)] uppercase tracking-wider"
               >
-                Informações
+                InformaÃ§Ãµes
               </h3>
               <div class="grid grid-cols-2 gap-1.5 md:gap-2">
                 <DadoItem
@@ -107,8 +107,8 @@
             >
               <History class="w-5 h-5 md:w-6 md:h-6 opacity-50" />
             </div>
-            <p class="text-xs md:text-sm font-medium">Nenhum histórico registrado</p>
-            <p class="text-[10px] md:text-xs mt-1 opacity-70">As interações aparecerão aqui</p>
+            <p class="text-xs md:text-sm font-medium">Nenhum histÃ³rico registrado</p>
+            <p class="text-[10px] md:text-xs mt-1 opacity-70">As interaÃ§Ãµes aparecerÃ£o aqui</p>
           </div>
         </Transition>
       </div>
@@ -134,12 +134,15 @@
 
 <script setup lang="ts">
 import { Calendar, CircleAlert, Edit, History, Send } from "lucide-vue-next";
+import { z } from "zod";
 
 import { formatarData } from "~/utils/formatters/date";
 
 import DadoItem from "./DadoItem.vue";
+import { ocorrenciaSchema } from "../schemas/ocorrencias.schema";
 
-import type { Ocorrencia, OcorrenciaStatus } from "~/server/schemas/ocorrencias.schema";
+type Ocorrencia = z.infer<typeof ocorrenciaSchema>;
+type OcorrenciaStatus = "pendente" | "acompanhamento" | "concluida";
 
 const props = defineProps<{
   modelValue: boolean;
@@ -160,13 +163,13 @@ const abaAtiva = ref<"dados" | "historico">("dados");
 
 const tabs = [
   { id: "dados" as const, label: "Dados", icon: CircleAlert },
-  { id: "historico" as const, label: "Histórico", icon: History },
+  { id: "historico" as const, label: "HistÃ³rico", icon: History },
 ];
 
 const statusOptions = [
   { value: "pendente" as const, label: "Pendente" },
   { value: "acompanhamento" as const, label: "Em acompanhamento" },
-  { value: "concluida" as const, label: "Concluída" },
+  { value: "concluida" as const, label: "ConcluÃ­da" },
 ];
 
 const getStatusBarColor = (status?: string): string => {
@@ -194,7 +197,7 @@ const detalhesItems = computed(() => [
     valor: props.ocorrencia?.formaAtendimento || "-",
   },
   {
-    label: "Situação",
+    label: "SituaÃ§Ã£o",
     valor: getSituacaoLabel(props.ocorrencia?.situacao || ""),
   },
 ]);

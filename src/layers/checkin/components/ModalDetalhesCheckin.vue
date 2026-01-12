@@ -52,7 +52,7 @@
                   Data Check-in
                 </p>
                 <p class="text-sm font-medium text-[var(--color-text)]">
-                  {{ formatarData(checkin?.dataCheckin) || "-" }}
+                  {{ formatarData(checkin?.data) || "-" }}
                 </p>
               </div>
               <div
@@ -131,8 +131,13 @@
 </template>
 
 <script setup lang="ts">
-import type { Checkin } from "../schemas/checkin.schema";
+import { z } from "zod";
+
+import { checkinSchema } from "../schemas/checkin.schema";
+import { resolveStatusVariant } from "~/components/ui/utils/status";
 import type { Variant } from "~/components/ui/UiBadge.vue";
+
+type Checkin = z.infer<typeof checkinSchema>;
 
 const props = defineProps<{
   modelValue: boolean;
@@ -162,11 +167,11 @@ const STATUS_BAR_CLASSES: Record<string, string> = {
   inativo: "bg-[var(--color-danger)]",
 };
 
-const getStatusBarColor = (status?: string): string => {
-  return resolveStatusVariant(status, STATUS_BAR_CLASSES, "bg-[var(--color-primary)]");
+const getStatusBarColor = (status?: string | null): string => {
+  return resolveStatusVariant(status || undefined, STATUS_BAR_CLASSES, "bg-[var(--color-primary)]");
 };
 
-const getVariant = (status?: string): Variant => {
-  return resolveStatusVariant(status, STATUS_VARIANTS) as Variant;
+const getVariant = (status?: string | null): Variant => {
+  return resolveStatusVariant(status || undefined, STATUS_VARIANTS) as Variant;
 };
 </script>

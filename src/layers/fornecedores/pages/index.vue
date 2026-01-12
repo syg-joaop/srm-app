@@ -61,8 +61,16 @@ import ListaFornecedores from "../components/ListaFornecedores.vue";
 import MapaFornecedores from "../components/MapaFornecedores.vue";
 import ModalAdicionarARota from "../components/ModalAdicionarARota.vue";
 
+import { z } from "zod";
 import type { Rota } from "../../rotas/schemas/rotas.schema";
-import type { Fornecedor } from "../schemas/fornecedores.schema";
+import { fornecedorItemSchema } from "../schemas/fornecedores.schema";
+
+type Fornecedor = z.infer<typeof fornecedorItemSchema>;
+
+type FornecedorWithExtraFields = Fornecedor & {
+  name?: string;
+  codfor?: string; // Always string, not number
+};
 
 const viewMode = ref<"list" | "map">("list");
 const currentPage = ref(1);
@@ -160,13 +168,14 @@ const paginatedFornecedores = computed(() => fornecedores.value?.data.items ?? [
 
 const isLoading = computed(() => status.value === "pending");
 const showModal = ref(false);
-const selectedFornecedor = ref<Fornecedor | null>(null);
+const selectedFornecedor = ref<FornecedorWithExtraFields | null>(null);
 
 const handleSelectFornecedor = (fornecedor: Fornecedor) => {
   selectedFornecedor.value = {
     ...fornecedor,
+    codfor: typeof fornecedor.codfor === "number" ? String(fornecedor.codfor) : fornecedor.codfor,
     name: fornecedor.fornecedor,
-  } as typeof selectedFornecedor.value;
+  };
   showModal.value = true;
 };
 

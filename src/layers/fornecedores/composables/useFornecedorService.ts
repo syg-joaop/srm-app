@@ -1,6 +1,14 @@
-﻿import { schemaFornecedorResponse } from "../schemas/fornecedores.schema";
+﻿import { z } from "zod";
 
-import type { Fornecedor, FornecedorFilters, FornecedorResponse } from "../schemas/fornecedores.schema";
+import {
+  fornecedorResponseSchema,
+  fornecedorSchema,
+  fornecedorFiltersSchema,
+} from "../schemas/fornecedores.schema";
+
+type Fornecedor = z.infer<typeof fornecedorSchema>;
+type FornecedorResponse = z.infer<typeof fornecedorResponseSchema>;
+type FornecedorFilters = z.infer<typeof fornecedorFiltersSchema>;
 
 const FORNECEDORES_LIST_ENDPOINT = "/sygecom/chameleon-mode/SRM_GET_FORNECEDORES";
 const FORNECEDORES_CREATE_ENDPOINT = "/sygecom/chameleon-mode/SRM_POST_FORNECEDOR";
@@ -12,7 +20,7 @@ export const useFornecedorService = () => {
     buildBody: buildPagedListBody,
     homol: true,
     cacheTtl: 5 * 60 * 1000,
-    schema: schemaFornecedorResponse,
+    schema: fornecedorResponseSchema,
   });
 
   const createFornecedor = useOfflineMutation<Partial<Fornecedor>>({

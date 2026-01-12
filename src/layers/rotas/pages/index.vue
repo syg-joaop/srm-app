@@ -36,9 +36,7 @@
     </div>
 
     <!-- Loading state -->
-    <div v-if="isLoading" class="p-4">
-      <UiSkeletonLoader pattern="card" :count="itemsPerPage" />
-    </div>
+    <div v-if="isLoading" class="p-4"></div>
 
     <!-- Error state -->
     <UiEmptyState

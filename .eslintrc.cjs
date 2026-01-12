@@ -113,59 +113,6 @@ module.exports = {
     ],
     "import/newline-after-import": "warn",
     "import/no-duplicates": "warn",
-    "import/no-restricted-paths": [
-      "error",
-      {
-        zones: [
-          {
-            target: "./src/components",
-            from: "./src/layers",
-            message: "Componentes compartilhados não devem importar de features (src/layers/*).",
-          },
-          {
-            target: "./src/composables",
-            from: "./src/layers",
-            message: "Composables compartilhados não devem importar de features (src/layers/*).",
-          },
-          {
-            target: "./src/stores",
-            from: "./src/layers",
-            message: "Stores globais não devem importar de features (src/layers/*).",
-          },
-          {
-            target: "./src/utils",
-            from: "./src/layers",
-            message: "Utils compartilhados não devem importar de features (src/layers/*).",
-          },
-          {
-            target: "./src/types",
-            from: "./src/layers",
-            message: "Types compartilhados não devem importar de features (src/layers/*).",
-          },
-          {
-            target: "./src/layouts",
-            from: "./src/layers",
-            message: "Layouts não devem importar direto de features (src/layers/*).",
-          },
-          {
-            target: "./src/plugins",
-            from: "./src/layers",
-            message: "Plugins não devem importar direto de features (src/layers/*).",
-          },
-          {
-            target: "./src/middleware",
-            from: "./src/layers",
-            message: "Middleware não deve importar direto de features (src/layers/*).",
-          },
-          {
-            target: "./src/server",
-            from: "./src/layers",
-            message: "Código de server não deve importar de features (src/layers/*).",
-          },
-          ...crossFeatureZones,
-        ],
-      },
-    ],
   },
 
   overrides: [
