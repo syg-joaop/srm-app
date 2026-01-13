@@ -1,14 +1,3 @@
-const NETWORK_ERROR_HINTS = [
-  "Failed to fetch",
-  "NetworkError",
-  "Load failed",
-  "The Internet connection appears to be offline",
-  "fetch failed",
-  "ECONNRESET",
-  "ENOTFOUND",
-  "ETIMEDOUT",
-];
-
 const readString = (value: unknown): string | null => (typeof value === "string" ? value : null);
 
 export const toErrorMessage = (error: unknown): string => {
