@@ -111,20 +111,6 @@ module.exports = {
     },
     {
       files: ["src/layers/**/*.{ts,vue}"],
-      rules: {
-        "no-restricted-imports": [
-          "error",
-          {
-            patterns: [
-              {
-                group: ["~/layers/**", "@/layers/**"],
-                message:
-                  "Dentro de um layer, prefira imports relativos e não dependa de outras features.",
-              },
-            ],
-          },
-        ],
-      },
     },
     {
       files: [

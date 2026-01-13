@@ -228,11 +228,11 @@ import {
 } from "lucide-vue-next";
 import { computed, ref, watch } from "vue";
 
+import { getVariant } from "~/components/ui/utils/status";
 import { useBreakpoint } from "~/composables/useBreakpoint";
 
 import { useParceiroDetalhesData } from "./composables/useParceiroDetalhesData";
 import { useParceiroModalData } from "./composables/useParceiroModalData";
-import { getVariant } from "~/components/ui/utils/status";
 import { useParceiroTabs } from "./composables/useParceiroTabs";
 
 import type { ParceiroData, ParceiroVariant, TabId } from "~/types/parceiro";

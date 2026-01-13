@@ -1,9 +1,12 @@
 import { FetchError } from "ofetch";
 
-import { httpClientConfigSchema } from "~/schemas/shared/http";
+import {
+  httpClientConfigSchema,
+  type HttpClientConfig,
+  type HttpRequest,
+  type HttpResponse,
+} from "~/layers/common/schemas";
 import { HttpError, NetworkError } from "~/utils/errors";
-
-import type { HttpClientConfig, HttpRequest, HttpResponse } from "~/schemas/shared/http";
 
 const AUTH_STORAGE_KEY = "srm_auth_user";
 

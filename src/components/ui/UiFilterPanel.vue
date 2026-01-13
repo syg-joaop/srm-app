@@ -92,7 +92,7 @@
             <UiSegmentedControl
               v-else-if="filter.type === 'segmented'"
               :model-value="modelValue[filter.key]"
-              :options="filter.options?.map(opt => ({ ...opt, value: String(opt.value) })) ?? []"
+              :options="filter.options?.map((opt) => ({ ...opt, value: String(opt.value) })) ?? []"
               :size="filter.segmentedSize"
               :mobile-size="filter.segmentedMobileSize"
               :full-width="filter.segmentedFullWidth ?? true"

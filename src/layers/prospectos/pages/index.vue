@@ -230,7 +230,9 @@
                 <UserPlus class="w-8 h-8 text-[var(--color-text-muted)]" />
               </div>
               <h3 class="text-lg font-semibold text-[var(--color-text)] mb-2">
-                {{ hasActiveFilters ? "Nenhum prospecto encontrado" : "Nenhum prospecto cadastrado" }}
+                {{
+                  hasActiveFilters ? "Nenhum prospecto encontrado" : "Nenhum prospecto cadastrado"
+                }}
               </h3>
               <p class="text-sm text-[var(--color-text-muted)] mb-6">
                 {{
@@ -253,7 +255,12 @@
 
         <!-- Vista Mapa -->
         <div v-else>
-          <MapaProspectos :prospectos="prospectos?.data?.items ?? []" />
+          <div
+            class="h-[600px] w-full rounded-xl overflow-hidden border"
+            style="border-color: var(--color-border)"
+          >
+            <UiMapaPontos :pontos="pontosProspectos" :status-config="statusConfig" />
+          </div>
         </div>
       </div>
     </Transition>
@@ -268,141 +275,100 @@ import { Filter, List, Map, Search, UserPlus, X } from "lucide-vue-next";
 import { z } from "zod";
 
 import ModalDetalhesParceiro from "~/components/common/ModalDetalhesParceiro.vue";
-import type { FilterBadge } from "~/components/ui/UiFilterBadges.vue";
-import type { ParceiroData } from "~/types/parceiro";
 
-import MapaProspectos from "../components/MapaProspectos.vue";
 import ProspectoCardItem from "../components/ProspectoCardItem.vue";
+import { useProspectosFilters } from "../composables/useProspectosFilters";
+import { useProspectosMap } from "../composables/useProspectosMap";
+import {
+  ORDENACAO_OPTIONS,
+  PAGINACAO_PADRAO,
+  STATUS_OPTIONS,
+} from "../constants/prospecto.constants";
 import { prospectoItemSchema } from "../schemas/prospectos.schema";
+
+import type { ParceiroData } from "~/types/parceiro";
 
 type Prospecto = z.infer<typeof prospectoItemSchema>;
 
-definePageMeta({
-  layout: "default",
-});
+definePageMeta({ layout: "default" });
 
-const viewMode = ref<"list" | "map">("list");
-const currentPage = ref(1);
-const itemsPerPage = ref(50);
-const search = ref("");
-const showFilters = ref(false);
-
-const filters = ref({
-  fantasia: "",
-  cidade: "",
-  status: "todos",
-  sortBy: "fornecedor",
-});
+// =============================================================================
+// CONSTANTES E OPÇÕES
+// =============================================================================
 
 const viewModeOptions = [
   { label: "Lista", value: "list", icon: List },
   { label: "Mapa", value: "map", icon: Map },
 ];
 
-const statusOptions = [
-  { label: "Todos", value: "todos" },
-  { label: "Ativo", value: "ativo" },
-  { label: "Novo", value: "novo" },
-  { label: "Inativo", value: "inativo" },
-];
+const statusOptions = [...STATUS_OPTIONS];
+const sortOptions = [...ORDENACAO_OPTIONS];
 
-const sortOptions = [
-  { label: "Fornecedor", value: "fornecedor" },
-  { label: "Cidade", value: "cidade" },
-  { label: "Status", value: "status" },
-  { label: "Carga +60 dias", value: "sem_carga" },
-];
+// =============================================================================
+// ESTADO E COMPOSABLES
+// =============================================================================
+
+const viewMode = ref<"list" | "map">("list");
+const currentPage = ref<number>(PAGINACAO_PADRAO.page);
+const itemsPerPage = ref<number>(PAGINACAO_PADRAO.itemsPerPage);
+
+const {
+  search,
+  filters,
+  showFilters,
+  totalFiltrosAtivos: activeFiltersCount,
+  hasActiveFilters,
+  filterBadges,
+  apiFilters,
+  removeFilter: handleRemoveFilter,
+  clearAllFilters,
+} = useProspectosFilters();
+
+// =============================================================================
+// DATA FETCHING
+// =============================================================================
 
 const { fetchProspectos } = useProspectoService();
 
-const prospectoFilters = computed(() => ({
-  search: search.value,
-  fantasia: filters.value.fantasia,
-  cidade: filters.value.cidade,
-  status: filters.value.status,
-  sortBy: filters.value.sortBy,
-}));
+const { data: prospectos, status } = fetchProspectos(currentPage, itemsPerPage, apiFilters);
 
-watch(
-  [search, filters],
-  () => {
-    currentPage.value = 1;
-  },
-  { deep: true },
-);
-
-watch(currentPage, () => {
-  window.scrollTo({ top: 0, behavior: "smooth" });
-});
-
-const { data: prospectos, status } = fetchProspectos(currentPage, itemsPerPage, prospectoFilters);
-
-const paginatedProspectos = computed(() => prospectos.value?.data?.items ?? []);
+const prospectosList = computed(() => prospectos.value?.data?.items ?? []);
 const totalItems = computed(() => prospectos.value?.data?.totalItems ?? 0);
 const totalPages = computed(() => prospectos.value?.data?.totalPages ?? 1);
 const isLoading = computed(() => status.value === "pending");
 
-const activeFiltersCount = computed(() => {
-  let count = 0;
-  if (filters.value.fantasia) count++;
-  if (filters.value.cidade) count++;
-  if (filters.value.status !== "todos") count++;
-  if (filters.value.sortBy !== "fornecedor") count++;
-  return count;
-});
+// Alias para manter compatibilidade com template
+const paginatedProspectos = prospectosList;
 
-const hasActiveFilters = computed(() => search.value || activeFiltersCount.value > 0);
+// =============================================================================
+// MAPA
+// =============================================================================
 
-const filterBadges = computed<FilterBadge[]>(() => {
-  const badges: FilterBadge[] = [];
-  if (search.value) {
-    badges.push({ key: "search", label: "Busca", value: search.value });
-  }
-  if (filters.value.fantasia) {
-    badges.push({ key: "fantasia", label: "Fantasia", value: filters.value.fantasia });
-  }
-  if (filters.value.cidade) {
-    badges.push({ key: "cidade", label: "Cidade", value: filters.value.cidade });
-  }
-  if (filters.value.status !== "todos") {
-    const status = statusOptions.find((s) => s.value === filters.value.status);
-    badges.push({ key: "status", value: status?.label || filters.value.status, variant: "primary" });
-  }
-  return badges;
-});
+const { statusConfig, pontosProspectos } = useProspectosMap(prospectosList);
 
-const handleRemoveFilter = (key: string) => {
-  switch (key) {
-    case "search":
-      search.value = "";
-      break;
-    case "fantasia":
-      filters.value.fantasia = "";
-      break;
-    case "cidade":
-      filters.value.cidade = "";
-      break;
-    case "status":
-      filters.value.status = "todos";
-      break;
-  }
-};
+// =============================================================================
+// WATCHERS
+// =============================================================================
+
+watch([search, filters], () => (currentPage.value = 1), { deep: true });
+watch(currentPage, () => window.scrollTo({ top: 0, behavior: "smooth" }));
+
+// =============================================================================
+// HANDLERS
+// =============================================================================
 
 const limparFiltros = () => {
-  search.value = "";
-  filters.value = {
-    fantasia: "",
-    cidade: "",
-    status: "todos",
-    sortBy: "fornecedor",
-  };
+  clearAllFilters();
   currentPage.value = 1;
 };
 
+// Modal de detalhes
 const showModal = ref(false);
 const selectedProspecto = ref<ParceiroData | null>(null);
 
 const handleSelectProspecto = (prospecto: Prospecto) => {
+  const codigoProspecto = prospecto.codfor ? String(prospecto.codfor) : undefined;
+
   selectedProspecto.value = {
     name: prospecto.fornecedor,
     fornecedor: prospecto.fornecedor,
@@ -410,7 +376,7 @@ const handleSelectProspecto = (prospecto: Prospecto) => {
     status: prospecto.status,
     cidade: prospecto.cidade,
     uf: prospecto.uf,
-    codfor: prospecto.codfor ? String(prospecto.codfor) : undefined,
+    codfor: codigoProspecto,
     codpros: undefined,
     categoria: prospecto.categoria,
     ende: prospecto.ende,

@@ -1,7 +1,9 @@
 ﻿import { formatarMoeda } from "~/utils/formatters/formatadores";
 
+import { getIconByTipo } from "./constants/painel.constants";
+
+import type { DashboardData } from "./schemas/dashboard.schema";
 import type { ChartData, ComprasMesItem, SummaryItem } from "./schemas/ui.schema";
-import type { DashboardData } from "~/schemas/api/dashboard";
 
 export const EMPTY_CHART_DATA: ChartData = {
   ocorrenciasPie: [],
@@ -13,19 +15,10 @@ export const EMPTY_CHART_DATA: ChartData = {
 
 export const formatarLabel = (tipo: string) => tipo.charAt(0).toUpperCase() + tipo.slice(1);
 
-export function mapIcon(tipo: string): string {
-  const map: Record<string, string> = {
-    Fornecedores: "Building2",
-    Prospectos: "UserPlus",
-    Ativos: "CheckCircle",
-    Inativos: "XCircle",
-    Atendimentos: "MessageSquare",
-    Vencidos: "AlertTriangle",
-    Agendados: "Calendar",
-  };
-  const key = Object.keys(map).find((k) => k.toLowerCase() === tipo.toLowerCase());
-  return key ? map[key] : "Info";
-}
+/**
+ * @deprecated Use getIconByTipo from constants/painel.constants.ts
+ */
+export const mapIcon = getIconByTipo;
 
 export function formatarResumoCompras(data: ComprasMesItem): SummaryItem[] {
   return [

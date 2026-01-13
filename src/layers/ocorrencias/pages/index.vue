@@ -223,7 +223,9 @@
               <MessageSquare class="w-8 h-8 text-[var(--color-text-muted)]" />
             </div>
             <h3 class="text-lg font-semibold text-[var(--color-text)] mb-2">
-              {{ hasActiveFilters ? "Nenhuma ocorrência encontrada" : "Nenhuma ocorrência cadastrada" }}
+              {{
+                hasActiveFilters ? "Nenhuma ocorrência encontrada" : "Nenhuma ocorrência cadastrada"
+              }}
             </h3>
             <p class="text-sm text-[var(--color-text-muted)] mb-6">
               {{
@@ -257,59 +259,64 @@
 import { Filter, MessageSquare, Plus, Search, X } from "lucide-vue-next";
 import { z } from "zod";
 
-import type { FilterBadge } from "~/components/ui/UiFilterBadges.vue";
-
 import ModalDetalhesOcorrencia from "../components/ModalDetalhesOcorrencia.vue";
 import OcorrenciaCardItem from "../components/OcorrenciaCardItem.vue";
-import { ocorrenciaFiltersSchema, ocorrenciaSchema } from "../schemas/ocorrencias.schema";
+import { useOcorrenciasFilters } from "../composables/useOcorrenciasFilters";
+import {
+  ATENDENTE_OPTIONS,
+  FORMA_ATENDIMENTO_OPTIONS,
+  ORDENAR_POR_OPTIONS,
+  PAGINACAO_PADRAO,
+  SITUACAO_OPTIONS,
+  STATUS_OPTIONS,
+} from "../constants/ocorrencia.constants";
+import { ocorrenciaSchema } from "../schemas/ocorrencias.schema";
 import { normalizeOcorrencias } from "../utils/normalizers";
 
 type Ocorrencia = z.infer<typeof ocorrenciaSchema>;
-type OcorrenciaFilters = z.infer<typeof ocorrenciaFiltersSchema>;
 type OcorrenciaStatus = z.infer<typeof ocorrenciaSchema>["status"];
 
-definePageMeta({
-  layout: "default",
-});
+definePageMeta({ layout: "default" });
 
-const showFilters = ref(false);
-const searchQuery = ref("");
-const currentPage = ref(1);
-const itemsPerPage = ref(10);
-const showModal = ref(false);
-const ocorrenciaSelecionada = ref<Ocorrencia | null>(null);
+// =============================================================================
+// CONSTANTES E OPÇÕES
+// =============================================================================
 
-const filters = ref<OcorrenciaFilters>({
-  atendente: "",
-  situacao: "",
-  formaAtendimento: "",
-  status: "",
-  ordenarPor: "data_cadastro",
-});
+const atendenteOptions = [...ATENDENTE_OPTIONS];
+const situacaoOptions = [...SITUACAO_OPTIONS];
+const formaAtendimentoOptions = [...FORMA_ATENDIMENTO_OPTIONS];
+const statusOptions = [...STATUS_OPTIONS];
+const ordenarPorOptions = [...ORDENAR_POR_OPTIONS];
+
+// =============================================================================
+// ESTADO E COMPOSABLES
+// =============================================================================
+
+const currentPage = ref<number>(PAGINACAO_PADRAO.page);
+const itemsPerPage = ref<number>(PAGINACAO_PADRAO.itemsPerPage);
+
+const {
+  search: searchQuery,
+  filters,
+  showFilters,
+  totalFiltrosAtivos: activeFiltersCount,
+  hasActiveFilters,
+  filterBadges,
+  apiFilters,
+  removeFilter: handleRemoveFilter,
+  clearAllFilters,
+} = useOcorrenciasFilters();
+
+// =============================================================================
+// DATA FETCHING
+// =============================================================================
 
 const { fetchOcorrencias } = useOcorrenciaService();
-
-const ocorrenciaFilters = computed<OcorrenciaFilters>(() => ({
-  search: searchQuery.value,
-  ...filters.value,
-}));
-
-watch(
-  [searchQuery, filters],
-  () => {
-    currentPage.value = 1;
-  },
-  { deep: true },
-);
-
-watch(currentPage, () => {
-  window.scrollTo({ top: 0, behavior: "smooth" });
-});
 
 const { data: ocorrenciasResponse, status } = fetchOcorrencias(
   currentPage,
   itemsPerPage,
-  ocorrenciaFilters,
+  apiFilters,
 );
 
 const isLoading = computed(() => status.value === "pending");
@@ -323,111 +330,39 @@ const fallbackTotalItems = computed(
   () => ocorrenciasResponse.value?.data?.totalItems ?? ocorrencias.value.length,
 );
 
-const totalPages = computed(
-  () =>
-    ocorrenciasResponse.value?.data?.totalPages ??
-    Math.max(1, Math.ceil((fallbackTotalItems.value || 0) / itemsPerPage.value)),
-);
+const totalPages = computed(() => {
+  const apiTotalPages = ocorrenciasResponse.value?.data?.totalPages;
+  if (apiTotalPages) return apiTotalPages;
+  return Math.max(1, Math.ceil((fallbackTotalItems.value || 0) / itemsPerPage.value));
+});
 
 const paginatedOcorrencias = computed(() => {
   const items = ocorrencias.value;
   if (ocorrenciasResponse.value?.data?.totalPages) return items;
+
   const start = (currentPage.value - 1) * itemsPerPage.value;
   return items.slice(start, start + itemsPerPage.value);
 });
 
-const atendenteOptions = [
-  { label: "Todos", value: "" },
-  { label: "Sygecom", value: "Sygecom" },
-  { label: "Dahm", value: "Dahm" },
-  { label: "Alexnlv", value: "Alexnlv" },
-  { label: "Alex sygecom", value: "Alex sygecom" },
-];
+// =============================================================================
+// WATCHERS
+// =============================================================================
 
-const situacaoOptions = [
-  { label: "Todos", value: "" },
-  { label: "Aberta", value: "aberta" },
-  { label: "Fechada", value: "fechada" },
-];
+watch([searchQuery, filters], () => (currentPage.value = 1), { deep: true });
+watch(currentPage, () => window.scrollTo({ top: 0, behavior: "smooth" }));
 
-const formaAtendimentoOptions = [
-  { label: "Todos", value: "" },
-  { label: "Via Web", value: "web" },
-  { label: "Telefone", value: "telefone" },
-  { label: "Presencial", value: "presencial" },
-];
-
-const statusOptions = [
-  { label: "Todos", value: "" },
-  { label: "Pendente", value: "pendente" },
-  { label: "Em Acompanhamento", value: "acompanhamento" },
-  { label: "Atendimento Ok", value: "concluida" },
-];
-
-const ordenarPorOptions = [
-  { label: "Data da Ocorrência", value: "data_ocorrencia" },
-  { label: "Data do Próx. Atendimento", value: "data_proximo" },
-  { label: "Data de cadastro", value: "data_cadastro" },
-];
-
-const activeFiltersCount = computed(() => {
-  let count = 0;
-  if (filters.value.atendente) count++;
-  if (filters.value.situacao) count++;
-  if (filters.value.formaAtendimento) count++;
-  if (filters.value.status) count++;
-  if (filters.value.ordenarPor !== "data_cadastro") count++;
-  return count;
-});
-
-const hasActiveFilters = computed(() => searchQuery.value || activeFiltersCount.value > 0);
-
-const filterBadges = computed<FilterBadge[]>(() => {
-  const badges: FilterBadge[] = [];
-  if (searchQuery.value) {
-    badges.push({ key: "search", label: "Busca", value: searchQuery.value });
-  }
-  if (filters.value.atendente) {
-    badges.push({ key: "atendente", label: "Atendente", value: filters.value.atendente });
-  }
-  if (filters.value.situacao) {
-    const situacao = situacaoOptions.find((s) => s.value === filters.value.situacao);
-    badges.push({ key: "situacao", label: "Situação", value: situacao?.label || filters.value.situacao });
-  }
-  if (filters.value.status) {
-    const status = statusOptions.find((s) => s.value === filters.value.status);
-    badges.push({ key: "status", value: status?.label || filters.value.status, variant: "primary" });
-  }
-  return badges;
-});
-
-const handleRemoveFilter = (key: string) => {
-  switch (key) {
-    case "search":
-      searchQuery.value = "";
-      break;
-    case "atendente":
-      filters.value.atendente = "";
-      break;
-    case "situacao":
-      filters.value.situacao = "";
-      break;
-    case "status":
-      filters.value.status = "";
-      break;
-  }
-};
+// =============================================================================
+// HANDLERS
+// =============================================================================
 
 const clearFilters = () => {
-  searchQuery.value = "";
-  filters.value = {
-    atendente: "",
-    situacao: "",
-    formaAtendimento: "",
-    status: "",
-    ordenarPor: "data_cadastro",
-  };
+  clearAllFilters();
+  currentPage.value = 1;
 };
+
+// Modal de detalhes
+const showModal = ref(false);
+const ocorrenciaSelecionada = ref<Ocorrencia | null>(null);
 
 const abrirDetalhes = (ocorrencia: Ocorrencia) => {
   ocorrenciaSelecionada.value = ocorrencia;
@@ -436,6 +371,7 @@ const abrirDetalhes = (ocorrencia: Ocorrencia) => {
 
 const handleStatusChange = (newStatus: string) => {
   if (!ocorrenciaSelecionada.value) return;
+
   ocorrenciaSelecionada.value = {
     ...ocorrenciaSelecionada.value,
     status: newStatus as OcorrenciaStatus,

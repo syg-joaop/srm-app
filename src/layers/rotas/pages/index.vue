@@ -123,13 +123,12 @@
             v-if="filtroStatus"
             class="inline-flex items-center gap-1.5 px-2.5 py-1 bg-[var(--color-primary-soft)] border border-[var(--color-primary-border)] rounded-md text-xs font-medium text-[var(--color-primary)]"
           >
-            {{ statusFilters.find((f) => f.value === filtroStatus)?.label }}
+            {{ statusLabel }}
           </span>
         </div>
       </div>
     </Transition>
 
-    <!-- Loading state refinado -->
     <div v-if="isLoading" class="space-y-2" aria-hidden="true">
       <div
         v-for="i in 5"
@@ -210,17 +209,11 @@
             >
               <ChevronUp
                 class="w-3 h-3"
-                :class="
-                  sortField === 'codigo' && sortOrder === 'asc' ? 'text-[var(--color-primary)]' : ''
-                "
+                :class="isSortActive('codigo', 'asc') ? 'text-[var(--color-primary)]' : ''"
               />
               <ChevronDown
                 class="w-3 h-3"
-                :class="
-                  sortField === 'codigo' && sortOrder === 'desc'
-                    ? 'text-[var(--color-primary)]'
-                    : ''
-                "
+                :class="isSortActive('codigo', 'desc') ? 'text-[var(--color-primary)]' : ''"
               />
             </div>
           </button>
@@ -235,19 +228,11 @@
             >
               <ChevronUp
                 class="w-3 h-3"
-                :class="
-                  sortField === 'progresso' && sortOrder === 'asc'
-                    ? 'text-[var(--color-primary)]'
-                    : ''
-                "
+                :class="isSortActive('progresso', 'asc') ? 'text-[var(--color-primary)]' : ''"
               />
               <ChevronDown
                 class="w-3 h-3"
-                :class="
-                  sortField === 'progresso' && sortOrder === 'desc'
-                    ? 'text-[var(--color-primary)]'
-                    : ''
-                "
+                :class="isSortActive('progresso', 'desc') ? 'text-[var(--color-primary)]' : ''"
               />
             </div>
           </button>
@@ -262,17 +247,11 @@
             >
               <ChevronUp
                 class="w-3 h-3"
-                :class="
-                  sortField === 'status' && sortOrder === 'asc' ? 'text-[var(--color-primary)]' : ''
-                "
+                :class="isSortActive('status', 'asc') ? 'text-[var(--color-primary)]' : ''"
               />
               <ChevronDown
                 class="w-3 h-3"
-                :class="
-                  sortField === 'status' && sortOrder === 'desc'
-                    ? 'text-[var(--color-primary)]'
-                    : ''
-                "
+                :class="isSortActive('status', 'desc') ? 'text-[var(--color-primary)]' : ''"
               />
             </div>
           </button>
@@ -391,23 +370,42 @@ import { logger } from "~/utils/logger";
 import ModalDetalhesRota from "../components/ModalDetalhesRota.vue";
 import ModalNovaRota from "../components/ModalNovaRota.vue";
 import RotaCardItem from "../components/RotaCardItem.vue";
+import { useRotasFilters } from "../composables/useRotasFilters";
+import { useRotasSort } from "../composables/useRotasSort";
+import { PAGINACAO_PADRAO } from "../constants/rota.constants";
 
-import type { Rota, RotaFilters } from "../schemas/rotas.schema";
+import type { Rota } from "../schemas/rotas.schema";
 
-definePageMeta({
-  layout: "default",
-});
+definePageMeta({ layout: "default" });
+
+// =============================================================================
+// COMPOSABLES
+// =============================================================================
+
+const {
+  dataInicio: filtroDataInicio,
+  dataFim: filtroDataFim,
+  status: filtroStatus,
+  statusSelect: filtroStatusSelect,
+  statusOptions: statusFilterOptions,
+  currentPage,
+  hasActiveFilters,
+  apiFilters,
+  statusLabel,
+  handleDateChange,
+  handleStatusChange: handleStatusFilterChange,
+  clearAllFilters: limparFiltros,
+} = useRotasFilters(PAGINACAO_PADRAO.itemsPerPage);
+
+const { sortField, sortOrder, toggleSort, isSortActive, sortRotas } = useRotasSort();
+
+// =============================================================================
+// ESTADO
+// =============================================================================
 
 const showNovaRotaModal = ref(false);
 const showDetalhesModal = ref(false);
 const rotaSelecionada = ref<Rota | null>(null);
-const filtroDataInicio = ref<Date | null>(null);
-const filtroDataFim = ref<Date | null>(null);
-const filtroStatus = ref<string | null>(null);
-const currentPage = ref(1);
-const itemsPerPage = 10;
-const sortField = ref<"codigo" | "progresso" | "status" | null>(null);
-const sortOrder = ref<"asc" | "desc">("asc");
 
 const rotas = ref<Rota[]>([]);
 const totalItems = ref(0);
@@ -416,64 +414,16 @@ const error = ref<string | null>(null);
 
 const rotaService = useRotaService();
 
-const statusFilters = [
-  {
-    label: "Todas",
-    value: "",
-    color: "var(--color-text-muted)",
-    activeClass: "bg-[var(--color-hover)] text-[var(--color-text)]",
-  },
-  {
-    label: "Pendente",
-    value: "pendente",
-    color: "var(--color-text-muted)",
-    activeClass: "bg-[var(--color-hover)] text-[var(--color-text)]",
-  },
-  {
-    label: "Em Andamento",
-    value: "em_andamento",
-    color: "var(--color-primary)",
-    activeClass:
-      "bg-[var(--color-primary-soft)] text-[var(--color-primary)] border-[var(--color-primary-border)]",
-  },
-  {
-    label: "Completa",
-    value: "completa",
-    color: "var(--color-status-finalizado)",
-    activeClass: "bg-[var(--color-success-soft)] text-[var(--color-success)]",
-  },
-];
+// =============================================================================
+// GEOLOCALIZAÇÃO
+// =============================================================================
 
-const statusFilterOptions = computed(() =>
-  statusFilters.map((filter) => ({
-    label: filter.label,
-    value: filter.value,
-  })),
-);
-
-const filtroStatusSelect = computed({
-  get: () => filtroStatus.value,
-  set: (value: string) => {
-    filtroStatus.value = value;
-  },
-});
-
-const {
-  position: geoPosition,
-  getCurrentPosition,
-  error: geoError,
-  isLoading: isLoadingGeo,
-} = useGeolocation({
+const { position: geoPosition, getCurrentPosition } = useGeolocation({
   enableHighAccuracy: false,
   timeout: 10000,
   maximumAge: 300000,
 });
 
-const totalPages = computed(() => Math.ceil(totalItems.value / itemsPerPage) || 1);
-
-/**
- * Localização do usuário armazenada
- */
 const userLocation = computed(() => {
   if (!geoPosition.value) return null;
   return {
@@ -484,90 +434,26 @@ const userLocation = computed(() => {
   };
 });
 
-/**
- * Stats rápidas de rotas
- */
-const rotasCompletas = computed(() => rotas.value.filter((r) => r.status === "completa").length);
-const rotasEmAndamento = computed(
-  () => rotas.value.filter((r) => r.status === "em_andamento").length,
-);
+// =============================================================================
+// COMPUTEDS
+// =============================================================================
 
-/**
- * Rotas paginadas com ordenação
- */
-const rotasPaginadas = computed(() => {
-  let rotasOrdenadas = [...rotas.value];
+const totalPages = computed(() => Math.ceil(totalItems.value / PAGINACAO_PADRAO.itemsPerPage) || 1);
 
-  // Aplicar ordenação se houver
-  if (sortField.value) {
-    rotasOrdenadas.sort((a, b) => {
-      let valueA: number | string;
-      let valueB: number | string;
+const rotasPaginadas = computed(() => sortRotas(rotas.value));
 
-      switch (sortField.value) {
-        case "codigo":
-          valueA = a.codigo || 0;
-          valueB = b.codigo || 0;
-          break;
-        case "progresso":
-          valueA = a.progresso?.percentual_conclusao || 0;
-          valueB = b.progresso?.percentual_conclusao || 0;
-          break;
-        case "status":
-          valueA = a.status || "";
-          valueB = b.status || "";
-          break;
-        default:
-          return 0;
-      }
+// =============================================================================
+// DATA FETCHING
+// =============================================================================
 
-      if (sortOrder.value === "asc") {
-        return valueA > valueB ? 1 : -1;
-      } else {
-        return valueA < valueB ? 1 : -1;
-      }
-    });
-  }
-
-  return rotasOrdenadas;
-});
-
-const filtros = computed<RotaFilters>(() => {
-  const filters: RotaFilters = {
-    page: currentPage.value,
-    itens: itemsPerPage,
-  };
-
-  if (filtroDataInicio.value) {
-    filters.data_inicio = filtroDataInicio.value.toISOString().split("T")[0];
-  }
-  if (filtroDataFim.value) {
-    filters.data_fim = filtroDataFim.value.toISOString().split("T")[0];
-  }
-  if (filtroStatus.value) {
-    filters.status = filtroStatus.value;
-  }
-
-  return filters;
-});
-
-/**
- * Carrega rotas do backend
- */
 const carregarRotas = async () => {
   isLoading.value = true;
   error.value = null;
 
   try {
-    const response = await rotaService.fetchRotas(filtros.value);
-
-    if (response) {
-      rotas.value = response.data || [];
-      totalItems.value = response.total || response.data?.length || 0;
-    } else {
-      rotas.value = [];
-      totalItems.value = 0;
-    }
+    const response = await rotaService.fetchRotas(apiFilters.value);
+    rotas.value = response?.data ?? [];
+    totalItems.value = response?.total ?? response?.data?.length ?? 0;
   } catch (err) {
     error.value = err instanceof Error ? err.message : "Erro ao carregar rotas";
     logger.error("[RotasPage] Erro ao carregar rotas:", err);
@@ -576,130 +462,43 @@ const carregarRotas = async () => {
   }
 };
 
-/**
- * Recarrega rotas
- */
-const recarregarRotas = () => {
-  carregarRotas();
-};
+// =============================================================================
+// HANDLERS
+// =============================================================================
 
-/**
- * Abre modal de detalhes
- */
+const recarregarRotas = () => carregarRotas();
+
 const abrirDetalhes = (rota: Rota) => {
   rotaSelecionada.value = rota;
   showDetalhesModal.value = true;
 };
 
-/**
- * Ação de adição rápida
- */
 const adicionarRapido = (rota: Rota) => {
   logger.info("Adição rápida para rota:", rota.id);
-  // TODO: Implementar adição rápida de roteiros
 };
 
-/**
- * Handler de filtro de data
- */
-const handleDateChange = (value: { start: Date | null; end: Date | null }) => {
-  filtroDataInicio.value = value.start;
-  filtroDataFim.value = value.end;
-  currentPage.value = 1; // Reset para primeira página
-};
-
-/**
- * Limpa filtros
- */
-const limparFiltros = () => {
-  filtroDataInicio.value = null;
-  filtroDataFim.value = null;
-  filtroStatus.value = null;
-  currentPage.value = 1;
-};
-
-/**
- * Handler para mudança de status no dropdown
- * Mantém a lógica de toggle: se selecionar o mesmo valor, limpa o filtro
- */
-const handleStatusFilterChange = (value: string | number | null | undefined) => {
-  const statusValue = value === "" || value === null || value === undefined ? null : String(value);
-  // Se selecionar o mesmo valor, limpa o filtro (toggle)
-  if (filtroStatus.value === statusValue) {
-    filtroStatus.value = null;
-  } else {
-    filtroStatus.value = statusValue;
-  }
-  currentPage.value = 1;
-};
-
-/**
- * Toggle ordenação
- */
-const toggleSort = (field: "codigo" | "progresso" | "status") => {
-  if (sortField.value === field) {
-    sortOrder.value = sortOrder.value === "asc" ? "desc" : "asc";
-  } else {
-    sortField.value = field;
-    sortOrder.value = "asc";
-  }
-};
-
-/**
- * Handler de rota criada
- */
 const handleRouteCreated = () => {
   logger.info("Rota criada com sucesso!");
   carregarRotas();
 };
 
-/**
- * Formata os filtros ativos para exibição
- */
-const formatarFiltrosAtivos = () => {
-  const partes: string[] = [];
+// =============================================================================
+// WATCHERS
+// =============================================================================
 
-  if (filtroDataInicio.value) {
-    partes.push(`a partir de ${formatarData(filtroDataInicio.value.toISOString())}`);
-  }
+watch([currentPage, filtroDataInicio, filtroDataFim, filtroStatus], () => carregarRotas());
 
-  if (filtroDataFim.value) {
-    partes.push(`até ${formatarData(filtroDataFim.value.toISOString())}`);
-  }
+// =============================================================================
+// LIFECYCLE
+// =============================================================================
 
-  if (filtroStatus.value) {
-    const statusFilter = statusFilters.find((f) => f.value === filtroStatus.value);
-    if (statusFilter) {
-      partes.push(`status: ${statusFilter.label}`);
-    }
-  }
-
-  return partes.join(" • ");
-};
-
-watch(
-  [
-    () => currentPage.value,
-    () => filtroDataInicio.value,
-    () => filtroDataFim.value,
-    () => filtroStatus.value,
-  ],
-  () => {
-    carregarRotas();
-  },
-);
-
-/**
- * Solicita permissão de geolocalização
- */
 const solicitarLocalizacao = async () => {
   try {
     await getCurrentPosition();
     if (geoPosition.value) {
-      logger.info("[RotasPage] Localização do usuário obtida:", {
+      logger.info("[RotasPage] Localização obtida:", {
         lat: geoPosition.value.latitude,
         lng: geoPosition.value.longitude,
-        accuracy: geoPosition.value.accuracy,
       });
     }
   } catch (err) {

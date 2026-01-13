@@ -12,15 +12,15 @@ import {
   transformProdutosData,
 } from "../dashboard.helpers";
 
-import type { DashboardData } from "~/schemas/api/dashboard";
 import type {
   AniversarianteFornecedor,
   AtendentePerformance,
   Atendimento,
   CompradorPerformance,
+  DashboardData,
   IndicadorItem,
   ProdutoMaisComprado,
-} from "~/schemas/domain/dashboard";
+} from "../schemas/dashboard.schema";
 
 /**
  * Schema para item de status (UI)

@@ -1,6 +1,6 @@
 import { z } from "zod";
 
-import { createPaginatedSchema } from "~/server/schemas/common.schema";
+import { createPaginatedSchema } from "~/layers/common/schemas";
 
 export const checkinSchema = z
   .object({

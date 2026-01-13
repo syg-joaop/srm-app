@@ -1,6 +1,4 @@
-import { ambienteSchema } from "~/schemas/shared/config";
-
-import type { Ambiente } from "~/schemas/shared/config";
+import { ambienteSchema, type Ambiente } from "~/layers/common/schemas";
 
 /**
  * Composable para acessar configuração da aplicação

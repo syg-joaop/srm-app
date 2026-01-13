@@ -256,7 +256,12 @@
 
         <!-- Vista Mapa -->
         <div v-else>
-          <MapaFornecedores :fornecedores="fornecedores?.data?.items" />
+          <div
+            class="h-[600px] w-full rounded-xl overflow-hidden border"
+            style="border-color: var(--color-border)"
+          >
+            <UiMapaPontos :pontos="pontosFornecedores" :status-config="statusConfig" />
+          </div>
         </div>
       </div>
     </Transition>
@@ -279,161 +284,111 @@ import ModalDetalhesParceiro from "~/components/common/ModalDetalhesParceiro.vue
 import { logger } from "~/utils/logger";
 
 import FornecedorCardItem from "../components/FornecedorCardItem.vue";
-import MapaFornecedores from "../components/MapaFornecedores.vue";
 import ModalAdicionarARota from "../components/ModalAdicionarARota.vue";
+import { useFornecedoresFilters } from "../composables/useFornecedoresFilters";
+import { useFornecedoresMap } from "../composables/useFornecedoresMap";
+import {
+  ORDENACAO_OPTIONS,
+  PAGINACAO_PADRAO,
+  STATUS_OPTIONS,
+} from "../constants/fornecedor.constants";
 import { fornecedorItemSchema } from "../schemas/fornecedores.schema";
 
-import type { FilterBadge } from "~/components/ui/UiFilterBadges.vue";
 import type { Rota } from "../../rotas/schemas/rotas.schema";
 
 type Fornecedor = z.infer<typeof fornecedorItemSchema>;
 
-type FornecedorWithExtraFields = Fornecedor & {
-  name?: string;
-  codfor?: string;
-};
+type FornecedorParaModal = Fornecedor & { name?: string; codfor?: string };
 
-definePageMeta({
-  layout: "default",
-});
+definePageMeta({ layout: "default" });
 
-const viewMode = ref<"list" | "map">("list");
-const currentPage = ref(1);
-const itemsPerPage = ref(50);
-const search = ref("");
-const showFilters = ref(false);
-
-const filters = ref({
-  fantasia: "",
-  cidade: "",
-  status: "todos",
-  sortBy: "fornecedor",
-});
+// =============================================================================
+// CONSTANTES E OPÇÕES
+// =============================================================================
 
 const viewModeOptions = [
   { label: "Lista", value: "list", icon: List },
   { label: "Mapa", value: "map", icon: Map },
 ];
 
-const statusOptions = [
-  { label: "Todos", value: "todos" },
-  { label: "Ativo", value: "ativo" },
-  { label: "Inativo", value: "inativo" },
-];
+const statusOptions = [...STATUS_OPTIONS];
+const sortOptions = [...ORDENACAO_OPTIONS];
 
-const sortOptions = [
-  { label: "Fornecedor", value: "fornecedor" },
-  { label: "Cidade", value: "cidade" },
-  { label: "Status", value: "status" },
-  { label: "Sem carga +60 dias", value: "sem_carga" },
-];
+// =============================================================================
+// ESTADO E COMPOSABLES
+// =============================================================================
+
+const viewMode = ref<"list" | "map">("list");
+const currentPage = ref<number>(PAGINACAO_PADRAO.page);
+const itemsPerPage = ref<number>(PAGINACAO_PADRAO.itemsPerPage);
+
+const {
+  search,
+  filters,
+  showFilters,
+  totalFiltrosAtivos: activeFiltersCount,
+  hasActiveFilters,
+  filterBadges,
+  apiFilters,
+  removeFilter: handleRemoveFilter,
+  clearAllFilters,
+} = useFornecedoresFilters();
+
+// =============================================================================
+// DATA FETCHING
+// =============================================================================
 
 const { fetchFornecedor } = useFornecedorService();
 
-const fornecedorFilters = computed(() => ({
-  search: search.value,
-  fantasia: filters.value.fantasia,
-  cidade: filters.value.cidade,
-  status: filters.value.status,
-  sortBy: filters.value.sortBy,
-}));
+const { data: fornecedores, status } = fetchFornecedor(currentPage, itemsPerPage, apiFilters);
 
-watch(
-  [search, filters],
-  () => {
-    currentPage.value = 1;
-  },
-  { deep: true },
-);
-
-watch(currentPage, () => {
-  window.scrollTo({ top: 0, behavior: "smooth" });
-});
-
-const { data: fornecedores, status } = fetchFornecedor(
-  currentPage,
-  itemsPerPage,
-  fornecedorFilters,
-);
-
-const paginatedFornecedores = computed(() => fornecedores.value?.data?.items ?? []);
+const fornecedoresList = computed(() => fornecedores.value?.data?.items ?? []);
 const totalItems = computed(() => fornecedores.value?.data?.totalItems ?? 0);
 const totalPages = computed(() => fornecedores.value?.data?.totalPages ?? 1);
 const isLoading = computed(() => status.value === "pending");
 
-const activeFiltersCount = computed(() => {
-  let count = 0;
-  if (filters.value.fantasia) count++;
-  if (filters.value.cidade) count++;
-  if (filters.value.status !== "todos") count++;
-  if (filters.value.sortBy !== "fornecedor") count++;
-  return count;
-});
+// Alias para manter compatibilidade com template
+const paginatedFornecedores = fornecedoresList;
 
-const hasActiveFilters = computed(() => search.value || activeFiltersCount.value > 0);
+// =============================================================================
+// MAPA
+// =============================================================================
 
-const filterBadges = computed<FilterBadge[]>(() => {
-  const badges: FilterBadge[] = [];
-  if (search.value) {
-    badges.push({ key: "search", label: "Busca", value: search.value });
-  }
-  if (filters.value.fantasia) {
-    badges.push({ key: "fantasia", label: "Fantasia", value: filters.value.fantasia });
-  }
-  if (filters.value.cidade) {
-    badges.push({ key: "cidade", label: "Cidade", value: filters.value.cidade });
-  }
-  if (filters.value.status !== "todos") {
-    const status = statusOptions.find((s) => s.value === filters.value.status);
-    badges.push({
-      key: "status",
-      value: status?.label || filters.value.status,
-      variant: "primary",
-    });
-  }
-  return badges;
-});
+const { statusConfig, pontosFornecedores } = useFornecedoresMap(fornecedoresList);
 
-const handleRemoveFilter = (key: string) => {
-  switch (key) {
-    case "search":
-      search.value = "";
-      break;
-    case "fantasia":
-      filters.value.fantasia = "";
-      break;
-    case "cidade":
-      filters.value.cidade = "";
-      break;
-    case "status":
-      filters.value.status = "todos";
-      break;
-  }
-};
+// =============================================================================
+// WATCHERS
+// =============================================================================
+
+watch([search, filters], () => (currentPage.value = 1), { deep: true });
+watch(currentPage, () => window.scrollTo({ top: 0, behavior: "smooth" }));
+
+// =============================================================================
+// HANDLERS
+// =============================================================================
 
 const limparFiltros = () => {
-  search.value = "";
-  filters.value = {
-    fantasia: "",
-    cidade: "",
-    status: "todos",
-    sortBy: "fornecedor",
-  };
+  clearAllFilters();
   currentPage.value = 1;
 };
 
+// Modal de detalhes
 const showModal = ref(false);
-const selectedFornecedor = ref<FornecedorWithExtraFields | null>(null);
+const selectedFornecedor = ref<FornecedorParaModal | null>(null);
 
 const handleSelectFornecedor = (fornecedor: Fornecedor) => {
+  const codigoFornecedor =
+    typeof fornecedor.codfor === "number" ? String(fornecedor.codfor) : fornecedor.codfor;
+
   selectedFornecedor.value = {
     ...fornecedor,
-    codfor: typeof fornecedor.codfor === "number" ? String(fornecedor.codfor) : fornecedor.codfor,
+    codfor: codigoFornecedor,
     name: fornecedor.fornecedor,
   };
   showModal.value = true;
 };
 
+// Modal de adicionar à rota
 const showAddRouteModal = ref(false);
 const fornecedorParaRota = ref<Fornecedor | null>(null);
 

@@ -7,12 +7,14 @@ import { z } from "zod";
 import { checkinSchema } from "~/layers/checkin/schemas/checkin.schema";
 import { atendimentoSchema } from "~/layers/ocorrencias/schemas/atendimentos.schema";
 
-import type { Agendamento } from "~/server/schemas/agendamento.schema";
-import type { Carga } from "~/server/schemas/carga.schema";
-import type { Coleta } from "~/server/schemas/coleta.schema";
-import type { Contato } from "~/server/schemas/contato.schema";
-import type { Favorecido } from "~/server/schemas/favorecido.schema";
-import type { Preco } from "~/server/schemas/preco.schema";
+import type {
+  Agendamento,
+  Carga,
+  Coleta,
+  Contato,
+  Favorecido,
+  Preco,
+} from "~/layers/common/schemas";
 
 type Atendimento = z.infer<typeof atendimentoSchema>;
 type Checkin = z.infer<typeof checkinSchema>;

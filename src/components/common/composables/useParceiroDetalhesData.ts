@@ -11,10 +11,8 @@ import { z } from "zod";
 import { checkinSchema } from "~/layers/checkin/schemas/checkin.schema";
 import { logger } from "~/utils/logger";
 
-import type { Carga } from "~/server/schemas/carga.schema";
-import type { Coleta } from "~/server/schemas/coleta.schema";
-import type { Contato } from "~/server/schemas/contato.schema";
-import type { Preco } from "~/server/schemas/preco.schema";
+import type { Carga, Coleta, Contato, Preco } from "~/layers/common/schemas";
+import type { Atendimento } from "~/layers/painel/schemas/dashboard.schema";
 import type { ParceiroData } from "~/types/parceiro";
 
 type Checkin = z.infer<typeof checkinSchema>;

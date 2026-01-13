@@ -18,7 +18,7 @@ import {
 } from "./config";
 import { formatDetailValue, normalize, toLabel } from "./normalizers";
 
-import type { Carga } from "~/server/schemas/carga.schema";
+import type { Carga } from "~/layers/common/schemas";
 import type { DetailPair, EnhancedDetail, FieldMapping, TabId, TabItem } from "~/types/parceiro";
 
 // IMPORT ESM (substituindo require())

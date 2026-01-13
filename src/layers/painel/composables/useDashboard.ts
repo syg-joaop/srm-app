@@ -2,38 +2,15 @@ import { storeToRefs } from "pinia";
 
 import { useApiConfig } from "~/composables/config";
 import { useHttpClient } from "~/composables/http";
+import { useAuthStore } from "~/stores/auth";
+
+import { DASHBOARD_GRAPH_IDS } from "../constants/painel.constants";
 import {
   dashboardApiResponseSchema,
   dashboardFiltersSchema,
   type DashboardFilters,
-} from "~/schemas/api/dashboard";
-import { useAuthStore } from "~/stores/auth";
-
+} from "../schemas/dashboard.schema";
 import { useDashboardStore } from "../stores/dashboard";
-
-/**
- * IDs dos gráficos do dashboard
- */
-const DASHBOARD_GRAPH_IDS = [
-  "INDICADORES_DASHBOARD",
-  "INDICADORES_DASHBOARD_COMPRADOR",
-  "PROXIMOS_ATENDIMENTOS",
-  "PROXIMOS_ATENDIMENTOS_NAO_ADMIN",
-  "ATENDIMENTOS_VENCIDOS",
-  "ATENDIMENTOS_VENCIDOS_NAO_ADMIN",
-  "OCORRENCIAS_12_MESES",
-  "OCORRENCIAS_12_MESES_NAO_ADMIN",
-  "OCORRENCIAS_6_MESES",
-  "OCORRENCIAS_6_MESES_NAO_ADMIN",
-  "ANIVERSIANTES_FORNECEDORES",
-  "ANIVERSIANTES_CONTATOS",
-  "ATENDENTES",
-  "META_DIARIA",
-  "COMPRAS_MES",
-  "COMPRAS_COMPRADOR",
-  "PROD_MAIS_COMPRADOS_MES",
-  "TOTAL_DESCONTOS",
-] as const;
 
 /**
  * Composable principal do Dashboard

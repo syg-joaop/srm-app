@@ -1,7 +1,23 @@
 import { z } from "zod";
 
-import { createPaginatedSchema } from "~/server/schemas/common.schema";
+import { createPaginatedSchema } from "~/layers/common/schemas";
 
+/**
+ * Schema principal da Ocorrência
+ *
+ * Campos da API (nomes abreviados do legado):
+ * - num: Número da ocorrência
+ * - codcli: Código do cliente
+ * - codfor: Código do fornecedor
+ * - data_oco: Data da ocorrência
+ * - tipo_ate: Tipo de atendimento
+ * - oco: Descrição da ocorrência
+ * - data_pro: Data do próximo atendimento
+ * - sr_recno: Registro interno
+ * - hora_oco: Hora da ocorrência
+ * - atendente_enc: Atendente encaminhado
+ * - user_diagnostico: Usuário do diagnóstico
+ */
 export const ocorrenciaSchema = z
   .object({
     id: z.number().optional(),

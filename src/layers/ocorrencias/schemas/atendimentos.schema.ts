@@ -1,6 +1,6 @@
 import { z } from "zod";
 
-import { createPaginatedSchema } from "~/server/schemas/common.schema";
+import { createPaginatedSchema } from "~/layers/common/schemas";
 
 export const atendimentoSchema = z
   .object({
@@ -25,9 +25,9 @@ export const atendimentoSchema = z
     apelido: z.string().optional(),
     atendente_enc: z.string().optional(),
     user_diagnostico: z.string().optional(),
-    latitude: z.string().optional(),
-    longitude: z.string().optional(),
-    problema: z.string().optional(),
+    latitude: z.coerce.string().optional().nullable(),
+    longitude: z.coerce.string().optional().nullable(),
+    problema: z.string().nullable().optional(),
     id: z.string().optional(),
     tipo: z.string().optional(),
     titulo: z.string().optional(),

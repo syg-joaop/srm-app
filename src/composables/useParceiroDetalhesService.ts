@@ -9,11 +9,13 @@
 import { z } from "zod";
 
 import { checkinResponseSchema } from "~/layers/checkin/schemas/checkin.schema";
+import {
+  cargaResponseSchema,
+  coletaResponseSchema,
+  contatoResponseSchema,
+  precoResponseSchema,
+} from "~/layers/common/schemas";
 import { atendimentoResponseSchema } from "~/layers/ocorrencias/schemas/atendimentos.schema";
-import { cargaResponseSchema } from "~/server/schemas/carga.schema";
-import { coletaResponseSchema } from "~/server/schemas/coleta.schema";
-import { contatoResponseSchema } from "~/server/schemas/contato.schema";
-import { precoResponseSchema } from "~/server/schemas/preco.schema";
 
 // ============================================================================
 // ENDPOINTS

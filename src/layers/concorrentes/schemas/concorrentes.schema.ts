@@ -1,6 +1,10 @@
 import { z } from "zod";
 
-import { schemaPaginatedConcorrenteResponse } from "~/server/schemas/concorrentes.schema";
+import { createPaginatedSchema } from "~/layers/common/schemas";
+
+// =============================================================================
+// SCHEMAS
+// =============================================================================
 
 export const schemaConcorrente = z
   .object({
@@ -21,10 +25,12 @@ export const schemaConcorrenteFilters = z
   })
   .passthrough();
 
-export { schemaPaginatedConcorrenteResponse };
+export const schemaPaginatedConcorrenteResponse = createPaginatedSchema(schemaConcorrente);
+
+// =============================================================================
+// TIPOS
+// =============================================================================
 
 export type Concorrente = z.infer<typeof schemaConcorrente>;
 export type ConcorrenteFilters = z.infer<typeof schemaConcorrenteFilters>;
-export type PaginatedConcorrenteResponse = z.infer<
-  typeof schemaPaginatedConcorrenteResponse
->;
+export type PaginatedConcorrenteResponse = z.infer<typeof schemaPaginatedConcorrenteResponse>;

@@ -19,34 +19,6 @@ export const toErrorMessage = (error: unknown): string => {
   return "Erro inesperado";
 };
 
-export const isNetworkError = (error: unknown): boolean => {
-  if (import.meta.client && typeof navigator !== "undefined" && navigator.onLine === false) {
-    return true;
-  }
-
-  if (error instanceof TypeError) {
-    return NETWORK_ERROR_HINTS.some((hint) => error.message.includes(hint));
-  }
-
-  if (typeof error !== "object" || !error) return false;
-
-  const name = readString((error as { name?: unknown }).name) ?? "";
-  const message = readString((error as { message?: unknown }).message) ?? "";
-  const status = (error as { status?: unknown }).status;
-
-  const hasHttpStatus = typeof status === "number";
-  if (name === "FetchError" && !hasHttpStatus) return true;
-
-  if (NETWORK_ERROR_HINTS.some((hint) => message.includes(hint))) return true;
-
-  const cause = (error as { cause?: unknown }).cause;
-  if (cause instanceof TypeError) {
-    return NETWORK_ERROR_HINTS.some((hint) => cause.message.includes(hint));
-  }
-
-  return false;
-};
-
 export const generateId = (prefix = "op"): string => {
   if (import.meta.client && typeof crypto !== "undefined" && "randomUUID" in crypto) {
     const uuid = (crypto as Crypto).randomUUID();
@@ -93,4 +65,3 @@ export const stableStringify = (value: unknown): string => {
 export const getOfflineCacheTtl = (key: string, override?: number): number | undefined => {
   return override;
 };
-

@@ -1,7 +1,7 @@
 import { useApiConfig } from "../config";
 import { useTypedHttpClient } from "../http";
 
-import type { Ambiente } from "~/schemas/shared/config";
+import type { Ambiente } from "~/layers/common/schemas";
 
 /**
  * Composable base para serviços de domínio

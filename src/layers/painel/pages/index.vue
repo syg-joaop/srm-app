@@ -439,51 +439,17 @@ import {
   Users,
 } from "lucide-vue-next";
 
-import { dataAtualPrimeiroDiaMes, dataAtualUltimoDiaMes } from "~/utils/formatters/date";
-
 import { useDashboard } from "../composables/useDashboard";
 import { useDashboardCharts } from "../composables/useDashboardCharts";
+import { usePainelModals } from "../composables/usePainelModals";
+import { FILTROS_PADRAO } from "../constants/painel.constants";
 
-import type { Atendimento } from "~/schemas/domain/dashboard";
+definePageMeta({ layout: "default" });
 
-// Tipos de UI (transformados)
-interface AniversarianteItem {
-  name: string;
-  location: string;
-  status?: string;
-  date?: string;
-}
+// =============================================================================
+// COMPOSABLES
+// =============================================================================
 
-interface AtendenteItem {
-  role: string;
-  geral: number;
-  periodo: number;
-  concluidos: number;
-  pendentes: number;
-  statuses: Array<{
-    value: string | number;
-    label?: string;
-    color: string;
-    icon?: string;
-  }>;
-}
-
-definePageMeta({
-  layout: "default",
-});
-
-// Filtros do dashboard
-const filters = ref({
-  data_inicial: dataAtualPrimeiroDiaMes(),
-  data_final: dataAtualUltimoDiaMes(),
-  data_inicial2: dataAtualPrimeiroDiaMes(),
-  data_final2: dataAtualUltimoDiaMes(),
-  categoriaFornecedor: "12",
-  filial: "TODAS",
-  mes_grafico: "atual",
-});
-
-// Composable de dashboard (agora retorna tudo)
 const {
   fetchDashboard,
   isLoading,
@@ -492,7 +458,6 @@ const {
   comprasMes,
   comprasMesAnterior,
   compradorItems,
-  produtosItems,
   aniversariantesItems,
   atendentesItems,
   chartData,
@@ -504,63 +469,34 @@ const {
   isProdutosBarEmpty,
 } = useDashboard();
 
-// Busca dados ao montar
-onMounted(async () => {
-  await fetchDashboard(filters.value);
-});
+const {
+  showParceiroModal,
+  showAtendimentoModal,
+  parceiroSelecionado,
+  atendimentoSelecionado,
+  modalVariant,
+  openAtendimentoModal: handleOpenAtendimentoModal,
+  openParceiroModal: handleOpenParceiroModal,
+  openAtendenteModal: handleOpenAtendenteModal,
+} = usePainelModals();
 
-// Reage a mudanças nos filtros
-watch(
-  filters,
-  async (newFilters) => {
-    await fetchDashboard(newFilters);
-  },
-  { deep: true },
-);
+const { lineChartRef, barChartRef, discountChartRef, initCharts } = useDashboardCharts(chartData);
 
-// Monitora erros
-watch(error, (newError) => {
-  if (newError) {
-    console.error("Erro ao carregar dashboard:", newError);
-  }
-});
+// =============================================================================
+// ESTADO
+// =============================================================================
 
-const showParceiroModal = ref(false);
-const parceiroSelecionado = ref<AniversarianteItem | (AtendenteItem & { name: string }) | null>(
-  null,
-);
-const modalVariant = ref<"parceiro" | "atendente" | "time">("parceiro");
+const filters = ref({ ...FILTROS_PADRAO });
 
-const showAtendimentoModal = ref(false);
-const atendimentoSelecionado = ref<Atendimento | null>(null);
-
-const handleOpenAtendimentoModal = (atendimento: Atendimento) => {
-  atendimentoSelecionado.value = atendimento;
-  showAtendimentoModal.value = true;
-};
-
-const handleOpenParceiroModal = (parceiro: AniversarianteItem) => {
-  modalVariant.value = "parceiro";
-  parceiroSelecionado.value = parceiro;
-  showParceiroModal.value = true;
-};
-
-const handleOpenAtendenteModal = (atendente: AtendenteItem) => {
-  modalVariant.value = "atendente";
-  parceiroSelecionado.value = {
-    ...atendente,
-    name: atendente.role,
-  };
-  showParceiroModal.value = true;
-};
+// =============================================================================
+// MÉTRICAS DE COMPRAS
+// =============================================================================
 
 const mapResumoMetrics = (items: { label: string; value: string | number }[]) =>
-  items.slice(1).map((item) => ({
-    label: item.label,
-    value: item.value,
-  }));
+  items.slice(1).map((item) => ({ label: item.label, value: item.value }));
 
 const comprasMetricsMes = computed(() => mapResumoMetrics(comprasMes.value));
+
 const comprasMetricsMesAnterior = computed(() =>
   mapResumoMetrics(
     comprasMesAnterior.value.map((item) => ({
@@ -570,20 +506,19 @@ const comprasMetricsMesAnterior = computed(() =>
   ),
 );
 
-const { lineChartRef, barChartRef, discountChartRef, initCharts } = useDashboardCharts(chartData);
+// =============================================================================
+// WATCHERS
+// =============================================================================
 
-// Inicializa gráficos quando dados mudam
-watch(
-  chartData,
-  (newData) => {
-    if (newData) {
-      nextTick(() => {
-        initCharts();
-      });
-    }
-  },
-  { deep: true, immediate: true },
-);
+watch(filters, (newFilters) => fetchDashboard(newFilters), { deep: true });
+watch(error, (err) => err && console.error("Erro ao carregar dashboard:", err));
+watch(chartData, () => nextTick(initCharts), { deep: true, immediate: true });
+
+// =============================================================================
+// LIFECYCLE
+// =============================================================================
+
+onMounted(() => fetchDashboard(filters.value));
 </script>
 
 <style scoped></style>
