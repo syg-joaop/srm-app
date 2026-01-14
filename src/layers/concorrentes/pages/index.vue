@@ -371,21 +371,16 @@ const filterBadges = computed<FilterBadge[]>(() => {
   return badges;
 });
 
+// Mapeamento de ações de reset por filtro
+const FILTER_RESET_ACTIONS = {
+  search: () => (search.value = ""),
+  nome: () => (filters.value.nome = ""),
+  cidade: () => (filters.value.cidade = ""),
+  segmento: () => (filters.value.segmento = ""),
+} as const;
+
 const handleRemoveFilter = (key: string) => {
-  switch (key) {
-    case "search":
-      search.value = "";
-      break;
-    case "nome":
-      filters.value.nome = "";
-      break;
-    case "cidade":
-      filters.value.cidade = "";
-      break;
-    case "segmento":
-      filters.value.segmento = "";
-      break;
-  }
+  FILTER_RESET_ACTIONS[key as keyof typeof FILTER_RESET_ACTIONS]?.();
 };
 
 const limparFiltros = () => {

@@ -171,3 +171,6 @@ pids
 # Stores
 stores/*.json
 !stores/.gitkeep
+
+agent-os/
+

@@ -1,4 +1,6 @@
-﻿export interface ListFilterConfig<T> {
+﻿import type { MaybeRef } from "vue";
+
+export interface ListFilterConfig<T> {
   searchFields?: (keyof T)[];
   customFilters?: (item: T) => boolean;
   sortCompare?: (a: T, b: T) => number;

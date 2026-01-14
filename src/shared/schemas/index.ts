@@ -1,5 +1,5 @@
 /**
- * Common Schemas - Schemas compartilhados entre layers
+ * Shared Schemas - Schemas compartilhados entre layers
  */
 
 // Utilitários

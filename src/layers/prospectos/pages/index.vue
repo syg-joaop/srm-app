@@ -286,7 +286,7 @@ import {
 } from "../constants/prospecto.constants";
 import { prospectoItemSchema } from "../schemas/prospectos.schema";
 
-import type { ParceiroData } from "~/layers/common/schemas/parceiro.schema";
+import type { ParceiroData } from "~/shared/schemas/parceiro.schema";
 
 type Prospecto = z.infer<typeof prospectoItemSchema>;
 

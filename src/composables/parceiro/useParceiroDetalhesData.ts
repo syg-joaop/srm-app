@@ -11,8 +11,8 @@ import { z } from "zod";
 import { checkinSchema } from "~/layers/checkin/schemas/checkin.schema";
 import { logger } from "~/utils/logger";
 
-import type { Carga, Coleta, Contato, Preco } from "~/layers/common/schemas";
-import type { ParceiroData } from "~/layers/common/schemas/parceiro.schema";
+import type { Carga, Coleta, Contato, Preco } from "~/shared/schemas";
+import type { ParceiroData } from "~/shared/schemas/parceiro.schema";
 import type { Atendimento } from "~/layers/painel/schemas/dashboard.schema";
 
 type Checkin = z.infer<typeof checkinSchema>;
@@ -62,7 +62,7 @@ export const useParceiroDetalhesData = (parceiroFn: () => ParceiroData | null) =
 
     try {
       const { useParceiroDetalhesService } = await import(
-        "~/composables/useParceiroDetalhesService"
+        "~/composables/parceiro/useParceiroDetalhesService"
       );
       const service = useParceiroDetalhesService();
 

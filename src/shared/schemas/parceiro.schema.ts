@@ -45,7 +45,7 @@ export const parceiroBaseSchema = z
     ultima_carga: z.string().optional(),
     oco2: z.string().optional(),
   })
-  .loose();
+  .passthrough();
 
 export const parceiroMapSchema = parceiroBaseSchema.pick({
   fornecedor: true,

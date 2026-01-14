@@ -133,9 +133,9 @@ export function useVrpService() {
         },
         body: request,
       });
-    } catch (fetchError: any) {
+    } catch (fetchError: unknown) {
       logError("Erro ao chamar API VRP:", fetchError);
-      logError("Detalhes do erro:", fetchError?.data || fetchError?.message || fetchError);
+      logError("Detalhes do erro:", (fetchError as { data?: unknown; message?: string })?.data || (fetchError as Error)?.message || fetchError);
       throw fetchError;
     }
 
@@ -144,12 +144,12 @@ export function useVrpService() {
 
     // Verifica se há erro ou mensagem na resposta
     if (response && typeof response === "object") {
-      const anyResponse = response as any;
-      if (anyResponse.error || anyResponse.message || anyResponse.errors) {
+      const responseObj = response as Record<string, unknown>;
+      if (responseObj.error || responseObj.message || responseObj.errors) {
         logError("API VRP retornou erro:", {
-          error: anyResponse.error,
-          message: anyResponse.message,
-          errors: anyResponse.errors,
+          error: responseObj.error,
+          message: responseObj.message,
+          errors: responseObj.errors,
         });
       }
     }

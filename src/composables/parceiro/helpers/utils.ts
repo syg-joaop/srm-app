@@ -4,7 +4,7 @@
 
 import { ALL_TABS } from "./config";
 
-import type { ParceiroData } from "~/layers/common/schemas/parceiro.schema";
+import type { ParceiroData } from "~/shared/schemas/parceiro.schema";
 import type { ParceiroTabOption, ParceiroVariant, TabId } from "~/components/ui/ui.types";
 /**
  * Filtra as tabs disponíveis baseado na variante do parceiro.
@@ -56,5 +56,3 @@ export const getTabLabel = (tabId: TabId): string => {
 export const getCountLabel = (count: number): string => {
   return count === 1 ? "1 item" : `${count} itens`;
 };
-
-

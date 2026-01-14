@@ -4,17 +4,17 @@ import {
   buildCargaFallback,
   buildCargas,
   buildContato,
-} from "~/components/common/composables/utils/parceiro/builders";
-import { ALL_TABS, EMPTY_STATE_COPY } from "~/components/common/composables/utils/parceiro/config";
+} from "~/composables/parceiro/helpers/builders";
+import { ALL_TABS, EMPTY_STATE_COPY } from "~/composables/parceiro/helpers/config";
 import {
   filterTabs,
   getCountLabel,
   getInitialTab,
   getTabLabel,
   isParceiroInactive,
-} from "~/components/common/composables/utils/parceiro/utils";
+} from "~/composables/parceiro/helpers/utils";
 
-import type { ParceiroData } from "~/layers/common/schemas/parceiro.schema";
+import type { ParceiroData } from "~/shared/schemas/parceiro.schema";
 import type {
   DetailPair,
   ParceiroTabOption,

@@ -4,7 +4,6 @@ export default defineNuxtConfig({
   srcDir: "src/",
 
   extends: [
-    "./src/layers/common",
     "./src/layers/login",
     "./src/layers/painel",
     "./src/layers/fornecedores",

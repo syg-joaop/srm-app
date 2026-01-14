@@ -20,25 +20,21 @@ export class AuthError extends AppError {
   readonly code: AuthErrorCode;
   readonly statusCode: number;
 
+  // Mapeamento de códigos de erro para status HTTP
+  static readonly ERROR_CODE_TO_STATUS = {
+    UNAUTHORIZED: 401,
+    INVALID_CREDENTIALS: 401,
+    TOKEN_EXPIRED: 401,
+    INVALID_TOKEN: 401,
+    SESSION_EXPIRED: 401,
+    FORBIDDEN: 403,
+  } as const;
+
   constructor(message: string, code: AuthErrorCode, context?: unknown) {
     super(message, context);
     this.code = code;
-
     // Define status code baseado no tipo de erro
-    switch (code) {
-      case "UNAUTHORIZED":
-      case "INVALID_CREDENTIALS":
-      case "TOKEN_EXPIRED":
-      case "INVALID_TOKEN":
-      case "SESSION_EXPIRED":
-        this.statusCode = 401;
-        break;
-      case "FORBIDDEN":
-        this.statusCode = 403;
-        break;
-      default:
-        this.statusCode = 401;
-    }
+    this.statusCode = AuthError.ERROR_CODE_TO_STATUS[code] ?? 401;
   }
 
   /**

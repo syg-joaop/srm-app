@@ -5,7 +5,7 @@ import {
   parceiroBaseSchema,
   parceiroFiltersSchema,
   parceiroMapSchema,
-} from "~/layers/common/schemas";
+} from "~/shared/schemas";
 
 /**
  * Schema do Fornecedor

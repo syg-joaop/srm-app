@@ -65,6 +65,7 @@
     "prettier": "^3.4.2",
     "storybook": "^8.6.15",
     "typescript": "^5.9.3",
+    "vitest": "^4.0.17",
     "vue-tsc": "^3.1.5"
   }
 }

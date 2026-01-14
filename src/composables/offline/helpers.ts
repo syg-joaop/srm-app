@@ -8,7 +8,7 @@ export const toErrorMessage = (error: unknown): string => {
   return "Erro inesperado";
 };
 
-export const generateId = (prefix = "op"): string => {
+export const gerarId = (prefix = "op"): string => {
   if (import.meta.client && typeof crypto !== "undefined" && "randomUUID" in crypto) {
     const uuid = (crypto as Crypto).randomUUID();
     return `${prefix}_${uuid}`;

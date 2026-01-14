@@ -1,7 +1,18 @@
-import { z } from "zod";
+// Import direto para usar no CAMPO_LABELS
+import { createCampoLabels } from "~/shared/constants/parceiro.constants";
+
+// Re-exportar constantes compartilhadas
+export { PAGINACAO_PADRAO } from "~/shared/constants/pagination.constants";
+export {
+  createFilterResetMap,
+  FILTROS_PADRAO,
+  type ParceiroFilterKey as ProspectoFilterKey,
+  type ParceiroFiltersLocal as ProspectoFiltersLocal,
+} from "~/shared/constants/parceiro.constants";
+export { VIEW_MODE_OPTIONS, type ViewMode } from "~/shared/constants/ui.constants";
 
 // =============================================================================
-// STATUS
+// STATUS (ESPECÍFICO DE PROSPECTO)
 // =============================================================================
 
 export const STATUS_PROSPECTO = {
@@ -19,7 +30,7 @@ export const getStatusLabel = (status: string) =>
   STATUS_PROSPECTO[status as StatusProspecto]?.label ?? status;
 
 // =============================================================================
-// OPÇÕES DE FILTRO
+// OPÇÕES DE FILTRO (ESPECÍFICAS DE PROSPECTO)
 // =============================================================================
 
 export const STATUS_OPTIONS = [
@@ -36,85 +47,17 @@ export const ORDENACAO_OPTIONS = [
   { label: "Carga +60 dias", value: "sem_carga" },
 ] as const;
 
-export const VIEW_MODE_OPTIONS = [
-  { label: "Lista", value: "list", icon: "List" },
-  { label: "Mapa", value: "map", icon: "Map" },
-] as const;
-
-export type ViewMode = "list" | "map";
-
 // =============================================================================
-// VALORES PADRÃO
-// =============================================================================
-
-export const FILTROS_PADRAO = {
-  fantasia: "",
-  cidade: "",
-  status: "todos",
-  sortBy: "fornecedor",
-} as const;
-
-export const PAGINACAO_PADRAO = {
-  page: 1,
-  itemsPerPage: 50,
-} as const;
-
-// =============================================================================
-// MAPEAMENTO DE CAMPOS (API -> UI)
+// MAPEAMENTO DE CAMPOS (ESPECÍFICO DE PROSPECTO)
 // =============================================================================
 
 /**
  * Mapeia os nomes abreviados da API para nomes legíveis na UI.
  */
-export const CAMPO_LABELS = {
-  codfor: "Código do Prospecto",
-  fanta: "Nome Fantasia",
-  ende: "Endereço",
-  comp: "Complemento",
-  uf: "Estado",
-  tel3: "Telefone 3",
-  oco2: "Observação 2",
-  tf: "Tipo",
-  latlong: "Possui Coordenadas",
-  ultima_carga: "Última Carga",
-} as const;
+export const CAMPO_LABELS = createCampoLabels("Código do Prospecto", "Tipo");
 
 // =============================================================================
-// SCHEMAS E TIPOS
-// =============================================================================
-
-export const prospectoFiltersLocalSchema = z.object({
-  fantasia: z.string(),
-  cidade: z.string(),
-  status: z.string(),
-  sortBy: z.string(),
-});
-
-export type ProspectoFiltersLocal = z.infer<typeof prospectoFiltersLocalSchema>;
-
-export const prospectoFilterKeySchema = z.enum(["search", "fantasia", "cidade", "status"]);
-
-export type ProspectoFilterKey = z.infer<typeof prospectoFilterKeySchema>;
-
-// =============================================================================
-// RESET DE FILTROS
-// =============================================================================
-
-/**
- * Cria um objeto com funções de reset para cada filtro.
- */
-export const createFilterResetMap = (
-  filters: { value: ProspectoFiltersLocal },
-  search: { value: string },
-) => ({
-  search: () => (search.value = ""),
-  fantasia: () => (filters.value.fantasia = ""),
-  cidade: () => (filters.value.cidade = ""),
-  status: () => (filters.value.status = "todos"),
-});
-
-// =============================================================================
-// CONFIG DO MAPA
+// CONFIG DO MAPA (ESPECÍFICO DE PROSPECTO)
 // =============================================================================
 
 export const MAP_STATUS_CONFIG = {

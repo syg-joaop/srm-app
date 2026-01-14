@@ -1,4 +1,4 @@
-import type { HttpRequest, HttpResponse } from "~/layers/common/schemas";
+import type { HttpRequest, HttpResponse } from "~/shared/schemas";
 
 /**
  * Tipo do interceptor HTTP

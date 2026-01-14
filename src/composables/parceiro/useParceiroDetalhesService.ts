@@ -8,7 +8,7 @@
 
 import { z } from "zod";
 
-import { createDetailFetcher } from "./factories/createDetailFetcher";
+import { createDetailFetcher } from "~/composables/factories/createDetailFetcher";
 
 import { checkinResponseSchema } from "~/layers/checkin/schemas/checkin.schema";
 import {
@@ -16,7 +16,7 @@ import {
   coletaResponseSchema,
   contatoResponseSchema,
   precoResponseSchema,
-} from "~/layers/common/schemas";
+} from "~/shared/schemas";
 import { atendimentoResponseSchema } from "~/layers/ocorrencias/schemas/atendimentos.schema";
 
 // ============================================================================

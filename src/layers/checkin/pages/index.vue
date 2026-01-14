@@ -380,21 +380,16 @@ const filterBadges = computed<FilterBadge[]>(() => {
   return badges;
 });
 
+// Mapeamento de ações de reset por filtro
+const FILTER_RESET_ACTIONS = {
+  search: () => (search.value = ""),
+  fornecedor: () => (filters.value.fornecedor = ""),
+  responsavel: () => (filters.value.responsavel = ""),
+  cidade: () => (filters.value.cidade = ""),
+} as const;
+
 const handleRemoveFilter = (key: string) => {
-  switch (key) {
-    case "search":
-      search.value = "";
-      break;
-    case "fornecedor":
-      filters.value.fornecedor = "";
-      break;
-    case "responsavel":
-      filters.value.responsavel = "";
-      break;
-    case "cidade":
-      filters.value.cidade = "";
-      break;
-  }
+  FILTER_RESET_ACTIONS[key as keyof typeof FILTER_RESET_ACTIONS]?.();
 };
 
 const limparFiltros = () => {

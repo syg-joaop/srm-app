@@ -18,10 +18,14 @@ import {
 } from "./config";
 import { formatDetailValue, normalize, toLabel } from "./normalizers";
 
-import type { Carga } from "~/layers/common/schemas";
-import type { DetailPair, EnhancedDetail, FieldMapping, TabId, TabItem } from "~/components/ui/ui.types";
-
-// IMPORT ESM (substituindo require())
+import type {
+  DetailPair,
+  EnhancedDetail,
+  FieldMapping,
+  TabId,
+  TabItem,
+} from "~/components/ui/ui.types";
+import type { Carga } from "~/shared/schemas";
 
 /**
  * Seleciona o primeiro campo disponível de uma lista.
@@ -272,7 +276,6 @@ const buildDetailsForCarga = (
   titleKey: string,
   isBatch: boolean,
 ): EnhancedDetail[] => {
-  // Usando helpers importados (ESM)
   if (isBatch) {
     return buildListDetails(record);
   }

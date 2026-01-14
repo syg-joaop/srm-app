@@ -1,7 +1,7 @@
 export * from "./dashboard";
 export * from "./offline";
 
-// Tipos de domínio - re-exportados de common
+// Tipos de domínio - re-exportados de shared
 export type {
   Agendamento,
   Carga,
@@ -9,4 +9,4 @@ export type {
   Contato,
   Favorecido,
   Preco,
-} from "~/layers/common/schemas";
+} from "~/shared/schemas";

@@ -229,11 +229,11 @@ import { computed, ref, watch } from "vue";
 
 import { getVariant } from "~/components/ui/utils/status";
 
-import { useParceiroDetalhesData } from "./composables/useParceiroDetalhesData";
-import { useParceiroModalData } from "./composables/useParceiroModalData";
-import { useParceiroTabs } from "./composables/useParceiroTabs";
+import { useParceiroDetalhesData } from "~/composables/parceiro/useParceiroDetalhesData";
+import { useParceiroModalData } from "~/composables/parceiro/useParceiroModalData";
+import { useParceiroTabs } from "~/composables/parceiro/useParceiroTabs";
 
-import type { ParceiroData } from "~/layers/common/schemas/parceiro.schema";
+import type { ParceiroData } from "~/shared/schemas/parceiro.schema";
 import type { ParceiroVariant, TabId } from "~/components/ui/ui.types";
 
 const props = withDefaults(

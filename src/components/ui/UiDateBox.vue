@@ -24,16 +24,14 @@ const props = withDefaults(
   },
 );
 
-const variantClasses = computed(() => {
-  switch (props.variant) {
-    case "danger":
-      return "bg-red-100/50 dark:bg-red-900/20 text-red-600 dark:text-red-400 border-red-200/50 dark:border-red-800/30";
-    case "warning":
-      return "bg-amber-100/50 dark:bg-amber-900/20 text-amber-600 dark:text-amber-400 border-amber-200/50 dark:border-amber-800/30";
-    default:
-      return "bg-primary/10 dark:bg-primary/20 text-primary-dark dark:text-primary border-primary/20 dark:border-primary/30";
-  }
-});
+// Objeto de mapeamento para variantes (mais legível que switch)
+const VARIANT_CLASSES = {
+  danger: "bg-red-100/50 dark:bg-red-900/20 text-red-600 dark:text-red-400 border-red-200/50 dark:border-red-800/30",
+  warning: "bg-amber-100/50 dark:bg-amber-900/20 text-amber-600 dark:text-amber-400 border-amber-200/50 dark:border-amber-800/30",
+  default: "bg-primary/10 dark:bg-primary/20 text-primary-dark dark:text-primary border-primary/20 dark:border-primary/30",
+} as const;
+
+const variantClasses = computed(() => VARIANT_CLASSES[props.variant] ?? VARIANT_CLASSES.default);
 
 defineOptions({ name: "UiDateBox" });
 </script>

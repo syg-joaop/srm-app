@@ -1,6 +1,6 @@
 import { z } from "zod";
 
-import { createPaginatedSchema } from "~/layers/common/schemas";
+import { createPaginatedSchema } from "~/shared/schemas";
 
 // =============================================================================
 // SCHEMAS
