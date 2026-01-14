@@ -2,7 +2,7 @@
  * Configurações e constantes para processamento de dados de parceiros.
  */
 
-import type { EmptyStateCopy, FieldMapping, ParceiroTabOption, TabId } from "~/types/parceiro";
+import type { EmptyStateCopy, FieldMapping, ParceiroTabOption, TabId } from "~/components/ui/ui.types";
 
 /**
  * Configuração simples de campos por tab.

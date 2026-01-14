@@ -1,6 +1,6 @@
 <template>
   <div class="min-h-screen p-6 sm:p-8 bg-[var(--color-background)]">
-    <!-- Header refinado com hierarquia clara -->
+    <!-- Header  com hierarquia clara -->
     <header class="mb-8">
       <div class="flex items-baseline justify-between mb-6">
         <div>
@@ -64,11 +64,7 @@
     </header>
 
     <!-- Badges de filtros ativos -->
-    <UiFilterBadges
-      :filters="filterBadges"
-      @remove="limparPesquisa"
-      @clear-all="limparPesquisa"
-    />
+    <UiFilterBadges :filters="filterBadges" @remove="limparPesquisa" @clear-all="limparPesquisa" />
 
     <!-- Content -->
     <div>
@@ -163,7 +159,12 @@ const showModal = ref(false);
 const membroSelecionado = ref<Membro | null>(null);
 
 const membrosMock: Membro[] = [
-  { id: 1, nome: "Lucas candido", email: "Lucas Candido Soares de Figueiredo", setor: "ADMINISTRATIVO" },
+  {
+    id: 1,
+    nome: "Lucas candido",
+    email: "Lucas Candido Soares de Figueiredo",
+    setor: "ADMINISTRATIVO",
+  },
   { id: 2, nome: "Junior", email: "eng.meirelesjunior@gmail.com", setor: "BALANCA" },
   { id: 3, nome: "Deyfferson", email: "WILKLIFFD@GMAIL.COM", setor: "ADMINISTRATIVO" },
   { id: 4, nome: "Michele", email: "micherlania.21@hotmail.com", setor: "FINANCEIRO" },

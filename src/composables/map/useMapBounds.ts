@@ -1,5 +1,3 @@
-import { logger } from "~/utils/logger";
-
 import type { FitBoundsOptions } from "./maps.types";
 import type { Map, LatLngBoundsExpression } from "leaflet";
 
@@ -15,20 +13,17 @@ export function useMapBounds() {
     coords: [number, number][],
     options: FitBoundsOptions = {},
   ): boolean => {
-    if (!map || coords.length === 0) {
-      return false;
-    }
+    if (!map || coords.length < 2) return false;
 
     try {
       map.fitBounds(coords as LatLngBoundsExpression, {
-        padding: options.padding || [50, 50],
+        padding: options.padding ?? [50, 50],
         maxZoom: options.maxZoom,
         animate: options.animate ?? true,
         duration: options.duration,
       });
       return true;
-    } catch (error) {
-      logger.error("[useMapBounds] Erro ao ajustar bounds do mapa:", error);
+    } catch {
       return false;
     }
   };
@@ -42,9 +37,7 @@ export function useMapBounds() {
     zoom: number,
     options: { animate?: boolean; duration?: number } = {},
   ): boolean => {
-    if (!map) {
-      return false;
-    }
+    if (!map) return false;
 
     try {
       map.setView(center, zoom, {
@@ -52,92 +45,10 @@ export function useMapBounds() {
         duration: options.duration,
       });
       return true;
-    } catch (error) {
-      logger.error("[useMapBounds] Erro ao definir view do mapa:", error);
+    } catch {
       return false;
     }
   };
 
-  /**
-   * Ajusta o zoom do mapa.
-   */
-  const setZoom = (map: Map, zoom: number): boolean => {
-    if (!map) {
-      return false;
-    }
-
-    try {
-      map.setZoom(zoom);
-      return true;
-    } catch (error) {
-      logger.error("[useMapBounds] Erro ao definir zoom do mapa:", error);
-      return false;
-    }
-  };
-
-  /**
-   * Obtém os bounds atuais do mapa.
-   */
-  const getBounds = (map: Map) => {
-    if (!map) {
-      return null;
-    }
-
-    try {
-      return map.getBounds();
-    } catch (error) {
-      logger.error("[useMapBounds] Erro ao obter bounds do mapa:", error);
-      return null;
-    }
-  };
-
-  /**
-   * Obtém o centro atual do mapa.
-   */
-  const getCenter = (map: Map): [number, number] | null => {
-    if (!map) {
-      return null;
-    }
-
-    try {
-      const center = map.getCenter();
-      return [center.lat, center.lng];
-    } catch (error) {
-      logger.error("[useMapBounds] Erro ao obter centro do mapa:", error);
-      return null;
-    }
-  };
-
-  /**
-   * Obtém o zoom atual do mapa.
-   */
-  const getZoom = (map: Map): number | null => {
-    if (!map) {
-      return null;
-    }
-
-    try {
-      return map.getZoom();
-    } catch (error) {
-      logger.error("[useMapBounds] Erro ao obter zoom do mapa:", error);
-      return null;
-    }
-  };
-
-  /**
-   * Verifica se os bounds são válidos.
-   */
-  const isValidBounds = (coords: [number, number][]): boolean => {
-    return coords.length >= 2;
-  };
-
-  return {
-    fitToBounds,
-    setView,
-    setZoom,
-    getBounds,
-    getCenter,
-    getZoom,
-    isValidBounds,
-  };
+  return { fitToBounds, setView };
 }

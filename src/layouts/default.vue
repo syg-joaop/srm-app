@@ -25,7 +25,7 @@
           <span
             class="text-[10px] font-medium tracking-wide uppercase"
             style="color: var(--color-text-muted)"
-            >{{ userRole }}</span
+            >{{ user?.setor }}</span
           >
         </div>
       </div>
@@ -72,7 +72,7 @@
             {{ userName }}
           </p>
           <p class="text-xs" style="color: var(--color-text-muted)">
-            {{ userRole }}
+            {{ user?.setor }}
           </p>
         </div>
         <div class="w-10 h-10 rounded-full bg-primary flex items-center justify-center">
@@ -110,7 +110,7 @@ import OfflineIndicator from "~/components/common/OfflineIndicator.vue";
 import Profile from "~/layouts/profile.vue";
 
 const { theme, toggleTheme } = useTheme();
-const { userName, userRole } = useAuth();
+const { userName, user } = useAuthStore();
 
 const isSidebarExpanded = ref(false);
 const mobileMenuOpen = ref(false);

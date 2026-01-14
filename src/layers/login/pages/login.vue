@@ -1,11 +1,12 @@
 ﻿<script setup lang="ts">
 import { Eye, EyeOff, Info, Moon, Sun } from "lucide-vue-next";
+import { AuthStorage } from "~/utils/storage/AuthStorage";
 
 definePageMeta({
   layout: "blank",
 });
 
-const { login } = useAuth();
+const { login: loginApi } = useLogin();
 const config = useRuntimeConfig();
 const { theme, toggleTheme } = useTheme();
 
@@ -31,10 +32,9 @@ const loading = ref(false);
 const errorMessage = ref("");
 
 const appVersion = config.public.appVersion;
-const { loadSavedCredentials } = useAuthPersistence();
 
 onMounted(() => {
-  const saved = loadSavedCredentials();
+  const saved = AuthStorage.load();
   if (saved) {
     credentials.value = { ...credentials.value, ...saved };
   }
@@ -50,14 +50,12 @@ const handleLogin = async () => {
   loading.value = true;
 
   try {
-    // Monta payload - envia colaborador/password_colaborador apenas se modal foi exibido
     const payload = {
       email: credentials.value.email,
       password: credentials.value.password,
       origem: credentials.value.origem,
       remember: credentials.value.remember,
       terms: credentials.value.terms,
-      // Inclui dados de colaborador apenas se o modal foi exibido (número antes de @sygecom)
       ...(isSygecomUser.value && {
         colaborador: credentials.value.colaborador,
         password_colaborador: credentials.value.password_colaborador,
@@ -65,12 +63,16 @@ const handleLogin = async () => {
       }),
     };
 
-    const result = await login(payload);
-    if (!result.success) {
+    const result = await loginApi(payload);
+
+    if (result.success) {
+      await navigateTo("/");
+    } else {
       errorMessage.value = result.error || "Erro ao fazer login";
     }
   } catch (e) {
-    errorMessage.value = "Erro ao fazer login";
+    console.error(e);
+    errorMessage.value = "Erro ao conectar com o servidor";
   } finally {
     loading.value = false;
   }

@@ -7,7 +7,7 @@
  * - Preparado para futura integração com serviços externos (Sentry, etc.)
  */
 
-const LOG_PREFIX = '[SRM]';
+const LOG_PREFIX = "[SRM]";
 
 export const logger = {
   /**
@@ -15,7 +15,7 @@ export const logger = {
    */
   info: (...args: unknown[]) => {
     if (import.meta.env.DEV) {
-      console.log(LOG_PREFIX, '[INFO]', ...args);
+      console.log(LOG_PREFIX, "[INFO]", ...args);
     }
   },
 
@@ -23,14 +23,14 @@ export const logger = {
    * Log de aviso - sempre visível
    */
   warn: (...args: unknown[]) => {
-    console.warn(LOG_PREFIX, '[WARN]', ...args);
+    console.warn(LOG_PREFIX, "[WARN]", ...args);
   },
 
   /**
    * Log de erro - sempre visível
    */
   error: (...args: unknown[]) => {
-    console.error(LOG_PREFIX, '[ERROR]', ...args);
+    console.error(LOG_PREFIX, "[ERROR]", ...args);
   },
 
   /**
@@ -38,7 +38,7 @@ export const logger = {
    */
   debug: (...args: unknown[]) => {
     if (import.meta.env.DEV) {
-      console.log(LOG_PREFIX, '[DEBUG]', ...args);
+      console.log(LOG_PREFIX, "[DEBUG]", ...args);
     }
   },
 };

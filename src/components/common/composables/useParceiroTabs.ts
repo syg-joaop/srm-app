@@ -14,14 +14,14 @@ import {
   isParceiroInactive,
 } from "~/components/common/composables/utils/parceiro/utils";
 
+import type { ParceiroData } from "~/layers/common/schemas/parceiro.schema";
 import type {
   DetailPair,
-  ParceiroData,
   ParceiroTabOption,
   ParceiroVariant,
   TabId,
   TabItem,
-} from "~/types/parceiro";
+} from "~/components/ui/ui.types";
 
 /**
  * Composable para gerenciar tabs do modal de detalhes do parceiro.

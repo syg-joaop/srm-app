@@ -4,7 +4,8 @@
 
 import { ALL_TABS } from "./config";
 
-import type { ParceiroData, ParceiroTabOption, ParceiroVariant, TabId } from "~/types/parceiro";
+import type { ParceiroData } from "~/layers/common/schemas/parceiro.schema";
+import type { ParceiroTabOption, ParceiroVariant, TabId } from "~/components/ui/ui.types";
 /**
  * Filtra as tabs disponíveis baseado na variante do parceiro.
  * @param variant - Variante do parceiro

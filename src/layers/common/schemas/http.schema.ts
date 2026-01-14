@@ -9,15 +9,15 @@ export const httpMethodSchema = z.enum(["GET", "POST", "PUT", "PATCH", "DELETE"]
 export const httpRequestSchema = z.object({
   url: z.string(),
   method: httpMethodSchema,
-  headers: z.record(z.string()).optional(),
+  headers: z.record(z.string(), z.string()).optional(),
   data: z.unknown().optional(),
-  params: z.record(z.string()).optional(),
+  params: z.record(z.string(), z.string()).optional(),
 });
 
 export const httpClientConfigSchema = z.object({
   baseURL: z.string().url(),
   timeout: z.number().positive().default(300000),
-  headers: z.record(z.string()).optional(),
+  headers: z.record(z.string(), z.string()).optional(),
 });
 
 // =============================================================================
@@ -28,7 +28,7 @@ export const httpResponseSchema = z.object({
   status: z.number().int(),
   statusText: z.string(),
   data: z.unknown(),
-  headers: z.record(z.string()),
+  headers: z.record(z.string(), z.string()),
 });
 
 export const successResponseSchema = z.object({

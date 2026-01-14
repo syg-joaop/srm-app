@@ -1,6 +1,6 @@
 <template>
   <div class="min-h-screen p-6 sm:p-8 bg-[var(--color-background)]">
-    <!-- Header refinado com hierarquia clara -->
+    <!-- Header  com hierarquia clara -->
     <header class="mb-8">
       <div class="flex items-baseline justify-between mb-6">
         <div>
@@ -300,7 +300,11 @@ watch(currentPage, () => {
   window.scrollTo({ top: 0, behavior: "smooth" });
 });
 
-const { data: checkinsResponse, status } = fetchCheckins(currentPage, itemsPerPage, checkinFilters);
+const { data: checkinsResponse, status } = await useAsyncData(
+  "checkins",
+  () => fetchCheckins(currentPage.value, itemsPerPage.value, checkinFilters.value),
+  { watch: [currentPage, itemsPerPage, checkinFilters] },
+);
 
 const isLoading = computed(() => status.value === "pending");
 
@@ -325,9 +329,7 @@ const normalizeCheckin = (raw: Record<string, unknown>): Checkin => ({
     toStringValue(raw.data) ??
     toStringValue(raw.dataCadastro),
   responsavel:
-    toStringValue(raw.responsavel) ??
-    toStringValue(raw.usuario) ??
-    toStringValue(raw.colaborador),
+    toStringValue(raw.responsavel) ?? toStringValue(raw.usuario) ?? toStringValue(raw.colaborador),
   observacao: toStringValue(raw.observacao) ?? toStringValue(raw.obs),
   status: toStringValue(raw.status) ?? toStringValue(raw.situacao),
   latitude: toStringValue(raw.latitude) ?? toStringValue(raw.lat),

@@ -19,7 +19,7 @@ import {
 import { formatDetailValue, normalize, toLabel } from "./normalizers";
 
 import type { Carga } from "~/layers/common/schemas";
-import type { DetailPair, EnhancedDetail, FieldMapping, TabId, TabItem } from "~/types/parceiro";
+import type { DetailPair, EnhancedDetail, FieldMapping, TabId, TabItem } from "~/components/ui/ui.types";
 
 // IMPORT ESM (substituindo require())
 

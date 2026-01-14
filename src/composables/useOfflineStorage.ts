@@ -1,4 +1,3 @@
-import { logger } from "~/utils/logger";
 import {
   OFFLINE_CACHE_STORE,
   OFFLINE_PENDING_STORE,
@@ -9,8 +8,13 @@ import {
   requestToPromise,
   transactionToPromise,
 } from "~/composables/offline/database";
+import { logger } from "~/utils/logger";
 
-import type { GetOfflineCacheOptions, OfflineCacheEntry, OfflinePendingOperation } from "~/types/offline";
+import type {
+  GetOfflineCacheOptions,
+  OfflineCacheEntry,
+  OfflinePendingOperation,
+} from "~/types/offline";
 
 type CacheLookup<T> = { data: T; isExpired: boolean };
 
@@ -113,7 +117,9 @@ export const useOfflineStorage = () => {
     }
   };
 
-  const addPending = async <Payload>(operation: OfflinePendingOperation<Payload>): Promise<string> => {
+  const addPending = async <Payload>(
+    operation: OfflinePendingOperation<Payload>,
+  ): Promise<string> => {
     if (!isIndexedDbAvailable()) return operation.id;
 
     try {
@@ -127,7 +133,9 @@ export const useOfflineStorage = () => {
     }
   };
 
-  const updatePending = async <Payload>(operation: OfflinePendingOperation<Payload>): Promise<void> => {
+  const updatePending = async <Payload>(
+    operation: OfflinePendingOperation<Payload>,
+  ): Promise<void> => {
     if (!isIndexedDbAvailable()) return;
 
     try {

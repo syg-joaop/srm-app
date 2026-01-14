@@ -1,33 +1,40 @@
 import { defineStore } from "pinia";
 
-import { loginResponseSchema } from "~/types/auth";
+import { handleError, useApi } from "~/composables/http/useApi";
 
-import type { LoginCredentials, Parametros, Permissao, User } from "~/types/auth";
+import {
+  authResponseSchema,
+  loginCredentialsSchema,
+  type LoginCredentials,
+  type Parametros,
+  type Permissao,
+  type Usuario,
+} from "~/layers/login/schemas/login.schemas";
 
 const STORAGE_KEY = "srm_auth_user";
 const DEFAULT_ORIGEM = "SRM";
 
-type LoginResult = { success: true; data: { user: User[] } } | { success: false; error: string };
+type LoginResult = { success: true; data: { user: Usuario[] } } | { success: false; error: string };
 
 const isClient = () => import.meta.client;
 
-const readStoredUser = (): User | null => {
+const readStoredUsuario = (): Usuario | null => {
   if (!isClient()) return null;
   const stored = localStorage.getItem(STORAGE_KEY);
   if (!stored) return null;
   try {
-    return JSON.parse(stored) as User;
+    return JSON.parse(stored) as Usuario;
   } catch {
     return null;
   }
 };
 
-const writeStoredUser = (userData: User) => {
+const writeStoredUsuario = (userData: Usuario) => {
   if (!isClient()) return;
   localStorage.setItem(STORAGE_KEY, JSON.stringify(userData));
 };
 
-const clearStoredUser = () => {
+const clearStoredUsuario = () => {
   if (!isClient()) return;
   localStorage.removeItem(STORAGE_KEY);
 };
@@ -48,31 +55,8 @@ const buildLoginPayload = (credentials: LoginCredentials) => {
   return payload;
 };
 
-const parseLoginResponse = (response: unknown): { user: User | null; error: string | null } => {
-  const parsed = loginResponseSchema.safeParse(response);
-  if (!parsed.success) {
-    return { user: null, error: "Resposta de login invalida" };
-  }
-
-  const loggedUser = parsed.data.user?.[0];
-  if (!loggedUser) {
-    return { user: null, error: "Credenciais invalidas" };
-  }
-
-  if (!loggedUser.token) {
-    return { user: null, error: "Login sem token" };
-  }
-
-  return { user: loggedUser, error: null };
-};
-
-const getErrorMessage = (err: unknown): string => {
-  const error = err as { data?: { message?: string }; message?: string };
-  return error?.data?.message ?? error?.message ?? "Erro ao fazer login";
-};
-
 export const useAuthStore = defineStore("auth", () => {
-  const user = ref<User | null>(null);
+  const user = ref<Usuario | null>(null);
   const loading = ref(false);
   const error = ref<string | null>(null);
   const initialized = ref(false);
@@ -80,29 +64,24 @@ export const useAuthStore = defineStore("auth", () => {
   const isAuthenticated = computed(() => Boolean(user.value?.token));
   const userEmail = computed(() => user.value?.email ?? "");
   const userName = computed(() => user.value?.usuario ?? "");
-  const userRole = computed(() => user.value?.role ?? "user");
   const userPermissoes = computed<Permissao[]>(() => (user.value?.permissoes as Permissao[]) ?? []);
   const userParametros = computed<Partial<Parametros>>(
     () => (user.value?.parametros as Partial<Parametros>) ?? {},
   );
 
-  const setUser = (userData: User | null) => {
-    user.value = userData;
-  };
-
   const clearSession = () => {
     user.value = null;
     error.value = null;
     initialized.value = false;
-    clearStoredUser();
+    clearStoredUsuario();
   };
 
   const initAuth = async (): Promise<boolean> => {
     if (initialized.value) return isAuthenticated.value;
 
-    const savedUser = readStoredUser();
-    if (savedUser) {
-      user.value = savedUser;
+    const savedUsuario = readStoredUsuario();
+    if (savedUsuario) {
+      user.value = savedUsuario;
     }
 
     initialized.value = true;
@@ -116,43 +95,6 @@ export const useAuthStore = defineStore("auth", () => {
     return true;
   };
 
-  const failLogin = (message: string): LoginResult => {
-    error.value = message;
-    return { success: false, error: message };
-  };
-
-  const login = async (credentials: LoginCredentials): Promise<LoginResult> => {
-    loading.value = true;
-    error.value = null;
-
-    try {
-      const api = useAuthApi();
-      const response = await api<{ user: User[] }>("/login", {
-        method: "POST",
-        body: buildLoginPayload(credentials),
-      });
-
-      const { user: loggedUser, error: parseError } = parseLoginResponse(response);
-      if (!loggedUser) {
-        return failLogin(parseError ?? "Erro ao fazer login");
-      }
-
-      setUser(loggedUser);
-      initialized.value = true;
-      writeStoredUser(loggedUser);
-
-      if (credentials.remember || credentials.remember_colaborador) {
-        useAuthPersistence().persistCredentials(credentials);
-      }
-
-      return { success: true, data: { user: [loggedUser] } };
-    } catch (err) {
-      return failLogin(getErrorMessage(err));
-    } finally {
-      loading.value = false;
-    }
-  };
-
   const logout = async () => {
     clearSession();
     await navigateTo("/login");
@@ -160,6 +102,37 @@ export const useAuthStore = defineStore("auth", () => {
 
   const clearError = () => {
     error.value = null;
+  };
+
+  const login = async (credentials: LoginCredentials): Promise<LoginResult> => {
+    loading.value = true;
+    error.value = null;
+
+    try {
+      const api = useApi("login");
+      const response = await api.postValidated(
+        "/login",
+        loginCredentialsSchema,
+        authResponseSchema,
+        buildLoginPayload(credentials),
+      );
+
+      const loggedUsuario = response.user?.[0];
+
+      if (!loggedUsuario) {
+        error.value = "Credenciais inválidas";
+        return { success: false, error: error.value };
+      }
+
+      user.value = loggedUsuario;
+      writeStoredUsuario(loggedUsuario);
+
+      return { success: true, data: { user: [loggedUsuario] } };
+    } catch (err) {
+      throw handleError(err, "/login", "POST");
+    } finally {
+      loading.value = false;
+    }
   };
 
   return {
@@ -171,7 +144,6 @@ export const useAuthStore = defineStore("auth", () => {
     isAuthenticated,
     userEmail,
     userName,
-    userRole,
     userPermissoes,
     userParametros,
 

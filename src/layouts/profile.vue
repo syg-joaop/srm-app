@@ -33,7 +33,7 @@
                 {{ userName || "—" }}
               </p>
               <p class="text-xs font-medium text-white/80 truncate">
-                {{ userRole || "—" }}
+                {{ user?.setor || "—" }}
               </p>
             </div>
           </div>
@@ -76,7 +76,7 @@
                   Cargo
                 </p>
                 <p class="text-sm font-medium text-[var(--color-text)] truncate">
-                  {{ userRole || "—" }}
+                  {{ user?.setor || "—" }}
                 </p>
               </div>
             </div>
@@ -119,7 +119,7 @@ import { Briefcase, Mail, User } from "lucide-vue-next";
 import UiButton from "~/components/ui/UiButton.vue";
 import UiModal from "~/components/ui/UiModal.vue";
 
-const { userName, userRole, userEmail } = useAuth();
+const { userName, userEmail, user } = useAuthStore();
 
 defineProps({
   isOpen: {

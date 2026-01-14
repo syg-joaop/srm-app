@@ -1,7 +1,6 @@
 import { storeToRefs } from "pinia";
 
-import { useApiConfig } from "~/composables/config";
-import { useHttpClient } from "~/composables/http";
+import { useApi } from "~/composables/http/useApi";
 import { useAuthStore } from "~/stores/auth";
 
 import { DASHBOARD_GRAPH_IDS } from "../constants/painel.constants";
@@ -35,7 +34,7 @@ import { useDashboardStore } from "../stores/dashboard";
 export const useDashboard = () => {
   const dashboardStore = useDashboardStore();
   const authStore = useAuthStore();
-  const { getApiUrl } = useApiConfig();
+  const api = useApi();
 
   const isLoading = ref(false);
   const error = ref<Error | null>(null);
@@ -65,17 +64,13 @@ export const useDashboard = () => {
         ...validFilters,
       });
 
-      // Busca dados com validação automática
-      const baseClient = useHttpClient(getApiUrl());
-      const response = await baseClient.get<unknown>(
-        `/dashboard/indicadores?${queryParams.toString()}`,
+      const response = await api.getValidated(
+        `/srm/dashboard/indicadores?${queryParams.toString()}`,
+        dashboardApiResponseSchema,
       );
 
-      // Valida resposta completa (com envelope)
-      const validatedResponse = dashboardApiResponseSchema.parse(response);
-
       // Extrai os dados do envelope e atualiza store
-      dashboardStore.setDashboardData(validatedResponse.data);
+      dashboardStore.setDashboardData(response.data);
     } catch (err) {
       error.value = err instanceof Error ? err : new Error("Erro ao buscar dashboard");
       console.error("[useDashboard] Erro ao buscar dados:", err);

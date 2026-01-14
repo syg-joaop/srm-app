@@ -2,7 +2,6 @@
   <UiModal
     :model-value="modelValue"
     size="large"
-    :show-close="isDesktop"
     @update:model-value="$emit('update:modelValue', $event)"
     @close="$emit('close')"
   >
@@ -229,13 +228,13 @@ import {
 import { computed, ref, watch } from "vue";
 
 import { getVariant } from "~/components/ui/utils/status";
-import { useBreakpoint } from "~/composables/useBreakpoint";
 
 import { useParceiroDetalhesData } from "./composables/useParceiroDetalhesData";
 import { useParceiroModalData } from "./composables/useParceiroModalData";
 import { useParceiroTabs } from "./composables/useParceiroTabs";
 
-import type { ParceiroData, ParceiroVariant, TabId } from "~/types/parceiro";
+import type { ParceiroData } from "~/layers/common/schemas/parceiro.schema";
+import type { ParceiroVariant, TabId } from "~/components/ui/ui.types";
 
 const props = withDefaults(
   defineProps<{
@@ -252,7 +251,6 @@ defineEmits<{
 }>();
 
 // State management usando composables
-const { isDesktop } = useBreakpoint();
 const { isLoading, error, loadData: loadModalData, reset: resetModalData } = useParceiroModalData();
 
 // Composables específicos do parceiro

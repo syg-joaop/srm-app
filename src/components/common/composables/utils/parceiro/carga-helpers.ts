@@ -5,7 +5,7 @@
 
 import { normalize } from './normalizers';
 
-import type { CargaRecord, EnhancedDetail, TotalDetail, ProductDetail, SeparatorDetail } from '~/types/parceiro';
+import type { CargaRecord, EnhancedDetail, TotalDetail, ProductDetail, SeparatorDetail } from '~/components/ui/ui.types';
 
 /**
  * Gets the count field from a carga record.

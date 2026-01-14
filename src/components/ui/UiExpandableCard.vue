@@ -16,7 +16,7 @@
 import UiCard from "./UiCard.vue";
 
 import type { Component } from "vue";
-import type { EnhancedDetail } from "~/types/parceiro";
+import type { EnhancedDetail } from "./ui.types";
 import type { Variant } from "./UiBadge.vue";
 
 interface Props {

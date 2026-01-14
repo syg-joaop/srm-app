@@ -1,6 +1,6 @@
 <template>
   <div class="min-h-screen p-6 sm:p-8 bg-[var(--color-background)]">
-    <!-- Header refinado com hierarquia clara -->
+    <!-- Header  -->
     <header class="mb-8">
       <div class="flex items-baseline justify-between mb-6">
         <div>
@@ -10,7 +10,7 @@
         </div>
       </div>
 
-      <!-- Toolbar com controles isolados -->
+      <!-- Toolbar  -->
       <div class="sticky top-2 z-10">
         <div
           class="bg-[var(--color-surface)] border border-[var(--color-border)] rounded-lg p-4 shadow-sm"
@@ -313,10 +313,10 @@ const {
 
 const { fetchOcorrencias } = useOcorrenciaService();
 
-const { data: ocorrenciasResponse, status } = fetchOcorrencias(
-  currentPage,
-  itemsPerPage,
-  apiFilters,
+const { data: ocorrenciasResponse, status } = await useAsyncData(
+  "ocorrencias",
+  () => fetchOcorrencias(currentPage.value, itemsPerPage.value, apiFilters.value),
+  { watch: [currentPage, itemsPerPage, apiFilters] },
 );
 
 const isLoading = computed(() => status.value === "pending");

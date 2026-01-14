@@ -3,10 +3,9 @@ import { z } from "zod";
 /**
  * Schema base para Parceiro (Fornecedor/Prospecto)
  *
- * Este schema define os campos comuns entre fornecedores e prospectos.
+ * Campos comuns entre fornecedores e prospectos.
  * Os schemas específicos de cada entidade devem estender este.
  *
- * Campos da API (nomes abreviados do legado):
  * - codfor: Código do parceiro (identificador único)
  * - fanta: Nome fantasia
  * - ende: Endereço completo
@@ -25,7 +24,7 @@ import { z } from "zod";
 
 export const parceiroBaseSchema = z
   .object({
-    codfor: z.union([z.string(), z.number()]).optional(),
+    codfor: z.union([z.string(), z.number()]),
     fornecedor: z.string().optional(),
     fanta: z.string().optional(),
     status: z.string().optional(),
@@ -46,7 +45,7 @@ export const parceiroBaseSchema = z
     ultima_carga: z.string().optional(),
     oco2: z.string().optional(),
   })
-  .passthrough();
+  .loose();
 
 export const parceiroMapSchema = parceiroBaseSchema.pick({
   fornecedor: true,
@@ -76,3 +75,26 @@ export const parceiroFiltersSchema = z
 export type ParceiroBase = z.infer<typeof parceiroBaseSchema>;
 export type ParceiroMap = z.infer<typeof parceiroMapSchema>;
 export type ParceiroFilters = z.infer<typeof parceiroFiltersSchema>;
+
+/**
+ * ParceiroData - Tipo estendido de parceiro com arrays de detalhes opcionais.
+ *
+ * Usado no ModalDetalhesParceiro para incluir todos os dados relacionados
+ * (contatos, cargas, atendimentos, etc) carregados dinamicamente.
+ */
+export interface ParceiroData extends Partial<ParceiroBase> {
+  name?: string;
+  location?: string;
+  date?: string;
+  role?: string;
+  codpros?: string;
+  contatos?: unknown[];
+  cargas?: unknown[];
+  agendamentos?: unknown[];
+  atendimentos?: unknown[];
+  coletas?: unknown[];
+  precos?: unknown[];
+  checkins?: unknown[];
+  favorecidos?: unknown[];
+  [key: string]: unknown;
+}

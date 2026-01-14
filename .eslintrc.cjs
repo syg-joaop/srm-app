@@ -55,7 +55,6 @@ module.exports = {
           "index", // Index imports
           "type", // Type imports
         ],
-        "newlines-between": "always",
         alphabetize: {
           order: "asc",
           caseInsensitive: true,
@@ -80,7 +79,6 @@ module.exports = {
         pathGroupsExcludedImportTypes: ["type"],
       },
     ],
-    "import/newline-after-import": "warn",
     "import/no-duplicates": "warn",
   },
 

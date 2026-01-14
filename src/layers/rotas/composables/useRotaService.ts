@@ -103,13 +103,13 @@ export const useRotaService = () => {
     isLoading.value = true;
     error.value = null;
     try {
-      const api = useMainApi(true);
+      const api = useHttpClient();
       const { tempOps, finalOps } = sequencingService.gerarOperacoesReordenacao(roteiros);
       for (const op of tempOps) {
-        await api(`/srm/roteiro/${op.id}`, { method: "PUT", body: { sequencia: op.sequencia } });
+        await api.put(`/srm/roteiro/${op.id}`, { sequencia: op.sequencia });
       }
       for (const op of finalOps) {
-        await api(`/srm/roteiro/${op.id}`, { method: "PUT", body: { sequencia: op.sequencia } });
+        await api.put(`/srm/roteiro/${op.id}`, { sequencia: op.sequencia });
       }
       clearPolylineCache();
       return true;

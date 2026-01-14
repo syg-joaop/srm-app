@@ -1,6 +1,6 @@
 <template>
   <div class="min-h-screen p-6 sm:p-8 bg-[var(--color-background)]">
-    <!-- Header refinado com hierarquia clara -->
+    <!-- Header  com hierarquia clara -->
     <header class="mb-8">
       <div class="flex items-baseline justify-between mb-6">
         <div>
@@ -340,7 +340,11 @@ const {
 
 const { fetchFornecedor } = useFornecedorService();
 
-const { data: fornecedores, status } = fetchFornecedor(currentPage, itemsPerPage, apiFilters);
+const { data: fornecedores, status } = await useAsyncData(
+  "fornecedores",
+  () => fetchFornecedor(currentPage.value, itemsPerPage.value, apiFilters.value),
+  { watch: [currentPage, itemsPerPage, apiFilters] },
+);
 
 const fornecedoresList = computed(() => fornecedores.value?.data?.items ?? []);
 const totalItems = computed(() => fornecedores.value?.data?.totalItems ?? 0);

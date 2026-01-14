@@ -77,7 +77,7 @@ const emit = defineEmits(["update:expanded", "close"]);
 const config = useRuntimeConfig();
 const appVersion = config.public.appVersion;
 const isExpanded = ref(false);
-const { logout } = useAuth();
+const { logout } = useAuthStore();
 
 watch(isExpanded, (newValue) => {
   emit("update:expanded", newValue);

@@ -1,6 +1,6 @@
 <template>
   <div class="min-h-screen p-6 sm:p-8 bg-[var(--color-background)]">
-    <!-- Header refinado com hierarquia clara -->
+    <!-- Header  com hierarquia clara -->
     <header class="mb-8">
       <div class="flex items-baseline justify-between mb-6">
         <div>
@@ -211,7 +211,9 @@
               <Users class="w-8 h-8 text-[var(--color-text-muted)]" />
             </div>
             <h3 class="text-lg font-semibold text-[var(--color-text)] mb-2">
-              {{ hasActiveFilters ? "Nenhum concorrente encontrado" : "Nenhum concorrente cadastrado" }}
+              {{
+                hasActiveFilters ? "Nenhum concorrente encontrado" : "Nenhum concorrente cadastrado"
+              }}
             </h3>
             <p class="text-sm text-[var(--color-text-muted)] mb-6">
               {{
@@ -239,8 +241,8 @@
 import { Filter, Search, Users, X } from "lucide-vue-next";
 
 import type { FilterBadge } from "~/components/ui/UiFilterBadges.vue";
-import { logger } from "~/utils/logger";
 import { toNumber, toStringValue } from "~/utils/coerce";
+import { logger } from "~/utils/logger";
 
 import ConcorrenteCardItem from "../components/ConcorrenteCardItem.vue";
 import type { Concorrente, ConcorrenteFilters } from "../schemas/concorrentes.schema";
@@ -250,6 +252,7 @@ definePageMeta({ layout: "default" });
 const currentPage = ref(1);
 const itemsPerPage = ref(50);
 const showFilters = ref(false);
+const search = ref("");
 
 const filters = ref({
   nome: "",
@@ -259,28 +262,35 @@ const filters = ref({
 
 const { fetchConcorrentes } = useConcorrenteService();
 
+const concorrenteFilters = computed<ConcorrenteFilters>(() => ({
+  search: search.value,
+}));
+
+const { data: concorrentesResponse, status } = await useAsyncData(
+  "concorrentes",
+  () => fetchConcorrentes(currentPage.value, itemsPerPage.value, concorrenteFilters.value),
+  { watch: [currentPage, itemsPerPage, concorrenteFilters] },
+);
+
 const concorrentes = computed(() =>
   (concorrentesResponse.value?.data?.items ?? []).map(normalizeConcorrente),
 );
 
-const { search, filteredItems: filteredConcorrentes } = useListFilter(concorrentes, {
-  searchFields: ["nome"],
-  customFilters: (item) => {
+const filteredConcorrentes = computed(() => {
+  return concorrentes.value.filter((item) => {
+    const searchLower = search.value.trim().toLowerCase();
     const nome = filters.value.nome.trim().toLowerCase();
     const cidade = filters.value.cidade.trim().toLowerCase();
     const segmento = filters.value.segmento.trim().toLowerCase();
 
+    if (searchLower && !item.nome.toLowerCase().includes(searchLower)) return false;
     if (nome && !item.nome.toLowerCase().includes(nome)) return false;
     if (cidade && !(item.cidade ?? "").toLowerCase().includes(cidade)) return false;
     if (segmento && !(item.segmento ?? "").toLowerCase().includes(segmento)) return false;
 
     return true;
-  },
+  });
 });
-
-const concorrenteFilters = computed<ConcorrenteFilters>(() => ({
-  search: search.value,
-}));
 
 watch(
   [search, filters],
@@ -293,12 +303,6 @@ watch(
 watch(currentPage, () => {
   window.scrollTo({ top: 0, behavior: "smooth" });
 });
-
-const { data: concorrentesResponse, status } = fetchConcorrentes(
-  currentPage,
-  itemsPerPage,
-  concorrenteFilters,
-);
 
 const isLoading = computed(() => status.value === "pending");
 

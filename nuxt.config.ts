@@ -16,7 +16,6 @@ export default defineNuxtConfig({
     "./src/layers/checkin",
   ],
 
-  // DevTools não agregam no modo SPA e adicionam ruído no bundle.
   devtools: { enabled: false },
 
   modules: ["@pinia/nuxt", "@nuxt/image", "nuxt-typed-router"],

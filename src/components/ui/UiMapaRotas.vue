@@ -233,10 +233,8 @@ const updateMap = () => {
     mapUserLocation.drawUserToRouteLine(map, userCoords, routeStart);
   }
 
-  if (props.autoFitBounds && mapBounds.isValidBounds(validBounds)) {
-    mapBounds.fitToBounds(map, validBounds, {
-      padding: props.boundsPadding,
-    });
+  if (props.autoFitBounds && validBounds.length >= 2) {
+    mapBounds.fitToBounds(map, validBounds, { padding: props.boundsPadding });
   } else {
     mapBounds.setView(map, props.center, props.initialZoom);
   }

@@ -12,8 +12,8 @@ import { checkinSchema } from "~/layers/checkin/schemas/checkin.schema";
 import { logger } from "~/utils/logger";
 
 import type { Carga, Coleta, Contato, Preco } from "~/layers/common/schemas";
+import type { ParceiroData } from "~/layers/common/schemas/parceiro.schema";
 import type { Atendimento } from "~/layers/painel/schemas/dashboard.schema";
-import type { ParceiroData } from "~/types/parceiro";
 
 type Checkin = z.infer<typeof checkinSchema>;
 
@@ -50,7 +50,6 @@ export const useParceiroDetalhesData = (parceiroFn: () => ParceiroData | null) =
 
   /**
    * Carrega os dados detalhados do parceiro.
-   * Determina automaticamente qual service usar baseado no tipo de parceiro.
    */
   const loadDetalhes = async () => {
     if (!codforOrCodpros.value) {
@@ -62,41 +61,21 @@ export const useParceiroDetalhesData = (parceiroFn: () => ParceiroData | null) =
     error.value = null;
 
     try {
-      if (isFornecedor.value) {
-        const { useFornecedorDetalhesService } = await import(
-          "~/layers/fornecedores/composables/useFornecedorDetalhesService"
-        );
-        const service = useFornecedorDetalhesService();
+      const { useParceiroDetalhesService } = await import(
+        "~/composables/useParceiroDetalhesService"
+      );
+      const service = useParceiroDetalhesService();
 
-        const data = await service.fetchAllDetalhes(codforOrCodpros.value);
+      const data = await service.fetchAllDetalhes(codforOrCodpros.value);
 
-        detalhesData.value = {
-          contatos: (data.contatos?.data.items as Contato[]) || [],
-          cargas: (data.cargas?.data.items as Carga[]) || [],
-          atendimentos: (data.atendimentos?.data.items as Atendimento[]) || [],
-          coletas: (data.coletas?.data.items as Coleta[]) || [],
-          precos: (data.precos?.data.items as Preco[]) || [],
-          checkins: (data.checkins?.data.items as Checkin[]) || [],
-        };
-      } else if (isProspecto.value) {
-        const { useProspectoDetalhesService } = await import(
-          "~/layers/prospectos/composables/useProspectoDetalhesService"
-        );
-        const service = useProspectoDetalhesService();
-
-        const data = await service.fetchAllDetalhes(codforOrCodpros.value);
-
-        detalhesData.value = {
-          contatos: (data.contatos?.data.items as Contato[]) || [],
-          cargas: (data.cargas?.data.items as Carga[]) || [],
-          atendimentos: (data.atendimentos?.data.items as Atendimento[]) || [],
-          coletas: (data.coletas?.data.items as Coleta[]) || [],
-          precos: (data.precos?.data.items as Preco[]) || [],
-          checkins: (data.checkins?.data.items as Checkin[]) || [],
-        };
-      } else {
-        error.value = "Tipo de parceiro não reconhecido";
-      }
+      detalhesData.value = {
+        contatos: (data.contatos?.data.items as Contato[]) || [],
+        cargas: (data.cargas?.data.items as Carga[]) || [],
+        atendimentos: (data.atendimentos?.data.items as Atendimento[]) || [],
+        coletas: (data.coletas?.data.items as Coleta[]) || [],
+        precos: (data.precos?.data.items as Preco[]) || [],
+        checkins: (data.checkins?.data.items as Checkin[]) || [],
+      };
     } catch (err) {
       logger.error("[useParceiroDetalhesData] Erro ao carregar detalhes do parceiro:", err);
       error.value = err instanceof Error ? err.message : "Erro ao carregar dados";

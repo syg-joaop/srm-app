@@ -23,18 +23,30 @@ export class ValidationError extends AppError {
     path: string;
     message: string;
     code: string;
+    expected?: string;
+    received?: string;
   }>;
 
   constructor(message: string, zodError: z.ZodError) {
-    super(message, zodError.format());
+    super(message, zodError);
     this.zodError = zodError;
 
-    // Formata erros do Zod para estrutura mais amigável
-    this.errors = zodError.errors.map((err) => ({
-      path: err.path.join("."),
-      message: err.message,
-      code: err.code,
-    }));
+    this.errors = Array.isArray(zodError.issues)
+      ? zodError.issues.map((err) => ({
+          path: Array.isArray(err.path) ? err.path.join(".") : String(err.path || ""),
+          message: err.message || "Erro de validação",
+          code: err.code || "invalid",
+          expected: "expected" in err ? String(err.expected) : undefined,
+          received: "received" in err ? String(err.received) : undefined,
+        }))
+      : [];
+
+    // Log detalhado do erro no console para debug
+    console.error("[ValidationError] Detalhes do erro Zod:", {
+      message: this.message,
+      errors: this.errors,
+      rawIssues: zodError.issues,
+    });
   }
 
   /**
@@ -49,7 +61,15 @@ export class ValidationError extends AppError {
    * Retorna mensagem de erro formatada
    */
   getFormattedMessage(): string {
-    const errorList = this.errors.map((err) => `  - ${err.path}: ${err.message}`).join("\n");
+    const errorList = this.errors
+      .map((err) => {
+        let detail = `  - ${err.path || "(root)"}: ${err.message}`;
+        if (err.expected || err.received) {
+          detail += ` (esperado: ${err.expected ?? "?"}, recebido: ${err.received ?? "?"})`;
+        }
+        return detail;
+      })
+      .join("\n");
     return `${this.message}:\n${errorList}`;
   }
 

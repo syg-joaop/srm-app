@@ -1,6 +1,6 @@
 <template>
   <div class="min-h-screen p-6 sm:p-8 bg-[var(--color-background)]">
-    <!-- Header refinado com hierarquia clara -->
+    <!-- Header  com hierarquia clara -->
     <header class="mb-8">
       <div class="flex items-baseline justify-between mb-6">
         <div>
@@ -285,7 +285,7 @@
           />
         </Transition>
 
-        <!-- Empty state refinado -->
+        <!-- Empty state  -->
         <div v-if="rotas.length === 0" class="py-20 text-center">
           <div class="max-w-md mx-auto">
             <!-- Ícone -->

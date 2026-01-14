@@ -1,6 +1,6 @@
 <template>
   <div class="min-h-screen p-6 sm:p-8 bg-[var(--color-background)]">
-    <!-- Header refinado com hierarquia clara -->
+    <!-- Header  com hierarquia clara -->
     <header class="mb-8">
       <div class="flex items-baseline justify-between mb-6">
         <div>
@@ -286,7 +286,7 @@ import {
 } from "../constants/prospecto.constants";
 import { prospectoItemSchema } from "../schemas/prospectos.schema";
 
-import type { ParceiroData } from "~/types/parceiro";
+import type { ParceiroData } from "~/layers/common/schemas/parceiro.schema";
 
 type Prospecto = z.infer<typeof prospectoItemSchema>;
 
@@ -330,7 +330,11 @@ const {
 
 const { fetchProspectos } = useProspectoService();
 
-const { data: prospectos, status } = fetchProspectos(currentPage, itemsPerPage, apiFilters);
+const { data: prospectos, status } = await useAsyncData(
+  "prospectos",
+  () => fetchProspectos(currentPage.value, itemsPerPage.value, apiFilters.value),
+  { watch: [currentPage, itemsPerPage, apiFilters] },
+);
 
 const prospectosList = computed(() => prospectos.value?.data?.items ?? []);
 const totalItems = computed(() => prospectos.value?.data?.totalItems ?? 0);

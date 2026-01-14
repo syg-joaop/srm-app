@@ -165,13 +165,12 @@
 import { ChevronDown } from "lucide-vue-next";
 import { ref } from "vue";
 
-import { useHeightAnimation } from "~/composables/useHeightAnimation";
-import { isSeparatorDetail, isTotalDetail } from "~/types/parceiro";
+import { isSeparatorDetail, isTotalDetail } from "./ui.types";
 
 import UiBadge from "./UiBadge.vue";
 
 import type { Component } from "vue";
-import type { EnhancedDetail } from "~/types/parceiro";
+import type { EnhancedDetail } from "./ui.types";
 import type { Variant } from "./UiBadge.vue";
 
 const props = withDefaults(
@@ -210,8 +209,44 @@ const emit = defineEmits<{
 const isExpanded = ref(false);
 const detailsContainer = ref<HTMLElement | null>(null);
 
-// Animation helpers usando composable reutilizável
-const { beforeEnter, enter, afterEnter, beforeLeave, leave, afterLeave } = useHeightAnimation();
+// Animação de altura inline
+const beforeEnter = (el: Element) => {
+  const htmlEl = el as HTMLElement;
+  htmlEl.style.height = "0";
+  htmlEl.style.opacity = "0";
+};
+
+const enter = (el: Element) => {
+  const htmlEl = el as HTMLElement;
+  htmlEl.style.transition = "height 250ms ease-out, opacity 250ms ease-out";
+  requestAnimationFrame(() => {
+    htmlEl.style.height = htmlEl.scrollHeight + "px";
+    htmlEl.style.opacity = "1";
+  });
+};
+
+const afterEnter = (el: Element) => {
+  (el as HTMLElement).style.height = "auto";
+};
+
+const beforeLeave = (el: Element) => {
+  const htmlEl = el as HTMLElement;
+  htmlEl.style.height = htmlEl.scrollHeight + "px";
+  htmlEl.style.opacity = "1";
+};
+
+const leave = (el: Element) => {
+  const htmlEl = el as HTMLElement;
+  htmlEl.style.transition = "height 250ms ease-out, opacity 250ms ease-out";
+  requestAnimationFrame(() => {
+    htmlEl.style.height = "0";
+    htmlEl.style.opacity = "0";
+  });
+};
+
+const afterLeave = (el: Element) => {
+  (el as HTMLElement).style.height = "auto";
+};
 
 const toggleExpand = () => {
   if (!props.expandable) return;

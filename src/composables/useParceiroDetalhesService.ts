@@ -1,5 +1,5 @@
 /**
- * Service compartilhado para buscar dados detalhados de parceiros via chameleon-mode
+ * Service compartilhado para buscar dados detalhados de fornecedores via chameleon-mode
  *
  * Este service é utilizado por fornecedores e prospectos, que compartilham
  * a mesma tabela (cag_for) e estrutura de API.
@@ -7,6 +7,8 @@
  */
 
 import { z } from "zod";
+
+import { createDetailFetcher } from "./factories/createDetailFetcher";
 
 import { checkinResponseSchema } from "~/layers/checkin/schemas/checkin.schema";
 import {
@@ -31,126 +33,22 @@ const ENDPOINTS = {
 } as const;
 
 // ============================================================================
-// BODY BUILDERS
-// ============================================================================
-
-/**
- * Constrói o corpo da requisição para endpoints detalhados de parceiro.
- * Todos esses endpoints exigem obrigatoriamente o parâmetro codfor.
- */
-const buildDetalheBody = (
-  codfor: string,
-  page: number = 1,
-  size: number = 50,
-): Record<string, string | number> => ({
-  codfor,
-  page,
-  size,
-  offset: (page - 1) * size,
-});
-
-// ============================================================================
 // SERVICE COMPOSABLE
 // ============================================================================
 
 export const useParceiroDetalhesService = () => {
-  const api = useMainApi(true); // homol = true
+  const fetchPrecos = createDetailFetcher<z.infer<typeof precoResponseSchema>>(ENDPOINTS.PRECO);
+  const fetchContatos = createDetailFetcher<z.infer<typeof contatoResponseSchema>>(ENDPOINTS.CONTATO);
+  const fetchCargas = createDetailFetcher<z.infer<typeof cargaResponseSchema>>(ENDPOINTS.CARGA);
+  const fetchAtendimentos = createDetailFetcher<z.infer<typeof atendimentoResponseSchema>>(ENDPOINTS.ATENDIMENTO);
+  const fetchColetas = createDetailFetcher<z.infer<typeof coletaResponseSchema>>(ENDPOINTS.COLETA);
+  const fetchCheckins = createDetailFetcher<z.infer<typeof checkinResponseSchema>>(ENDPOINTS.CHECKIN);
 
   /**
-   * Busca preços de um parceiro específico.
-   *
-   * @param codfor - Código do parceiro (pode ser codfor ou codpros)
-   * @param page - Página atual (default: 1)
-   * @param size - Itens por página (default: 50)
-   */
-  const fetchPrecos = async (codfor: string, page: number = 1, size: number = 50) => {
-    const body = buildDetalheBody(codfor, page, size);
-    return api<z.infer<typeof precoResponseSchema>>(ENDPOINTS.PRECO, {
-      method: "POST",
-      body,
-    });
-  };
-
-  /**
-   * Busca contatos de um parceiro específico.
-   *
-   * @param codfor - Código do parceiro (pode ser codfor ou codpros)
-   * @param page - Página atual (default: 1)
-   * @param size - Itens por página (default: 50)
-   */
-  const fetchContatos = async (codfor: string, page: number = 1, size: number = 50) => {
-    const body = buildDetalheBody(codfor, page, size);
-    return api<z.infer<typeof contatoResponseSchema>>(ENDPOINTS.CONTATO, {
-      method: "POST",
-      body,
-    });
-  };
-
-  /**
-   * Busca cargas de um parceiro específico.
-   *
-   * @param codfor - Código do parceiro (pode ser codfor ou codpros)
-   * @param page - Página atual (default: 1)
-   * @param size - Itens por página (default: 50)
-   */
-  const fetchCargas = async (codfor: string, page: number = 1, size: number = 50) => {
-    const body = buildDetalheBody(codfor, page, size);
-    return api<z.infer<typeof cargaResponseSchema>>(ENDPOINTS.CARGA, {
-      method: "POST",
-      body,
-    });
-  };
-
-  /**
-   * Busca atendimentos/ocorrências de um parceiro específico.
-   *
-   * @param codfor - Código do parceiro (pode ser codfor ou codpros)
-   * @param page - Página atual (default: 1)
-   * @param size - Itens por página (default: 50)
-   */
-  const fetchAtendimentos = async (codfor: string, page: number = 1, size: number = 50) => {
-    const body = buildDetalheBody(codfor, page, size);
-    return api<z.infer<typeof atendimentoResponseSchema>>(ENDPOINTS.ATENDIMENTO, {
-      method: "POST",
-      body,
-    });
-  };
-
-  /**
-   * Busca coletas de um parceiro específico.
-   *
-   * @param codfor - Código do parceiro (pode ser codfor ou codpros)
-   * @param page - Página atual (default: 1)
-   * @param size - Itens por página (default: 50)
-   */
-  const fetchColetas = async (codfor: string, page: number = 1, size: number = 50) => {
-    const body = buildDetalheBody(codfor, page, size);
-    return api<z.infer<typeof coletaResponseSchema>>(ENDPOINTS.COLETA, {
-      method: "POST",
-      body,
-    });
-  };
-
-  /**
-   * Busca check-ins de um parceiro específico.
-   *
-   * @param codfor - Código do parceiro (pode ser codfor ou codpros)
-   * @param page - Página atual (default: 1)
-   * @param size - Itens por página (default: 50)
-   */
-  const fetchCheckins = async (codfor: string, page: number = 1, size: number = 50) => {
-    const body = buildDetalheBody(codfor, page, size);
-    return api<z.infer<typeof checkinResponseSchema>>(ENDPOINTS.CHECKIN, {
-      method: "POST",
-      body,
-    });
-  };
-
-  /**
-   * Busca TODOS os detalhes de um parceiro de uma vez.
+   * Busca TODOS os detalhes de um fornecedor de uma vez.
    * Útil para carregar todos os dados do modal em paralelo.
    *
-   * @param codfor - Código do parceiro
+   * @param codfor - Código do fornecedor
    * @returns Objeto com todos os dados detalhados
    */
   const fetchAllDetalhes = async (codfor: string) => {
